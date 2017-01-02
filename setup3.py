@@ -84,20 +84,16 @@ else:
     import _winreg
 
 # The rest of our imports.
-from distutils.core import setup
+from setuptools import setup
 from setuptools import Extension
-from distutils.command.install import install
-from distutils.command.build_ext import build_ext
+from setuptools.command.install import install
+from setuptools.command.build_ext import build_ext
 from distutils.command.build import build
 from distutils.command.install_data import install_data
-from distutils.command.build_py import build_py
+from setuptools.command.build_py import build_py
 from distutils.command.build_scripts import build_scripts
 
-try:
-    from distutils.command.bdist_msi import bdist_msi
-except ImportError:
-    # py24 and earlier
-    bdist_msi = None
+bdist_msi = None  # Do not build any MSI scripts
 
 from distutils.msvccompiler import get_build_version
 from distutils import log
