@@ -229,8 +229,14 @@ def find_platform_sdk_dir_setuptools():
     """
     from setuptools.msvc import EnvironmentInfo
     import platform
-    ei = EnvironmentInfo(platform.architecture()[0], 14.0)  # TODO: Detect specific platform version
-    vc_dir = ei.si.VCInstallDir
+    for vc_guess in [None, 14.0]:
+        try:
+            ei = EnvironmentInfo(platform.architecture()[0], vc_guess)
+            vc_dir = ei.si.VCInstallDir
+            break
+        except Exception as e:
+            print('Failed to guess VC installation version:', e)
+
     vcvarsall = subprocess.check_output('cmd /c "{}" && set'.format(os.path.join(vc_dir, 'vcvarsall.bat')))
     vars = {}
     for line in vcvarsall.decode().splitlines():
