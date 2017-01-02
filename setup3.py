@@ -2582,6 +2582,7 @@ dist = setup(name="pywin32",
                           "pythonwin": "pythonwin", },
              packages=packages,
              py_modules=py_modules,
+             setup_requires=['setuptools>=24.0'],
 
              data_files=[('', (os.path.join(gettempdir(), 'pywin32.version.txt'),))] +
                         convert_optional_data_files([
