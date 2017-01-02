@@ -1195,6 +1195,7 @@ class my_build_ext(build_ext):
         # any sensible compiler will give precedence to later
         # command line args.  Hence we combine them in order:
         extra_args = ext.extra_compile_args or []
+        print("Sources generated:", sources)
 
         macros = ext.define_macros[:]
         for undef in ext.undef_macros:
