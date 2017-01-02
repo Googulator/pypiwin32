@@ -1,3 +1,8 @@
+[![build status][2]][3]
+
+[2]: https://ci.appveyor.com/api/projects/status/github/pywin32/pipywin32?branch=master&svg=true
+[3]: https://ci.appveyor.com/project/pywin32/pipywin32
+
 This is the readme for the Python for Win32 (pywin32) extensions source code.
 
 See CHANGES.txt for recent changes.
