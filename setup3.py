@@ -845,6 +845,9 @@ class my_build_ext(build_ext):
         log.debug("After SDK processing, includes are %s", self.compiler.include_dirs)
         log.debug("After SDK processing, libs are %s", self.compiler.library_dirs)
 
+        # Add the MAPI directory
+        self.compiler.add_include_dir(os.path.join(os.path.dirname(__file__), 'mapi'))
+
         # Vista SDKs have a 'VC' directory with headers and libs for older
         # compilers.  We need to hack the support in here so that the
         # directories are after the compiler's own.  As noted above, the
