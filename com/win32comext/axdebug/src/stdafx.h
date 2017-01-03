@@ -26,8 +26,9 @@ typedef BSTR UserBSTR;
 #include "activdbg.h"
 #endif
 
-#if defined(__REQUIRED_RPCNDR_H_VERSION__)
+#if 0
 // for some strange reason, these no longer exist in dbgprop.h !?!?
+#ifndef __MIDL___MIDL_itf_dbgprop_0000_0001
 enum __MIDL___MIDL_itf_dbgprop_0000_0001
     {	DBGPROP_ATTRIB_NO_ATTRIB	= 0,
 	DBGPROP_ATTRIB_VALUE_IS_INVALID	= 0x8,
@@ -47,8 +48,9 @@ enum __MIDL___MIDL_itf_dbgprop_0000_0001
 	DBGPROP_ATTRIB_HAS_EXTENDED_ATTRIBS	= 0x800000
     };
 typedef DWORD DBGPROP_ATTRIB_FLAGS;
+#endif
 
-
+#ifndef __MIDL___MIDL_itf_dbgprop_0000_0002
 enum __MIDL___MIDL_itf_dbgprop_0000_0002
     {	DBGPROP_INFO_NAME	= 0x1,
 	DBGPROP_INFO_TYPE	= 0x2,
@@ -58,6 +60,9 @@ enum __MIDL___MIDL_itf_dbgprop_0000_0002
 	DBGPROP_INFO_DEBUGPROP	= 0x10,
 	DBGPROP_INFO_AUTOEXPAND	= 0x8000000
     };
+#endif
+
+#ifndef DBGPROP_INFO_FLAGS
 typedef DWORD DBGPROP_INFO_FLAGS;
 
 enum {
@@ -67,6 +72,7 @@ enum {
    EX_DBGPROP_INFO_LOCKBYTES  =0x0800,
    EX_DBGPROP_INFO_DEBUGEXTPROP  =0x1000
 };
+#endif
 
 #endif
 
