@@ -62,8 +62,8 @@ enum __MIDL___MIDL_itf_dbgprop_0000_0002
     };
 #endif
 
-#ifndef DBGPROP_INFO_FLAGS
 typedef DWORD DBGPROP_INFO_FLAGS;
+#endif
 
 enum {
    EX_DBGPROP_INFO_ID  =0x0100,
@@ -72,9 +72,6 @@ enum {
    EX_DBGPROP_INFO_LOCKBYTES  =0x0800,
    EX_DBGPROP_INFO_DEBUGEXTPROP  =0x1000
 };
-#endif
-
-#endif
 
 // PythonAX Helpers.
 extern BOOL PyAXDebug_PySOURCE_TEXT_ATTR_Length(  PyObject *obAttr, ULONG *pLength );
