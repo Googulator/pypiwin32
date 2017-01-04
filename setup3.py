@@ -767,6 +767,9 @@ class my_build_ext(build_ext):
             # Old Python version that doesn't support cross-compile
             self.plat_name = distutils.util.get_platform()
 
+    def copy_extensions_to_source(self):
+        pass
+
     def _fixup_sdk_dirs(self):
         # Adjust paths etc for the platform SDK - this prevents the user from
         # needing to manually add these directories via the MSVC UI.  Note
