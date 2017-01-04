@@ -1030,6 +1030,16 @@ class my_build_ext(build_ext):
                 out_arg = '-outputresource:%s;2' % (dll,)
                 self.spawn(['mt.exe', '-nologo', '-manifest', temp_manifest, out_arg])
 
+    @staticmethod
+    def list_files(startpath):
+        for root, dirs, files in os.walk(startpath):
+            level = root.replace(startpath, '').count(os.sep)
+            indent = ' ' * 4 * (level)
+            print('{}{}/'.format(indent, os.path.basename(root)))
+            subindent = ' ' * 4 * (level + 1)
+            for f in files:
+                print('{}{}'.format(subindent, f))
+
     def build_extensions(self):
         # First, sanity-check the 'extensions' list
         self.check_extensions_list(self.extensions)
@@ -1082,6 +1092,8 @@ class my_build_ext(build_ext):
         clib_files = (['win32', 'pywintypes%s.lib'],
                       ['win32com', 'pythoncom%s.lib'],
                       ['win32com', 'axscript%s.lib'])
+        print('Listing build directory:')
+        self.list_files(os.path.dirname(self.build_temp))
         for clib_file in clib_files:
             target_dir = os.path.join(self.build_lib, clib_file[0], "libs")
             if not os.path.exists(target_dir):
@@ -1090,8 +1102,7 @@ class my_build_ext(build_ext):
             if self.debug:
                 suffix = "_d"
             fname = clib_file[1] % suffix
-            self.copy_file(
-                os.path.join(self.build_temp, fname), target_dir)
+            self.copy_file(os.path.join(self.build_temp, fname), target_dir)
         # The MFC DLLs.
         try:
             target_dir = os.path.join(self.build_lib, "pythonwin")
@@ -1140,8 +1151,7 @@ class my_build_ext(build_ext):
                 if not os.path.isdir(mfc_dir):
                     raise RuntimeError("Can't find the redist dir at %r" % (mfc_dir))
                 for f in mfc_files:
-                    self.copy_file(
-                        os.path.join(mfc_dir, f), target_dir)
+                    self.copy_file(os.path.join(mfc_dir, f), target_dir)
         except (EnvironmentError, RuntimeError) as exc:
             print("Can't find an installed VC for the MFC DLLs:", exc)
 
