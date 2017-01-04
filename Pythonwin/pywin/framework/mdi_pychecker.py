@@ -33,12 +33,18 @@
 ## 
 ######################################################################
 
-import win32ui
-import win32api
-from pywin.mfc import docview, dialog, window
-import win32con
-import sys, string, re, glob, os, stat, time
+import glob
+import os
+import re
+import sys
+import time
+
 import scriptutils
+import win32api
+import win32con
+import win32ui
+from pywin.mfc import docview, dialog, window
+
 
 def getsubdirs(d):
     dlist = []
@@ -305,7 +311,7 @@ class TheDocument(docview.RichEditDoc):
                 result = "Can't find python.exe!\n"
             elif not os.path.isfile(pychecker):
                 result = "Can't find checker.py - please install pychecker " \
-                         "(or run 'setup.py install' if you have the source version)\n"
+                         "(or run 'setup2.py install' if you have the source version)\n"
             else:
                 cmd='%s "%s" %s %s 2>&1' % (py, pychecker, options,files)
                 ##fin,fout,ferr=os.popen3(cmd)

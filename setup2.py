@@ -84,16 +84,19 @@ else:
     import _winreg
 
 # The rest of our imports.
-from setuptools import setup
-from setuptools import Extension
-from setuptools.command.install import install
-from setuptools.command.build_ext import build_ext
+from distutils.core import setup, Extension
+from distutils.command.install import install
+from distutils.command.build_ext import build_ext
 from distutils.command.build import build
 from distutils.command.install_data import install_data
-from setuptools.command.build_py import build_py
+from distutils.command.build_py import build_py
 from distutils.command.build_scripts import build_scripts
 
-bdist_msi = None  # Do not build any MSI scripts
+try:
+    from distutils.command.bdist_msi import bdist_msi
+except ImportError:
+    # py24 and earlier
+    bdist_msi = None
 
 from distutils.msvccompiler import get_build_version
 from distutils import log
@@ -107,7 +110,6 @@ from distutils.sysconfig import get_config_vars
 from distutils.filelist import FileList
 from distutils.errors import DistutilsExecError
 import distutils.util
-import subprocess
 
 # prevent the new in 3.5 suffix of "cpXX-win32" from being added.
 # (adjusting both .cp35-win_amd64.pyd and .cp35-win32.pyd to .pyd)
@@ -121,7 +123,8 @@ if not "." in build_id_patch:
     build_id_patch = build_id_patch + ".0"
 pywin32_version = "%d.%d.%s" % (sys.version_info[0], sys.version_info[1],
                                 build_id_patch)
-print("Building pywin32", pywin32_version)
+print
+"Building pywin32", pywin32_version
 
 try:
     this_file = __file__
@@ -151,7 +154,8 @@ def find_platform_sdk_dir():
     sdkdir = os.environ.get("MSSdk")
     if sdkdir:
         if DEBUG:
-            print("PSDK: try %%MSSdk%%: '%s'" % sdkdir)
+            print
+            "PSDK: try %%MSSdk%%: '%s'" % sdkdir
         if os.path.isfile(os.path.join(sdkdir, landmark)):
             return sdkdir
     # 2. The "Install Dir" value in the
@@ -166,8 +170,9 @@ def find_platform_sdk_dir():
         pass
     else:
         if DEBUG:
-            print(r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDK" \
-                  "\Directories\Install Dir': '%s'" % sdkdir)
+            print
+            r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDK" \
+            "\Directories\Install Dir': '%s'" % sdkdir
         if os.path.isfile(os.path.join(sdkdir, landmark)):
             return sdkdir
     # 3. Each installed SDK (not just the platform SDK) seems to have GUID
@@ -187,9 +192,10 @@ def find_platform_sdk_dir():
                 pass
             else:
                 if DEBUG:
-                    print(r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDK" \
-                          "\InstallSDKs\%s\Install Dir': '%s'" \
-                          % (guid, sdkdir))
+                    print
+                    r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDK" \
+                    "\InstallSDKs\%s\Install Dir': '%s'" \
+                    % (guid, sdkdir)
                 if os.path.isfile(os.path.join(sdkdir, landmark)):
                     return sdkdir
             i += 1
@@ -204,8 +210,9 @@ def find_platform_sdk_dir():
         pass
     else:
         if DEBUG:
-            print(r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDKs" \
-                  "\Windows\CurrentInstallFolder': '%s'" % sdkdir)
+            print
+            r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDKs" \
+            "\Windows\CurrentInstallFolder': '%s'" % sdkdir
         if os.path.isfile(os.path.join(sdkdir, landmark)):
             return sdkdir
 
@@ -217,40 +224,10 @@ def find_platform_sdk_dir():
     ]
     for sdkdir in defaultlocs:
         if DEBUG:
-            print("PSDK: try default location: '%s'" % sdkdir)
+            print
+            "PSDK: try default location: '%s'" % sdkdir
         if os.path.isfile(os.path.join(sdkdir, landmark)):
             return sdkdir
-
-
-def find_platform_sdk_dir_setuptools():
-    """
-    Finds the platform SDK directory using setuptools.msvc.EnvironmentInfo
-    :return: The location of the SDK
-    """
-    from setuptools.msvc import EnvironmentInfo
-    import platform
-    for vc_guess in [None, 14.0]:
-        try:
-            ei = EnvironmentInfo(platform.architecture()[0], vc_guess)
-            vc_dir = ei.si.VCInstallDir
-            break
-        except Exception as e:
-            print('Failed to guess VC installation version:', e)
-
-    vcvarsall = subprocess.check_output('cmd /c "{}" && set'.format(os.path.join(vc_dir, 'vcvarsall.bat')))
-    vars = {}
-    for line in vcvarsall.decode().splitlines():
-        split = line.split('=')
-        vars[split[0]] = split[1]
-
-    win_sdk_dir = vars['WindowsSdkDir']
-    win_sdk_version = vars['WindowsSDKLibVersion']
-
-    include_dir = os.path.join(win_sdk_dir, 'Include', win_sdk_version, 'um')
-    lib_dir = os.path.join(win_sdk_dir, 'Lib', win_sdk_version, 'um')
-    sdk_dir = win_sdk_dir
-
-    return sdk_dir, include_dir, lib_dir
 
 
 # Some nasty hacks to prevent most of our extensions using a manifest, as
@@ -335,14 +312,7 @@ if sys.version_info > (2, 6):
     MSVCCompiler.spawn = monkeypatched_spawn
     MSVCCompiler.link = monkeypatched_link
 
-try:
-    sdk_dir, include_dir, lib_dir = find_platform_sdk_dir_setuptools()
-except Exception as e:
-    sdk_dir = find_platform_sdk_dir()
-    include_dir = os.path.join(sdk_dir, 'include')
-    lib_dir = os.path.join(sdk_dir, 'lib')
-
-assert sdk_dir  # Fail fast rather than propagating the error
+sdk_dir = find_platform_sdk_dir()
 
 
 class WinExt(Extension):
@@ -643,7 +613,7 @@ class WinExt_win32com_axdebug(WinExt_win32com):
     def __init__(self, name, **kw):
         # Later SDK versions again ship with activdbg.h, but if we attempt
         # to use our own copy of that file with that SDK, we fail to link.
-        if os.path.isfile(os.path.join(include_dir, "activdbg.h")):
+        if os.path.isfile(os.path.join(sdk_dir, "include", "activdbg.h")):
             kw.setdefault('extra_compile_args', []).append("/DHAVE_SDK_ACTIVDBG")
         WinExt_win32com.__init__(self, name, **kw)
 
@@ -746,8 +716,9 @@ class my_build(build):
             f = open(ver_fname, "w")
             f.write("%s\n" % build_id)
             f.close()
-        except EnvironmentError as why:
-            print("Failed to open '%s': %s" % (ver_fname, why))
+        except EnvironmentError, why:
+            print
+            "Failed to open '%s': %s" % (ver_fname, why)
 
 
 class my_build_ext(build_ext):
@@ -766,9 +737,6 @@ class my_build_ext(build_ext):
         if not hasattr(self, 'plat_name'):
             # Old Python version that doesn't support cross-compile
             self.plat_name = distutils.util.get_platform()
-
-    def copy_extensions_to_source(self):
-        pass
 
     def _fixup_sdk_dirs(self):
         # Adjust paths etc for the platform SDK - this prevents the user from
@@ -810,7 +778,7 @@ class my_build_ext(build_ext):
         assert self.compiler.initialized  # if not, our env changes will be lost!
 
         is_64bit = self.plat_name == 'win-amd64'
-        extra = include_dir
+        extra = os.path.join(sdk_dir, 'include')
         # should not be possible for the SDK dirs to already be in our
         # include_dirs - they may be in the registry etc from MSVC, but
         # those aren't reflected here...
@@ -819,7 +787,7 @@ class my_build_ext(build_ext):
         assert os.path.isdir(extra), "%s doesn't exist!" % (extra,)
         self.compiler.add_include_dir(extra)
         # and again for lib dirs.
-        extra = lib_dir
+        extra = os.path.join(sdk_dir, 'lib')
         if is_64bit:
             extra = os.path.join(extra, 'x64')
             assert os.path.isdir(extra), extra
@@ -830,7 +798,6 @@ class my_build_ext(build_ext):
         # Must manually set DIRECTX_SDK_DIR for now.
         # (but it appears November 2008 and later versions set DXSDK_DIR, so
         # we allow both, allowing our "old" DIRECTX_SDK_DIR to override things
-        '''
         for dxsdk_dir_var in ("DIRECTX_SDK_DIR", "DXSDK_DIR"):
             dxsdk_dir = os.environ.get(dxsdk_dir_var)
             if dxsdk_dir:
@@ -845,12 +812,9 @@ class my_build_ext(build_ext):
                 assert os.path.isdir(extra), "%s doesn't exist!" % (extra,)
                 self.compiler.add_library_dir(extra)
                 break
-        '''
+
         log.debug("After SDK processing, includes are %s", self.compiler.include_dirs)
         log.debug("After SDK processing, libs are %s", self.compiler.library_dirs)
-
-        # Add the MAPI directory
-        self.compiler.add_include_dir(os.path.join(os.path.dirname(__file__), 'mapi'))
 
         # Vista SDKs have a 'VC' directory with headers and libs for older
         # compilers.  We need to hack the support in here so that the
@@ -1033,16 +997,6 @@ class my_build_ext(build_ext):
                 out_arg = '-outputresource:%s;2' % (dll,)
                 self.spawn(['mt.exe', '-nologo', '-manifest', temp_manifest, out_arg])
 
-    @staticmethod
-    def list_files(startpath):
-        for root, dirs, files in os.walk(startpath):
-            level = root.replace(startpath, '').count(os.sep)
-            indent = ' ' * 4 * (level)
-            print('{}{}/'.format(indent, os.path.basename(root)))
-            subindent = ' ' * 4 * (level + 1)
-            for f in files:
-                print('{}{}'.format(subindent, f))
-
     def build_extensions(self):
         # First, sanity-check the 'extensions' list
         self.check_extensions_list(self.extensions)
@@ -1076,7 +1030,8 @@ class my_build_ext(build_ext):
             if why is not None:
                 self.excluded_extensions.append((ext, why))
                 assert why, "please give a reason, or None"
-                print("Skipping %s: %s" % (ext.name, why))
+                print
+                "Skipping %s: %s" % (ext.name, why)
                 continue
 
             try:
@@ -1095,8 +1050,6 @@ class my_build_ext(build_ext):
         clib_files = (['win32', 'pywintypes%s.lib'],
                       ['win32com', 'pythoncom%s.lib'],
                       ['win32com', 'axscript%s.lib'])
-        print('Listing build directory:')
-        self.list_files(os.path.dirname(self.build_temp))
         for clib_file in clib_files:
             target_dir = os.path.join(self.build_lib, clib_file[0], "libs")
             if not os.path.exists(target_dir):
@@ -1105,7 +1058,8 @@ class my_build_ext(build_ext):
             if self.debug:
                 suffix = "_d"
             fname = clib_file[1] % suffix
-            self.copy_file(os.path.join(self.build_temp, fname), target_dir)
+            self.copy_file(
+                os.path.join(self.build_temp, fname), target_dir)
         # The MFC DLLs.
         try:
             target_dir = os.path.join(self.build_lib, "pythonwin")
@@ -1154,9 +1108,11 @@ class my_build_ext(build_ext):
                 if not os.path.isdir(mfc_dir):
                     raise RuntimeError("Can't find the redist dir at %r" % (mfc_dir))
                 for f in mfc_files:
-                    self.copy_file(os.path.join(mfc_dir, f), target_dir)
-        except (EnvironmentError, RuntimeError) as exc:
-            print("Can't find an installed VC for the MFC DLLs:", exc)
+                    self.copy_file(
+                        os.path.join(mfc_dir, f), target_dir)
+        except (EnvironmentError, RuntimeError), exc:
+            print
+            "Can't find an installed VC for the MFC DLLs:", exc
 
     def build_exefile(self, ext):
         sources = ext.sources
@@ -1212,7 +1168,6 @@ class my_build_ext(build_ext):
         # any sensible compiler will give precedence to later
         # command line args.  Hence we combine them in order:
         extra_args = ext.extra_compile_args or []
-        print("Sources generated:", sources)
 
         macros = ext.define_macros[:]
         for undef in ext.undef_macros:
@@ -1280,7 +1235,8 @@ class my_build_ext(build_ext):
         if why is not None:
             self.excluded_extensions.append((ext, why))
             assert why, "please give a reason, or None"
-            print("Skipping %s: %s" % (ext.name, why))
+            print
+            "Skipping %s: %s" % (ext.name, why)
             return
         self.current_extension = ext
 
@@ -1508,7 +1464,8 @@ class my_install(install):
             filename = os.path.join(self.prefix, "Scripts", "pywin32_postinstall.py")
             if not os.path.isfile(filename):
                 raise RuntimeError("Can't find '%s'" % (filename,))
-            print("Executing post install script...")
+            print
+            "Executing post install script..."
             # What executable to use?  This one I guess.
             os.spawnl(os.P_NOWAIT, sys.executable,
                       sys.executable, filename,
@@ -1588,7 +1545,7 @@ class my_compiler(base_compiler):
             args.append(output_filename)
             try:
                 self.spawn(args)
-            except DistutilsExecError as msg:
+            except DistutilsExecError, msg:
                 log.info("VersionStamp failed: %s", msg)
                 ok = False
         if not ok:
@@ -1606,7 +1563,8 @@ class my_install_data(install_data):
         if self.install_dir is None:
             installobj = self.distribution.get_command_obj('install')
             self.install_dir = installobj.install_lib
-        print('Installing data files to %s' % self.install_dir)
+        print
+        'Installing data files to %s' % self.install_dir
         install_data.finalize_options(self)
 
     def copy_file(self, src, dest):
@@ -1812,7 +1770,7 @@ win32_extensions += [
 # causes problems with references to the @__security_check_cookie magic.
 # Use bufferoverflowu.lib if it exists.
 win32help_libs = "htmlhelp user32 advapi32"
-if sdk_dir and os.path.exists(os.path.join(lib_dir, "bufferoverflowu.lib")):
+if sdk_dir and os.path.exists(os.path.join(sdk_dir, "Lib", "bufferoverflowu.lib")):
     win32help_libs += " bufferoverflowu"
 # but of-course the Vista SDK does it differently...
 elif sdk_dir and os.path.exists(os.path.join(sdk_dir, "VC", "Lib", "RunTmChk.lib")):
@@ -2031,7 +1989,39 @@ com_extensions += [
                         %(internet)s/PyIInternetProtocolSink.cpp    %(internet)s/PyIInternetSecurityManager.cpp
                     """ % dirs).split(),
                     depends=["%(internet)s/internet_pch.h" % dirs]),
-
+    WinExt_win32com('mapi', libraries="mapi32", pch_header="PythonCOM.h",
+                    sources=("""
+                        %(mapi)s/mapi.i                 %(mapi)s/mapi.cpp
+                        %(mapi)s/PyIABContainer.i       %(mapi)s/PyIABContainer.cpp
+                        %(mapi)s/PyIAddrBook.i          %(mapi)s/PyIAddrBook.cpp
+                        %(mapi)s/PyIAttach.i            %(mapi)s/PyIAttach.cpp
+                        %(mapi)s/PyIDistList.i          %(mapi)s/PyIDistList.cpp
+                        %(mapi)s/PyIMailUser.i          %(mapi)s/PyIMailUser.cpp
+                        %(mapi)s/PyIMAPIContainer.i     %(mapi)s/PyIMAPIContainer.cpp
+                        %(mapi)s/PyIMAPIFolder.i        %(mapi)s/PyIMAPIFolder.cpp
+                        %(mapi)s/PyIMAPIProp.i          %(mapi)s/PyIMAPIProp.cpp
+                        %(mapi)s/PyIMAPISession.i       %(mapi)s/PyIMAPISession.cpp
+                        %(mapi)s/PyIMAPIStatus.i        %(mapi)s/PyIMAPIStatus.cpp
+                        %(mapi)s/PyIMAPITable.i         %(mapi)s/PyIMAPITable.cpp
+                        %(mapi)s/PyIMessage.i           %(mapi)s/PyIMessage.cpp
+                        %(mapi)s/PyIMsgServiceAdmin.i   %(mapi)s/PyIMsgServiceAdmin.cpp
+                        %(mapi)s/PyIMsgStore.i          %(mapi)s/PyIMsgStore.cpp
+                        %(mapi)s/PyIProfAdmin.i         %(mapi)s/PyIProfAdmin.cpp
+                        %(mapi)s/PyIProfSect.i          %(mapi)s/PyIProfSect.cpp
+                        %(mapi)s/PyIConverterSession.i	%(mapi)s/PyIConverterSession.cpp
+                        %(mapi)s/PyIMAPIAdviseSink.cpp
+                        %(mapi)s/mapiutil.cpp
+                        %(mapi)s/mapiguids.cpp
+                        """ % dirs).split()),
+    WinExt_win32com_mapi('exchange', libraries="mapi32",
+                         sources=("""
+                                  %(mapi)s/exchange.i         %(mapi)s/exchange.cpp
+                                  %(mapi)s/PyIExchangeManageStore.i %(mapi)s/PyIExchangeManageStore.cpp
+                                  """ % dirs).split()),
+    WinExt_win32com_mapi('exchdapi', libraries="mapi32",
+                         sources=("""
+                                  %(mapi)s/exchdapi.i         %(mapi)s/exchdapi.cpp
+                                  """ % dirs).split()),
     WinExt_win32com('shell', libraries='shell32', pch_header="shell_pch.h",
                     windows_h_version=0x600,
                     sources=("""
@@ -2460,7 +2450,7 @@ def convert_optional_data_files(files):
     for file in files:
         try:
             temp = convert_data_files([file])
-        except RuntimeError as details:
+        except RuntimeError, details:
             if not str(details.args[0]).startswith("No file"):
                 raise
             log.info('NOTE: Optional file %s not found - skipping' % file)
@@ -2472,8 +2462,10 @@ def convert_optional_data_files(files):
 ################################################################
 if len(sys.argv) == 1:
     # distutils will print usage - print our docstring first.
-    print(__doc__)
-    print("Standard usage information follows:")
+    print
+    __doc__
+    print
+    "Standard usage information follows:"
 
 packages = ['win32com',
             'win32com.client',
@@ -2574,7 +2566,6 @@ dist = setup(name="pywin32",
                           "pythonwin": "pythonwin", },
              packages=packages,
              py_modules=py_modules,
-             setup_requires=['setuptools>=24.0'],
 
              data_files=[('', (os.path.join(gettempdir(), 'pywin32.version.txt'),))] +
                         convert_optional_data_files([
@@ -2661,10 +2652,15 @@ if 'build_ext' in dist.command_obj:
     if 'build_ext' in dist.command_obj:
         excluded_extensions = dist.command_obj['build_ext'].excluded_extensions
         if excluded_extensions:
-            print("*** NOTE: The following extensions were NOT %s:" % what_string)
+            print
+            "*** NOTE: The following extensions were NOT %s:" % what_string
             for ext, why in excluded_extensions:
-                print(" %s: %s" % (ext.name, why))
-            print("For more details on installing the correct libraries and headers,")
-            print("please execute this script with no arguments (or see the docstring)")
+                print
+                " %s: %s" % (ext.name, why)
+            print
+            "For more details on installing the correct libraries and headers,"
+            print
+            "please execute this script with no arguments (or see the docstring)"
         else:
-            print("All extension modules %s OK" % (what_string,))
+            print
+            "All extension modules %s OK" % (what_string,)
