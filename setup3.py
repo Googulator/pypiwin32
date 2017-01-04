@@ -827,6 +827,7 @@ class my_build_ext(build_ext):
         # Must manually set DIRECTX_SDK_DIR for now.
         # (but it appears November 2008 and later versions set DXSDK_DIR, so
         # we allow both, allowing our "old" DIRECTX_SDK_DIR to override things
+        '''
         for dxsdk_dir_var in ("DIRECTX_SDK_DIR", "DXSDK_DIR"):
             dxsdk_dir = os.environ.get(dxsdk_dir_var)
             if dxsdk_dir:
@@ -841,7 +842,7 @@ class my_build_ext(build_ext):
                 assert os.path.isdir(extra), "%s doesn't exist!" % (extra,)
                 self.compiler.add_library_dir(extra)
                 break
-
+        '''
         log.debug("After SDK processing, includes are %s", self.compiler.include_dirs)
         log.debug("After SDK processing, libs are %s", self.compiler.library_dirs)
 
