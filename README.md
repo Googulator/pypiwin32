@@ -8,11 +8,13 @@ This is the readme for the Python for Win32 (pywin32) extensions source code.
 See CHANGES.txt for recent changes.
 
 'setup.py' is a standard distutils build script.  You probably want to:
-
-% setup.py install
+```
+  % setup.py install
+```
 or
-% setup.py --help
-
+```
+  % setup.py --help
+```
 These extensions require the same version of MSVC as used for the 
 corresponding version of Python itself.  Some extensions require a recent 
 "Platform SDK"  from Microsoft, and in general, the latest service packs 
