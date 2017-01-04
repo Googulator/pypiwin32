@@ -30,14 +30,8 @@ environment:
       # for more discussion.
       TEST1_CMD: "python setup.py build"
 
-    - PYTHON: "C:\\Python34"
-      PYTHON_VERSION: "3.4"
-      PYTHON_ARCH: "32"
-      VCVARSALL: "x86"
-      TEST1_CMD: "python setup.py build"
-
-    - PYTHON: "C:\\Python33"
-      PYTHON_VERSION: "3.3"
+    - PYTHON: "C:\\Python36"
+      PYTHON_VERSION: "3.6"
       PYTHON_ARCH: "32"
       VCVARSALL: "x86"
       TEST1_CMD: "python setup.py build"
