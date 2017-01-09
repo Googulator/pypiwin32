@@ -1276,7 +1276,8 @@ class my_build_ext(build_ext):
         # Note we can't do this in advance, as some of the .lib files
         # we depend on may be built as part of the process - thus we can
         # only check an extension's lib files as we are building it.
-        why = self._why_cant_build_extension(ext)
+        # why = self._why_cant_build_extension(ext)
+        why = None
         if why is not None:
             self.excluded_extensions.append((ext, why))
             assert why, "please give a reason, or None"
