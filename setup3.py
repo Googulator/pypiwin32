@@ -84,7 +84,7 @@ else:
     import _winreg
 
 # The rest of our imports.
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools import Extension
 from setuptools.command.install import install
 from setuptools.command.build_ext import build_ext
@@ -2476,48 +2476,7 @@ if len(sys.argv) == 1:
     print(__doc__)
     print("Standard usage information follows:")
 
-packages = ['win32com',
-            'win32com.client',
-            'win32com.demos',
-            'win32com.makegw',
-            'win32com.server',
-            'win32com.servers',
-            'win32com.test',
-
-            'win32comext.adsi',
-
-            'win32comext.axscript',
-            'win32comext.axscript.client',
-            'win32comext.axscript.server',
-
-            'win32comext.axdebug',
-
-            'win32comext.propsys',
-            'win32comext.shell',
-            'win32comext.mapi',
-            'win32comext.ifilter',
-            'win32comext.internet',
-            'win32comext.axcontrol',
-            'win32comext.taskscheduler',
-            'win32comext.directsound',
-            'win32comext.directsound.test',
-            'win32comext.authorization',
-            'win32comext.bits',
-
-            'pythonwin.pywin',
-            'pythonwin.pywin.debugger',
-            'pythonwin.pywin.dialogs',
-            'pythonwin.pywin.docking',
-            'pythonwin.pywin.framework',
-            'pythonwin.pywin.framework.editor',
-            'pythonwin.pywin.framework.editor.color',
-            'pythonwin.pywin.idle',
-            'pythonwin.pywin.mfc',
-            'pythonwin.pywin.scintilla',
-            'pythonwin.pywin.tools',
-            'isapi',
-            'adodbapi',
-            ]
+packages = find_packages()
 
 py_modules = expand_modules("win32\\lib")
 ext_modules = win32_extensions + com_extensions + pythonwin_extensions + \
