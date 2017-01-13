@@ -84,7 +84,7 @@ else:
     import _winreg
 
 # The rest of our imports.
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools import Extension
 from setuptools.command.install import install
 from setuptools.command.build_ext import build_ext
@@ -659,81 +659,71 @@ class WinExt_system32(WinExt):
 
 # Start with 2to3 related stuff for py3k.
 do_2to3 = is_py3k
-if do_2to3:
-    def refactor_filenames(filenames):
-        from lib2to3.refactor import RefactoringTool
-        # we only need some fixers.
-        fixers = """basestring exec except dict import imports next nonzero
-                    print raise raw_input long standarderror types unicode
-                    urllib xrange""".split()
-        fqfixers = ['lib2to3.fixes.fix_' + f for f in fixers]
 
-        options = dict(doctests_only=False, fix=[], list_fixes=[],
-                       print_function=False, verbose=False,
-                       write=True)
-        r = RefactoringTool(fqfixers, options)
-        for updated_file in filenames:
-            if os.path.splitext(updated_file)[1] not in ['.py', '.pys']:
-                continue
-            log.info("Refactoring %s" % updated_file)
-            try:
-                r.refactor_file(updated_file, write=True, doctests_only=False)
-                if os.path.exists(updated_file + ".bak"):
-                    os.unlink(updated_file + ".bak")
-            except Exception:
-                log.warn("WARNING: Failed to 2to3 %s: %s" % (updated_file, sys.exc_info()[1]))
-else:
-    # py2k - nothing to do.
-    def refactor_filenames(filenames):
-        pass
 
-# 'build_py' command
-if do_2to3:
-    # Force 2to3 to be run for py3k versions.
-    class my_build_py(build_py):
-        def finalize_options(self):
-            build_py.finalize_options(self)
-            # must force as the 2to3 conversion happens in place so an
-            # interrupted build can cause py2 syntax files in a py3k build.
-            self.force = True
+def refactor_filenames(filenames):
+    from lib2to3.refactor import RefactoringTool
+    # we only need some fixers.
+    fixers = """basestring exec except dict import imports next nonzero
+                print raise raw_input long standarderror types unicode
+                urllib xrange""".split()
+    fqfixers = ['lib2to3.fixes.fix_' + f for f in fixers]
 
-        def run(self):
-            self.updated_files = []
+    options = dict(doctests_only=False, fix=[], list_fixes=[],
+                   print_function=False, verbose=False,
+                   write=True)
+    r = RefactoringTool(fqfixers, options)
+    for updated_file in filenames:
+        if os.path.splitext(updated_file)[1] not in ['.py', '.pys']:
+            continue
+        log.info("Refactoring %s" % updated_file)
+        try:
+            r.refactor_file(updated_file, write=True, doctests_only=False)
+            if os.path.exists(updated_file + ".bak"):
+                os.unlink(updated_file + ".bak")
+        except Exception:
+            log.warn("WARNING: Failed to 2to3 %s: %s" % (updated_file, sys.exc_info()[1]))
 
-            # Base class code
-            if self.py_modules:
-                self.build_modules()
-            if self.packages:
-                self.build_packages()
-                self.build_package_data()
 
-            # 2to3
-            refactor_filenames(self.updated_files)
+# Force 2to3 to be run for py3k versions.
+class my_build_py(build_py):
+    def finalize_options(self):
+        build_py.finalize_options(self)
+        # must force as the 2to3 conversion happens in place so an
+        # interrupted build can cause py2 syntax files in a py3k build.
+        self.force = True
 
-            # Remaining base class code
-            self.byte_compile(self.get_outputs(include_bytecode=0))
+    def run(self):
+        self.updated_files = []
 
-        def build_module(self, module, module_file, package):
-            res = build_py.build_module(self, module, module_file, package)
-            if res[1]:
-                # file was copied
-                self.updated_files.append(res[0])
-            return res
-else:
-    my_build_py = build_py  # default version.
+        # Base class code
+        if self.py_modules:
+            self.build_modules()
+        if self.packages:
+            self.build_packages()
+            self.build_package_data()
 
-# 'build_scripts' command
-if do_2to3:
-    class my_build_scripts(build_scripts):
-        def copy_file(self, src, dest):
-            dest, copied = build_scripts.copy_file(self, src, dest)
-            # 2to3
-            if not self.dry_run and copied:
-                refactor_filenames([dest])
-            return dest, copied
+        # 2to3
+        refactor_filenames(self.updated_files)
 
-else:
-    my_build_scripts = build_scripts
+        # Remaining base class code
+        self.byte_compile(self.get_outputs(include_bytecode=0))
+
+    def build_module(self, module, module_file, package):
+        res = build_py.build_module(self, module, module_file, package)
+        if res[1]:
+            # file was copied
+            self.updated_files.append(res[0])
+        return res
+
+
+class my_build_scripts(build_scripts):
+    def copy_file(self, src, dest):
+        dest, copied = build_scripts.copy_file(self, src, dest)
+        # 2to3
+        if not self.dry_run and copied:
+            refactor_filenames([dest])
+        return dest, copied
 
 
 # 'build' command
@@ -908,11 +898,15 @@ class my_build_ext(build_ext):
                     break
             else:
                 raise RuntimeError("Can't find a version in Windows.h")
+        '''
         if ext.windows_h_version is not None and \
                         ext.windows_h_version > self.windows_h_version:
             return "WINDOWS.H with version 0x%x is required, but only " \
                    "version 0x%x is installed." \
                    % (ext.windows_h_version, self.windows_h_version)
+        '''
+        if ext.name in ['shell']:
+            return 'Extension is currently not supported'
 
         look_dirs = include_dirs
         for h in ext.optional_headers:
@@ -2475,48 +2469,7 @@ if len(sys.argv) == 1:
     print(__doc__)
     print("Standard usage information follows:")
 
-packages = ['win32com',
-            'win32com.client',
-            'win32com.demos',
-            'win32com.makegw',
-            'win32com.server',
-            'win32com.servers',
-            'win32com.test',
-
-            'win32comext.adsi',
-
-            'win32comext.axscript',
-            'win32comext.axscript.client',
-            'win32comext.axscript.server',
-
-            'win32comext.axdebug',
-
-            'win32comext.propsys',
-            'win32comext.shell',
-            'win32comext.mapi',
-            'win32comext.ifilter',
-            'win32comext.internet',
-            'win32comext.axcontrol',
-            'win32comext.taskscheduler',
-            'win32comext.directsound',
-            'win32comext.directsound.test',
-            'win32comext.authorization',
-            'win32comext.bits',
-
-            'pythonwin.pywin',
-            'pythonwin.pywin.debugger',
-            'pythonwin.pywin.dialogs',
-            'pythonwin.pywin.docking',
-            'pythonwin.pywin.framework',
-            'pythonwin.pywin.framework.editor',
-            'pythonwin.pywin.framework.editor.color',
-            'pythonwin.pywin.idle',
-            'pythonwin.pywin.mfc',
-            'pythonwin.pywin.scintilla',
-            'pythonwin.pywin.tools',
-            'isapi',
-            'adodbapi',
-            ]
+packages = find_packages()
 
 py_modules = expand_modules("win32\\lib")
 ext_modules = win32_extensions + com_extensions + pythonwin_extensions + \
