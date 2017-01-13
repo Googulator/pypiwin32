@@ -898,11 +898,15 @@ class my_build_ext(build_ext):
                     break
             else:
                 raise RuntimeError("Can't find a version in Windows.h")
+        '''
         if ext.windows_h_version is not None and \
                         ext.windows_h_version > self.windows_h_version:
             return "WINDOWS.H with version 0x%x is required, but only " \
                    "version 0x%x is installed." \
                    % (ext.windows_h_version, self.windows_h_version)
+        '''
+        if ext.name in ['shell']:
+            return 'Extension is currently not supported'
 
         look_dirs = include_dirs
         for h in ext.optional_headers:
@@ -1266,8 +1270,7 @@ class my_build_ext(build_ext):
         # Note we can't do this in advance, as some of the .lib files
         # we depend on may be built as part of the process - thus we can
         # only check an extension's lib files as we are building it.
-        # why = self._why_cant_build_extension(ext)
-        why = None
+        why = self._why_cant_build_extension(ext)
         if why is not None:
             self.excluded_extensions.append((ext, why))
             assert why, "please give a reason, or None"
