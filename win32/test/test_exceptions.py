@@ -1,11 +1,15 @@
 """Test pywin32's error semantics"""
 import sys
 import unittest
-import win32api, win32file, pywintypes
+import win32api
+import win32file
+import pywintypes
 import pythoncom
 import winerror
 
+
 class TestBase(unittest.TestCase):
+
     def _testExceptionIndex(self, exc, index, expected):
         # check the exception itself can be indexed if not py3k
         if sys.version_info < (3,):
@@ -13,11 +17,13 @@ class TestBase(unittest.TestCase):
         # and that exception.args can is the same.
         self.failUnlessEqual(exc.args[index], expected)
 
+
 class TestAPISimple(TestBase):
+
     def _getInvalidHandleException(self):
         try:
             win32api.CloseHandle(1)
-        except win32api.error, exc:
+        except win32api.error as exc:
             return exc
         self.fail("Didn't get invalid-handle exception.")
 
@@ -34,30 +40,36 @@ class TestAPISimple(TestBase):
 
     def testMessageIndex(self):
         exc = self._getInvalidHandleException()
-        expected = win32api.FormatMessage(winerror.ERROR_INVALID_HANDLE).rstrip()
+        expected = win32api.FormatMessage(
+            winerror.ERROR_INVALID_HANDLE).rstrip()
         self._testExceptionIndex(exc, 2, expected)
 
     def testUnpack(self):
         try:
             win32api.CloseHandle(1)
             self.fail("expected exception!")
-        except win32api.error, exc:
+        except win32api.error as exc:
             self.failUnlessEqual(exc.winerror, winerror.ERROR_INVALID_HANDLE)
             self.failUnlessEqual(exc.funcname, "CloseHandle")
-            expected_msg = win32api.FormatMessage(winerror.ERROR_INVALID_HANDLE).rstrip()
+            expected_msg = win32api.FormatMessage(
+                winerror.ERROR_INVALID_HANDLE).rstrip()
             self.failUnlessEqual(exc.strerror, expected_msg)
 
     def testAsStr(self):
         exc = self._getInvalidHandleException()
-        err_msg = win32api.FormatMessage(winerror.ERROR_INVALID_HANDLE).rstrip()
-        # early on the result actually *was* a tuple - it must always look like one
+        err_msg = win32api.FormatMessage(
+            winerror.ERROR_INVALID_HANDLE).rstrip()
+        # early on the result actually *was* a tuple - it must always look like
+        # one
         err_tuple = (winerror.ERROR_INVALID_HANDLE, 'CloseHandle', err_msg)
         self.failUnlessEqual(str(exc), str(err_tuple))
 
     def testAsTuple(self):
         exc = self._getInvalidHandleException()
-        err_msg = win32api.FormatMessage(winerror.ERROR_INVALID_HANDLE).rstrip()
-        # early on the result actually *was* a tuple - it must be able to be one
+        err_msg = win32api.FormatMessage(
+            winerror.ERROR_INVALID_HANDLE).rstrip()
+        # early on the result actually *was* a tuple - it must be able to be
+        # one
         err_tuple = (winerror.ERROR_INVALID_HANDLE, 'CloseHandle', err_msg)
         if sys.version_info < (3,):
             self.failUnlessEqual(tuple(exc), err_tuple)
@@ -78,7 +90,8 @@ class TestAPISimple(TestBase):
 
     def testAttributes(self):
         exc = self._getInvalidHandleException()
-        err_msg = win32api.FormatMessage(winerror.ERROR_INVALID_HANDLE).rstrip()
+        err_msg = win32api.FormatMessage(
+            winerror.ERROR_INVALID_HANDLE).rstrip()
         self.failUnlessEqual(exc.winerror, winerror.ERROR_INVALID_HANDLE)
         self.failUnlessEqual(exc.strerror, err_msg)
         self.failUnlessEqual(exc.funcname, 'CloseHandle')
@@ -88,7 +101,7 @@ class TestAPISimple(TestBase):
         try:
             raise pywintypes.error()
             self.fail("Expected exception")
-        except pywintypes.error, exc:
+        except pywintypes.error as exc:
             self.failUnlessEqual(exc.args, ())
             self.failUnlessEqual(exc.winerror, None)
             self.failUnlessEqual(exc.funcname, None)
@@ -98,7 +111,7 @@ class TestAPISimple(TestBase):
         try:
             raise pywintypes.error("foo")
             self.fail("Expected exception")
-        except pywintypes.error, exc:
+        except pywintypes.error as exc:
             assert exc.args[0] == "foo"
             # 'winerror' always args[0]
             self.failUnlessEqual(exc.winerror, "foo")
@@ -109,18 +122,20 @@ class TestAPISimple(TestBase):
         try:
             raise pywintypes.error("foo", "bar", "you", "never", "kn", 0)
             self.fail("Expected exception")
-        except pywintypes.error, exc:
+        except pywintypes.error as exc:
             self.failUnlessEqual(exc.args[0], "foo")
             self.failUnlessEqual(exc.args[-1], 0)
             self.failUnlessEqual(exc.winerror, "foo")
             self.failUnlessEqual(exc.funcname, "bar")
             self.failUnlessEqual(exc.strerror, "you")
 
+
 class TestCOMSimple(TestBase):
+
     def _getException(self):
         try:
             pythoncom.StgOpenStorage("foo", None, 0)
-        except pythoncom.com_error, exc:
+        except pythoncom.com_error as exc:
             return exc
         self.fail("Didn't get storage exception.")
 
@@ -128,7 +143,12 @@ class TestCOMSimple(TestBase):
         self.failUnless(pythoncom.com_error is pywintypes.com_error)
 
     def testSimple(self):
-        self.assertRaises(pythoncom.com_error, pythoncom.StgOpenStorage, "foo", None, 0)
+        self.assertRaises(
+            pythoncom.com_error,
+            pythoncom.StgOpenStorage,
+            "foo",
+            None,
+            0)
 
     def testErrnoIndex(self):
         exc = self._getException()
@@ -142,14 +162,16 @@ class TestCOMSimple(TestBase):
     def testAsStr(self):
         exc = self._getException()
         err_msg = win32api.FormatMessage(winerror.STG_E_INVALIDFLAG).rstrip()
-        # early on the result actually *was* a tuple - it must always look like one
+        # early on the result actually *was* a tuple - it must always look like
+        # one
         err_tuple = (winerror.STG_E_INVALIDFLAG, err_msg, None, None)
         self.failUnlessEqual(str(exc), str(err_tuple))
 
     def testAsTuple(self):
         exc = self._getException()
         err_msg = win32api.FormatMessage(winerror.STG_E_INVALIDFLAG).rstrip()
-        # early on the result actually *was* a tuple - it must be able to be one
+        # early on the result actually *was* a tuple - it must be able to be
+        # one
         err_tuple = (winerror.STG_E_INVALIDFLAG, err_msg, None, None)
         if sys.version_info < (3,):
             self.failUnlessEqual(tuple(exc), err_tuple)
@@ -180,7 +202,7 @@ class TestCOMSimple(TestBase):
         try:
             raise pywintypes.com_error()
             self.fail("Expected exception")
-        except pywintypes.com_error, exc:
+        except pywintypes.com_error as exc:
             self.failUnlessEqual(exc.args, ())
             self.failUnlessEqual(exc.hresult, None)
             self.failUnlessEqual(exc.strerror, None)
@@ -191,7 +213,7 @@ class TestCOMSimple(TestBase):
         try:
             raise pywintypes.com_error("foo")
             self.fail("Expected exception")
-        except pywintypes.com_error, exc:
+        except pywintypes.com_error as exc:
             self.failUnlessEqual(exc.args[0], "foo")
             self.failUnlessEqual(exc.hresult, "foo")
             self.failUnlessEqual(exc.strerror, None)
@@ -202,7 +224,7 @@ class TestCOMSimple(TestBase):
         try:
             raise pywintypes.com_error("foo", "bar", "you", "never", "kn", 0)
             self.fail("Expected exception")
-        except pywintypes.com_error, exc:
+        except pywintypes.com_error as exc:
             self.failUnlessEqual(exc.args[0], "foo")
             self.failUnlessEqual(exc.args[-1], 0)
             self.failUnlessEqual(exc.hresult, "foo")

@@ -1,7 +1,7 @@
 # This is a port of the Vista SDK "FolderView" sample, and associated
 # notes at http://shellrevealed.com/blogs/shellblog/archive/2007/03/15/Shell-Namespace-Extension_3A00_-Creating-and-Using-the-System-Folder-View-Object.aspx
-# A key difference to shell_view.py is that this version uses the default 
-# IShellView provided by the shell (via SHCreateShellFolderView) rather 
+# A key difference to shell_view.py is that this version uses the default
+# IShellView provided by the shell (via SHCreateShellFolderView) rather
 # than our own.
 # XXX - sadly, it doesn't work quite like the original sample.  Oh well,
 # another day...
@@ -10,7 +10,7 @@ import os
 import pickle
 import random
 import win32api
-import winxpgui as win32gui # the needs vista, let alone xp!
+import winxpgui as win32gui  # the needs vista, let alone xp!
 import win32con
 import winerror
 import commctrl
@@ -20,27 +20,35 @@ from win32com.server.exception import COMException
 from win32com.server.util import wrap as _wrap
 from win32com.server.util import NewEnum as _NewEnum
 from win32com.shell import shell, shellcon
-from win32com.axcontrol import axcontrol # IObjectWithSite
+from win32com.axcontrol import axcontrol  # IObjectWithSite
 from win32com.propsys import propsys
 
-GUID=pythoncom.MakeIID
+GUID = pythoncom.MakeIID
 
 # If set, output spews to the win32traceutil collector...
-debug=0
+debug = 0
 # wrap a python object in a COM pointer
+
+
 def wrap(ob, iid=None):
-    return _wrap(ob, iid, useDispatcher=(debug>0))
+    return _wrap(ob, iid, useDispatcher=(debug > 0))
+
+
 def NewEnum(seq, iid):
-    return _NewEnum(seq, iid=iid, useDispatcher=(debug>0))
+    return _NewEnum(seq, iid=iid, useDispatcher=(debug > 0))
 
 # The sample makes heavy use of "string ids" (ie, integer IDs defined in .h
 # files, loaded at runtime from a (presumably localized) DLL.  We cheat.
-_sids = {} # strings, indexed bystring_id, 
+_sids = {}  # strings, indexed bystring_id,
+
+
 def LoadString(sid):
     return _sids[sid]
 
 # fn to create a unique string ID
 _last_ids = 0
+
+
 def _make_ids(s):
     global _last_ids
     _last_ids += 1
@@ -77,40 +85,48 @@ IDI_SETTINGS = 101
 
 # The sample defines a number of "category ids".  Each one gets
 # its own GUID.
-CAT_GUID_NAME=GUID("{de094c9d-c65a-11dc-ba21-005056c00008}")
-CAT_GUID_SIZE=GUID("{de094c9e-c65a-11dc-ba21-005056c00008}")
-CAT_GUID_SIDES=GUID("{de094c9f-c65a-11dc-ba21-005056c00008}")
-CAT_GUID_LEVEL=GUID("{de094ca0-c65a-11dc-ba21-005056c00008}")
+CAT_GUID_NAME = GUID("{de094c9d-c65a-11dc-ba21-005056c00008}")
+CAT_GUID_SIZE = GUID("{de094c9e-c65a-11dc-ba21-005056c00008}")
+CAT_GUID_SIDES = GUID("{de094c9f-c65a-11dc-ba21-005056c00008}")
+CAT_GUID_LEVEL = GUID("{de094ca0-c65a-11dc-ba21-005056c00008}")
 # The next category guid is NOT based on a column (see
 # ViewCategoryProvider::EnumCategories()...)
-CAT_GUID_VALUE="{de094ca1-c65a-11dc-ba21-005056c00008}"
+CAT_GUID_VALUE = "{de094ca1-c65a-11dc-ba21-005056c00008}"
 
-GUID_Display=GUID("{4d6c2fdd-c689-11dc-ba21-005056c00008}")
-GUID_Settings=GUID("{4d6c2fde-c689-11dc-ba21-005056c00008}")
-GUID_Setting1=GUID("{4d6c2fdf-c689-11dc-ba21-005056c00008}")
-GUID_Setting2=GUID("{4d6c2fe0-c689-11dc-ba21-005056c00008}")
-GUID_Setting3=GUID("{4d6c2fe1-c689-11dc-ba21-005056c00008}")
+GUID_Display = GUID("{4d6c2fdd-c689-11dc-ba21-005056c00008}")
+GUID_Settings = GUID("{4d6c2fde-c689-11dc-ba21-005056c00008}")
+GUID_Setting1 = GUID("{4d6c2fdf-c689-11dc-ba21-005056c00008}")
+GUID_Setting2 = GUID("{4d6c2fe0-c689-11dc-ba21-005056c00008}")
+GUID_Setting3 = GUID("{4d6c2fe1-c689-11dc-ba21-005056c00008}")
 
 # Hrm - not sure what to do about the std keys.
 # Probably need a simple parser for propkey.h
 PKEY_ItemNameDisplay = ("{B725F130-47EF-101A-A5F1-02608C9EEBAC}", 10)
 PKEY_PropList_PreviewDetails = ("{C9944A21-A406-48FE-8225-AEC7E24C211B}", 8)
 
-# Not sure what the "3" here refers to - docs say PID_FIRST_USABLE (2) be 
+# Not sure what the "3" here refers to - docs say PID_FIRST_USABLE (2) be
 # used.  Presumably it is the 'propID' value in the .propdesc file!
 # note that the following GUIDs are also references in the .propdesc file
-PID_SOMETHING=3
+PID_SOMETHING = 3
 # These are our 'private' PKEYs
 # Col 2, name="Sample.AreaSize"
-PKEY_Sample_AreaSize=("{d6f5e341-c65c-11dc-ba21-005056c00008}", PID_SOMETHING)
+PKEY_Sample_AreaSize = (
+    "{d6f5e341-c65c-11dc-ba21-005056c00008}",
+    PID_SOMETHING)
 # Col 3, name="Sample.NumberOfSides"
-PKEY_Sample_NumberOfSides = ("{d6f5e342-c65c-11dc-ba21-005056c00008}", PID_SOMETHING)
+PKEY_Sample_NumberOfSides = (
+    "{d6f5e342-c65c-11dc-ba21-005056c00008}",
+    PID_SOMETHING)
 # Col 4, name="Sample.DirectoryLevel"
-PKEY_Sample_DirectoryLevel = ("{d6f5e343-c65c-11dc-ba21-005056c00008}", PID_SOMETHING)
+PKEY_Sample_DirectoryLevel = (
+    "{d6f5e343-c65c-11dc-ba21-005056c00008}",
+    PID_SOMETHING)
 
 # We construct a PIDL from a pickle of a dict - turn it back into a
-# dict (we should *never* be called with a PIDL that the last elt is not 
+# dict (we should *never* be called with a PIDL that the last elt is not
 # ours, so it is safe to assume we created it (assume->"ass" = "u" + "me" :)
+
+
 def pidl_to_item(pidl):
     # Note that only the *last* elt in the PIDL is certainly ours,
     # but it contains everything we need encoded as a dict.
@@ -118,14 +134,16 @@ def pidl_to_item(pidl):
 
 # Start of msdn sample port...
 # make_item_enum replaces the sample's entire EnumIDList.cpp :)
+
+
 def make_item_enum(level, flags):
     pidls = []
     nums = """zero one two three four five size seven eight nine ten""".split()
     for i, name in enumerate(nums):
-        size = random.randint(0,255)
+        size = random.randint(0, 255)
         sides = 1
-        while sides in [1,2]:
-            sides = random.randint(0,5)
+        while sides in [1, 2]:
+            sides = random.randint(0, 5)
         is_folder = (i % 2) != 0
         # check the flags say to include it.
         # (This seems strange; if you ask the same folder for, but appear
@@ -136,11 +154,18 @@ def make_item_enum(level, flags):
             else:
                 skip = not (flags & shellcon.SHCONTF_NONFOLDERS)
         if not skip:
-            data = dict(name=name, size=size, sides=sides, level=level, is_folder=is_folder)
+            data = dict(
+                name=name,
+                size=size,
+                sides=sides,
+                level=level,
+                is_folder=is_folder)
             pidls.append([pickle.dumps(data)])
     return NewEnum(pidls, shell.IID_IEnumIDList)
 
 # start of Utils.cpp port
+
+
 def DisplayItem(shell_item_array, hwnd_parent=0):
     # Get the first ShellItem and display its name
     if shell_item_array is None:
@@ -148,77 +173,138 @@ def DisplayItem(shell_item_array, hwnd_parent=0):
     else:
         si = shell_item_array.GetItemAt(0)
         name = si.GetDisplayName(shellcon.SIGDN_NORMALDISPLAY)
-        msg = "%d items selected, first is %r" % (shell_item_array.GetCount(), name)
+        msg = "%d items selected, first is %r" % (
+            shell_item_array.GetCount(), name)
     win32gui.MessageBox(hwnd_parent, msg, "Hello", win32con.MB_OK)
 # end of Utils.cpp port
 
 # start of sample's FVCommands.cpp port
+
+
 class Command:
+
     def __init__(self, guid, ids, ids_tt, idi, flags, callback, children):
-        self.guid = guid; self.ids = ids; self.ids_tt = ids_tt
-        self.idi = idi; self.flags = flags; self.callback = callback;
+        self.guid = guid
+        self.ids = ids
+        self.ids_tt = ids_tt
+        self.idi = idi
+        self.flags = flags
+        self.callback = callback
         self.children = children
         assert not children or isinstance(children[0], Command)
+
     def tuple(self):
         return self.guid, self.ids, self.ids_tt, self.idi, self.flags, self.callback, self.children
 
 # command callbacks - called back directly by us - see ExplorerCommand.Invoke
+
+
 def onDisplay(items, bindctx):
     DisplayItem(items)
+
 
 def onSetting1(items, bindctx):
     win32gui.MessageBox(0, LoadString(IDS_SETTING1), "Hello", win32con.MB_OK)
 
+
 def onSetting2(items, bindctx):
     win32gui.MessageBox(0, LoadString(IDS_SETTING2), "Hello", win32con.MB_OK)
+
 
 def onSetting3(items, bindctx):
     win32gui.MessageBox(0, LoadString(IDS_SETTING3), "Hello", win32con.MB_OK)
 
 taskSettings = [
-    Command(GUID_Setting1, IDS_SETTING1,   IDS_SETTING1_TT,  IDI_SETTINGS,  0, onSetting1, None),
-    Command(GUID_Setting2, IDS_SETTING2,   IDS_SETTING2_TT,  IDI_SETTINGS,  0, onSetting2, None),
-    Command(GUID_Setting3, IDS_SETTING3,   IDS_SETTING3_TT,  IDI_SETTINGS,  0, onSetting3, None),
-    ]
+    Command(
+        GUID_Setting1,
+        IDS_SETTING1,
+        IDS_SETTING1_TT,
+        IDI_SETTINGS,
+        0,
+        onSetting1,
+        None),
+    Command(
+        GUID_Setting2,
+        IDS_SETTING2,
+        IDS_SETTING2_TT,
+        IDI_SETTINGS,
+        0,
+        onSetting2,
+        None),
+    Command(
+        GUID_Setting3,
+        IDS_SETTING3,
+        IDS_SETTING3_TT,
+        IDI_SETTINGS,
+        0,
+        onSetting3,
+        None),
+]
 
 tasks = [
-    Command(GUID_Display,  IDS_DISPLAY,    IDS_DISPLAY_TT,   IDI_ICON1,     0,                           onDisplay, None ),
-    Command(GUID_Settings, IDS_SETTINGS,   IDS_SETTINGS_TT,  IDI_SETTINGS,  shellcon.ECF_HASSUBCOMMANDS, None,        taskSettings),
-    ]
+    Command(
+        GUID_Display,
+        IDS_DISPLAY,
+        IDS_DISPLAY_TT,
+        IDI_ICON1,
+        0,
+        onDisplay,
+        None),
+    Command(
+        GUID_Settings,
+        IDS_SETTINGS,
+        IDS_SETTINGS_TT,
+        IDI_SETTINGS,
+        shellcon.ECF_HASSUBCOMMANDS,
+        None,
+        taskSettings),
+]
+
 
 class ExplorerCommandProvider:
     _com_interfaces_ = [shell.IID_IExplorerCommandProvider]
     _public_methods_ = shellcon.IExplorerCommandProvider_Methods
+
     def GetCommands(self, site, iid):
         items = [wrap(ExplorerCommand(t)) for t in tasks]
         return NewEnum(items, shell.IID_IEnumExplorerCommand)
 
+
 class ExplorerCommand:
     _com_interfaces_ = [shell.IID_IExplorerCommand]
     _public_methods_ = shellcon.IExplorerCommand_Methods
+
     def __init__(self, cmd):
         self.cmd = cmd
     # The sample also appears to ignore the pidl args!?
+
     def GetTitle(self, pidl):
         return LoadString(self.cmd.ids)
+
     def GetToolTip(self, pidl):
         return LoadString(self.cmd.ids_tt)
+
     def GetIcon(self, pidl):
         # Return a string of the usual "dll,resource_id" format
         # todo - just return any ".ico that comes with python" + ",0" :)
         raise COMException(hresult=winerror.E_NOTIMPL)
+
     def GetState(self, shell_items, slow_ok):
         return shellcon.ECS_ENABLED
+
     def GetFlags(self):
         return self.cmd.flags
+
     def GetCanonicalName(self):
         return self.cmd.guid
+
     def Invoke(self, items, bind_ctx):
         # If no function defined - just return S_OK
         if self.cmd.callback:
             self.cmd.callback(items, bind_ctx)
         else:
             print "No callback for command ", LoadString(self.cmd.ids)
+
     def EnumSubCommands(self):
         if not self.cmd.children:
             return None
@@ -229,20 +315,23 @@ class ExplorerCommand:
 # end of sample's FVCommands.cpp port
 
 # start of sample's Category.cpp port
+
+
 class FolderViewCategorizer:
     _com_interfaces_ = [shell.IID_ICategorizer]
     _public_methods_ = shellcon.ICategorizer_Methods
 
-    description = None # subclasses should set their own
+    description = None  # subclasses should set their own
 
     def __init__(self, shell_folder):
         self.sf = shell_folder
 
-    #  Determines the relative order of two items in their item identifier lists.
+    # Determines the relative order of two items in their item identifier
+    # lists.
     def CompareCategory(self, flags, cat1, cat2):
-        return cat1-cat2
+        return cat1 - cat2
 
-    #  Retrieves the name of a categorizer, such as "Group By Device 
+    #  Retrieves the name of a categorizer, such as "Group By Device
     #  Type", that can be displayed in the user interface.
     def GetDescription(self, cch):
         return self.description
@@ -251,10 +340,12 @@ class FolderViewCategorizer:
     # display and the text to display in the user interface.
     def GetCategoryInfo(self, catid):
         # Note: this isn't always appropriate!  See overrides below
-        return 0, str(catid) # ????
+        return 0, str(catid)  # ????
+
 
 class FolderViewCategorizer_Name(FolderViewCategorizer):
     description = "Alphabetical"
+
     def GetCategory(self, pidls):
         ret = []
         for pidl in pidls:
@@ -262,15 +353,17 @@ class FolderViewCategorizer_Name(FolderViewCategorizer):
             ret.append(val)
         return ret
 
+
 class FolderViewCategorizer_Size(FolderViewCategorizer):
     description = "Group By Size"
+
     def GetCategory(self, pidls):
         ret = []
         for pidl in pidls:
             # Why don't we just get the size of the PIDL?
             val = self.sf.GetDetailsEx(pidl, PKEY_Sample_AreaSize)
-            val = int(val) # it probably came in a VT_BSTR variant
-            if val < 255//3:
+            val = int(val)  # it probably came in a VT_BSTR variant
+            if val < 255 // 3:
                 cid = IDS_SMALL
             elif val < 2 * 255 // 3:
                 cid = IDS_MEDIUM
@@ -282,19 +375,21 @@ class FolderViewCategorizer_Size(FolderViewCategorizer):
     def GetCategoryInfo(self, catid):
         return 0, LoadString(catid)
 
+
 class FolderViewCategorizer_Sides(FolderViewCategorizer):
     description = "Group By Sides"
+
     def GetCategory(self, pidls):
         ret = []
         for pidl in pidls:
             val = self.sf.GetDetailsEx(pidl, PKEY_ItemNameDisplay)
-            if val==0:
+            if val == 0:
                 cid = IDS_CIRCLE
-            elif val==3:
+            elif val == 3:
                 cid = IDS_TRIANGLE
-            elif val==4:
+            elif val == 4:
                 cid = IDS_RECTANGLE
-            elif val==5:
+            elif val == 5:
                 cid = IDS_POLYGON
             else:
                 cid = IDS_UNSPECIFIED
@@ -304,8 +399,10 @@ class FolderViewCategorizer_Sides(FolderViewCategorizer):
     def GetCategoryInfo(self, catid):
         return 0, LoadString(catid)
 
+
 class FolderViewCategorizer_Value(FolderViewCategorizer):
     description = "Group By Value"
+
     def GetCategory(self, pidls):
         ret = []
         for pidl in pidls:
@@ -319,19 +416,24 @@ class FolderViewCategorizer_Value(FolderViewCategorizer):
     def GetCategoryInfo(self, catid):
         return 0, LoadString(catid)
 
+
 class FolderViewCategorizer_Level(FolderViewCategorizer):
     description = "Group By Value"
+
     def GetCategory(self, pidls):
-        return [self.sf.GetDetailsEx(pidl, PKEY_Sample_DirectoryLevel) for pidl in pidls]
+        return [self.sf.GetDetailsEx(
+            pidl, PKEY_Sample_DirectoryLevel) for pidl in pidls]
+
 
 class ViewCategoryProvider:
     _com_interfaces_ = [shell.IID_ICategoryProvider]
     _public_methods_ = shellcon.ICategoryProvider_Methods
+
     def __init__(self, shell_folder):
         self.shell_folder = shell_folder
 
     def CanCategorizeOnSCID(self, pkey):
-        return pkey in [PKEY_ItemNameDisplay, PKEY_Sample_AreaSize, 
+        return pkey in [PKEY_ItemNameDisplay, PKEY_Sample_AreaSize,
                         PKEY_Sample_NumberOfSides, PKEY_Sample_DirectoryLevel]
 
     #  Creates a category object.
@@ -361,7 +463,7 @@ class ViewCategoryProvider:
     #  Retrieves a globally unique identifier (GUID) that represents
     #  the categorizer to use for the specified Shell column.
     def GetCategoryForSCID(self, scid):
-        if scid==PKEY_ItemNameDisplay:
+        if scid == PKEY_ItemNameDisplay:
             guid = CAT_GUID_NAME
         elif scid == PKEY_Sample_AreaSize:
             guid = CAT_GUID_SIZE
@@ -374,7 +476,7 @@ class ViewCategoryProvider:
             # format ID. This will happen if you have a category,
             # not based on a column, that gets stored in the
             # property bag. When a return is made to this item,
-            # it will call this function with a NULL format id. 
+            # it will call this function with a NULL format id.
             guid = CAT_GUID_VALUE
         else:
             raise COMException(hresult=winerror.E_INVALIDARG)
@@ -397,16 +499,22 @@ class ViewCategoryProvider:
 MENUVERB_DISPLAY = 0
 
 folderViewImplContextMenuIDs = [
-    ("display",    MENUVERB_DISPLAY,      0, ),
+    ("display", MENUVERB_DISPLAY, 0, ),
 ]
+
 
 class ContextMenu:
     _reg_progid_ = "Python.ShellFolderSample.ContextMenu"
     _reg_desc_ = "Python FolderView Context Menu"
     _reg_clsid_ = "{fed40039-021f-4011-87c5-6188b9979764}"
-    _com_interfaces_ = [shell.IID_IShellExtInit, shell.IID_IContextMenu, axcontrol.IID_IObjectWithSite]
-    _public_methods_ = shellcon.IContextMenu_Methods + shellcon.IShellExtInit_Methods + ["GetSite", "SetSite"]
+    _com_interfaces_ = [
+        shell.IID_IShellExtInit,
+        shell.IID_IContextMenu,
+        axcontrol.IID_IObjectWithSite]
+    _public_methods_ = shellcon.IContextMenu_Methods + \
+        shellcon.IShellExtInit_Methods + ["GetSite", "SetSite"]
     _context_menu_type_ = "PythonFolderViewSampleType"
+
     def __init__(self):
         self.site = None
         self.dataobj = None
@@ -414,9 +522,16 @@ class ContextMenu:
     def Initialize(self, folder, dataobj, hkey):
         self.dataobj = dataobj
 
-    def QueryContextMenu(self, hMenu, indexMenu, idCmdFirst, idCmdLast, uFlags):
-        s = LoadString(IDS_DISPLAY);
-        win32gui.InsertMenu(hMenu, indexMenu, win32con.MF_BYPOSITION, idCmdFirst + MENUVERB_DISPLAY, s);
+    def QueryContextMenu(self, hMenu, indexMenu,
+                         idCmdFirst, idCmdLast, uFlags):
+        s = LoadString(IDS_DISPLAY)
+        win32gui.InsertMenu(
+            hMenu,
+            indexMenu,
+            win32con.MF_BYPOSITION,
+            idCmdFirst +
+            MENUVERB_DISPLAY,
+            s)
         indexMenu += 1
         # other verbs could go here...
 
@@ -428,18 +543,18 @@ class ContextMenu:
         # this seems very convuluted, but its what the sample does :)
         for verb_name, verb_id, flag in folderViewImplContextMenuIDs:
             if isinstance(verb, int):
-                matches = verb==verb_id
+                matches = verb == verb_id
             else:
-                matches = verb==verb_name
+                matches = verb == verb_name
             if matches:
                 break
         else:
-            assert False, ci # failed to find our ID
+            assert False, ci  # failed to find our ID
         if verb_id == MENUVERB_DISPLAY:
             sia = shell.SHCreateShellItemArrayFromDataObject(self.dataobj)
             DisplayItem(hwnd, sia)
         else:
-            assert False, ci # Got some verb we weren't expecting?
+            assert False, ci  # Got some verb we weren't expecting?
 
     def GetCommandString(self, cmd, typ):
         raise COMException(hresult=winerror.E_NOTIMPL)
@@ -464,26 +579,27 @@ class ShellFolder:
                         ]
 
     _public_methods_ = shellcon.IBrowserFrame_Methods + \
-                       shellcon.IPersistFolder2_Methods + \
-                       shellcon.IShellFolder2_Methods
+        shellcon.IPersistFolder2_Methods + \
+        shellcon.IShellFolder2_Methods
 
     _reg_progid_ = "Python.ShellFolderSample.Folder2"
     _reg_desc_ = "Python FolderView sample"
     _reg_clsid_ = "{bb8c24ad-6aaa-4cec-ac5e-c429d5f57627}"
 
     max_levels = 5
+
     def __init__(self, level=0):
         self.current_level = level
-        self.pidl = None # set when Initialize is called
+        self.pidl = None  # set when Initialize is called
 
     def ParseDisplayName(self, hwnd, reserved, displayName, attr):
-        #print "ParseDisplayName", displayName
+        # print "ParseDisplayName", displayName
         raise COMException(hresult=winerror.E_NOTIMPL)
 
     def EnumObjects(self, hwndOwner, flags):
         if self.current_level >= self.max_levels:
             return None
-        return make_item_enum(self.current_level+1, flags)
+        return make_item_enum(self.current_level + 1, flags)
 
     def BindToObject(self, pidl, bc, iid):
         tail = pidl_to_item(pidl)
@@ -492,7 +608,7 @@ class ShellFolder:
         # No point creating object just to have QI fail.
         if iid not in ShellFolder._com_interfaces_:
             raise COMException(hresult=winerror.E_NOTIMPL)
-        child = ShellFolder(self.current_level+1)
+        child = ShellFolder(self.current_level + 1)
         # hrmph - not sure what multiple PIDLs here mean?
         #        assert len(pidl)==1, pidl # expecting just relative child PIDL
         child.Initialize(self.pidl + pidl)
@@ -502,7 +618,7 @@ class ShellFolder:
         return self.BindToObject(pidl, bc, iid)
 
     def CompareIDs(self, param, id1, id2):
-        return 0 # XXX - todo - implement this!
+        return 0  # XXX - todo - implement this!
 
     def CreateViewObject(self, hwnd, iid):
         if iid == shell.IID_IShellView:
@@ -520,8 +636,8 @@ class ShellFolder:
             raise COMException(hresult=winerror.E_NOINTERFACE)
 
     def GetAttributesOf(self, pidls, attrFlags):
-        assert len(pidls)==1, "sample only expects 1 too!"
-        assert len(pidls[0])==1, "expect relative pidls!"
+        assert len(pidls) == 1, "sample only expects 1 too!"
+        assert len(pidls[0]) == 1, "expect relative pidls!"
         item = pidl_to_item(pidls[0])
         flags = 0
         if item['is_folder']:
@@ -530,11 +646,11 @@ class ShellFolder:
             flags |= shellcon.SFGAO_HASSUBFOLDER
         return flags
 
-    #  Retrieves an OLE interface that can be used to carry out 
+    #  Retrieves an OLE interface that can be used to carry out
     #  actions on the specified file objects or folders.
     def GetUIObjectOf(self, hwndOwner, pidls, iid, inout):
-        assert len(pidls)==1, "oops - arent expecting more than one!"
-        assert len(pidls[0])==1, "assuming relative pidls!"
+        assert len(pidls) == 1, "oops - arent expecting more than one!"
+        assert len(pidls[0]) == 1, "assuming relative pidls!"
         item = pidl_to_item(pidls[0])
         if iid == shell.IID_IContextMenu:
             ws = wrap(self)
@@ -551,18 +667,19 @@ class ShellFolder:
             return dxi
 
         elif iid == pythoncom.IID_IDataObject:
-            return shell.SHCreateDataObject(self.pidl, pidls, None, iid);
+            return shell.SHCreateDataObject(self.pidl, pidls, None, iid)
 
         elif iid == shell.IID_IQueryAssociations:
             elts = []
             if item['is_folder']:
                 elts.append((shellcon.ASSOCCLASS_FOLDER, None, None))
-            elts.append((shellcon.ASSOCCLASS_PROGID_STR, None, ContextMenu._context_menu_type_))
+            elts.append((shellcon.ASSOCCLASS_PROGID_STR, None,
+                         ContextMenu._context_menu_type_))
             return shell.AssocCreateForClasses(elts, iid)
 
         raise COMException(hresult=winerror.E_NOINTERFACE)
 
-    #  Retrieves the display name for the specified file object or subfolder. 
+    #  Retrieves the display name for the specified file object or subfolder.
     def GetDisplayNameOf(self, pidl, flags):
         item = pidl_to_item(pidl)
         if flags & shellcon.SHGDN_FORPARSING:
@@ -616,15 +733,15 @@ class ShellFolder:
         elif pkey == PKEY_Sample_AreaSize and not is_folder:
             val = "%d Sq. Ft." % item['size']
         elif pkey == PKEY_Sample_NumberOfSides and not is_folder:
-            val = str(item['sides']) # not sure why str()
+            val = str(item['sides'])  # not sure why str()
         elif pkey == PKEY_Sample_DirectoryLevel:
             val = str(item['level'])
         else:
             val = ''
         return val
 
-    #  Retrieves detailed information, identified by a 
-    #  property set ID (FMTID) and property ID (PID), 
+    #  Retrieves detailed information, identified by a
+    #  property set ID (FMTID) and property ID (PID),
     #  on an item in a Shell folder.
     def GetDetailsEx(self, pidl, pkey):
         item = pidl_to_item(pidl)
@@ -633,35 +750,35 @@ class ShellFolder:
             return "prop:Sample.AreaSize;Sample.NumberOfSides;Sample.DirectoryLevel"
         return self._GetColumnDisplayName(pidl, pkey)
 
-    #  Retrieves detailed information, identified by a 
+    #  Retrieves detailed information, identified by a
     #  column index, on an item in a Shell folder.
     def GetDetailsOf(self, pidl, iCol):
-        key = self.MapColumnToSCID(iCol);
+        key = self.MapColumnToSCID(iCol)
         if pidl is None:
             data = [(commctrl.LVCFMT_LEFT, "Name"),
                     (commctrl.LVCFMT_CENTER, "Size"),
                     (commctrl.LVCFMT_CENTER, "Sides"),
-                    (commctrl.LVCFMT_CENTER, "Level"),]
+                    (commctrl.LVCFMT_CENTER, "Level"), ]
             if iCol >= len(data):
                 raise COMException(hresult=winerror.E_FAIL)
             fmt, val = data[iCol]
         else:
-            fmt = 0 # ?
+            fmt = 0  # ?
             val = self._GetColumnDisplayName(pidl, key)
         cxChar = 24
         return fmt, cxChar, val
 
-    #  Converts a column name to the appropriate  
+    #  Converts a column name to the appropriate
     #  property set ID (FMTID) and property ID (PID).
     def MapColumnToSCID(self, iCol):
-        data = [PKEY_ItemNameDisplay, PKEY_Sample_AreaSize, 
+        data = [PKEY_ItemNameDisplay, PKEY_Sample_AreaSize,
                 PKEY_Sample_NumberOfSides, PKEY_Sample_DirectoryLevel]
         if iCol >= len(data):
             raise COMException(hresult=winerror.E_FAIL)
         return data[iCol]
 
     #  IPersistFolder2 methods
-    #  Retrieves the PIDLIST_ABSOLUTE for the folder object. 
+    #  Retrieves the PIDLIST_ABSOLUTE for the folder object.
     def GetCurFolder(self):
         # The docs say this is OK, but I suspect its a problem in this case :)
         #assert self.pidl, "haven't been initialized?"
@@ -669,11 +786,13 @@ class ShellFolder:
 
 # end of sample's ShellFolder.cpp port
 
+
 def get_schema_fname():
     me = win32api.GetFullPathName(__file__)
     sc = os.path.splitext(me)[0] + ".propdesc"
     assert os.path.isfile(sc), sc
     return sc
+
 
 def DllRegisterServer():
     import _winreg
@@ -682,36 +801,41 @@ def DllRegisterServer():
         sys.exit(1)
 
     key = _winreg.CreateKey(_winreg.HKEY_LOCAL_MACHINE,
-                            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\" \
-                            "Explorer\\Desktop\\Namespace\\" + \
+                            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\"
+                            "Explorer\\Desktop\\Namespace\\" +
                             ShellFolder._reg_clsid_)
     _winreg.SetValueEx(key, None, 0, _winreg.REG_SZ, ShellFolder._reg_desc_)
     # And special shell keys under our CLSID
     key = _winreg.CreateKey(_winreg.HKEY_CLASSES_ROOT,
-                        "CLSID\\" + ShellFolder._reg_clsid_ + "\\ShellFolder")
+                            "CLSID\\" + ShellFolder._reg_clsid_ + "\\ShellFolder")
     # 'Attributes' is an int stored as a binary! use struct
     attr = shellcon.SFGAO_FOLDER | shellcon.SFGAO_HASSUBFOLDER | \
-           shellcon.SFGAO_BROWSABLE
+        shellcon.SFGAO_BROWSABLE
     import struct
     s = struct.pack("i", attr)
     _winreg.SetValueEx(key, "Attributes", 0, _winreg.REG_BINARY, s)
     # register the context menu handler under the FolderViewSampleType type.
-    keypath = "%s\\shellex\\ContextMenuHandlers\\%s" % (ContextMenu._context_menu_type_, ContextMenu._reg_desc_)
+    keypath = "%s\\shellex\\ContextMenuHandlers\\%s" % (
+        ContextMenu._context_menu_type_, ContextMenu._reg_desc_)
     key = _winreg.CreateKey(_winreg.HKEY_CLASSES_ROOT, keypath)
     _winreg.SetValueEx(key, None, 0, _winreg.REG_SZ, ContextMenu._reg_clsid_)
     propsys.PSRegisterPropertySchema(get_schema_fname())
     print ShellFolder._reg_desc_, "registration complete."
 
+
 def DllUnregisterServer():
     import _winreg
     paths = [
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\Namespace\\" + ShellFolder._reg_clsid_,
-        "%s\\shellex\\ContextMenuHandlers\\%s" % (ContextMenu._context_menu_type_, ContextMenu._reg_desc_),
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\Namespace\\" +
+        ShellFolder._reg_clsid_,
+        "%s\\shellex\\ContextMenuHandlers\\%s" % (
+            ContextMenu._context_menu_type_,
+            ContextMenu._reg_desc_),
     ]
     for path in paths:
         try:
             _winreg.DeleteKey(_winreg.HKEY_LOCAL_MACHINE, path)
-        except WindowsError, details:
+        except WindowsError as details:
             import errno
             if details.errno != errno.ENOENT:
                 print "FAILED to remove %s: %s" % (path, details)
@@ -719,9 +843,9 @@ def DllUnregisterServer():
     propsys.PSUnregisterPropertySchema(get_schema_fname())
     print ShellFolder._reg_desc_, "unregistration complete."
 
-if __name__=='__main__':
+if __name__ == '__main__':
     from win32com.server import register
     register.UseCommandLine(ShellFolder, ContextMenu,
-                   debug = debug,
-                   finalize_register = DllRegisterServer,
-                   finalize_unregister = DllUnregisterServer)
+                            debug=debug,
+                            finalize_register=DllRegisterServer,
+                            finalize_unregister=DllUnregisterServer)

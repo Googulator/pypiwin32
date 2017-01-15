@@ -21,7 +21,7 @@ if hasattr(os, 'popen3'):
             print script
             stdin, stdout, stderr = os.popen3(cmd)
             stdin.close()
-            while 1:
+            while True:
                 char = stderr.read(1)
                 if not char:
                     break
@@ -39,6 +39,7 @@ else:
     # see test results as they are run (whereas this one waits until the test
     # is finished...)
     import subprocess
+
     def run_test(script, cmdline_rest=""):
         dirname, scriptname = os.path.split(script)
         # some tests prefer to be run from their directory.
@@ -55,29 +56,34 @@ else:
 def find_and_run(possible_locations, script, cmdline_rest=""):
     for maybe in possible_locations:
         if os.path.isfile(os.path.join(maybe, script)):
-            run_test(os.path.abspath(os.path.join(maybe, script)), cmdline_rest)
+            run_test(
+                os.path.abspath(
+                    os.path.join(
+                        maybe,
+                        script)),
+                cmdline_rest)
             break
     else:
         raise RuntimeError("Failed to locate the test script '%s' in one of %s"
                            % (script, possible_locations))
 
-if __name__=='__main__':
+if __name__ == '__main__':
     # win32
     maybes = [os.path.join(this_dir, "win32", "test"),
               os.path.join(site_packages, "win32", "test"),
-             ]
+              ]
     find_and_run(maybes, 'testall.py')
 
     # win32com
     maybes = [os.path.join(this_dir, "com", "win32com", "test"),
               os.path.join(site_packages, "win32com", "test"),
-             ]
+              ]
     find_and_run(maybes, 'testall.py', "2")
 
     # adodbapi
     maybes = [os.path.join(this_dir, "adodbapi", "tests"),
               os.path.join(site_packages, "adodbapi", "tests"),
-             ]
+              ]
     find_and_run(maybes, 'adodbapitest.py')
     # This script has a hard-coded sql server name in it, (and markh typically
     # doesn't have a different server to test on) so don't bother trying to

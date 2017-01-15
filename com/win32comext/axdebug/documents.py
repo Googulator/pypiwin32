@@ -1,24 +1,32 @@
 """ Management of documents for AXDebugging.
 """
 
-import axdebug, gateways
+import axdebug
+import gateways
 import pythoncom
 from util import _wrap, _wrap_remove, RaiseNotImpl, trace
 from win32com.server.util import unwrap
 import codecontainer
 import contexts
 from win32com.server.exception import Exception
-import win32api, winerror, os, string, sys
+import win32api
+import winerror
+import os
+import string
+import sys
 
-#def trace(*args):
+# def trace(*args):
 #       pass
+
 
 def GetGoodFileName(fname):
     if fname[0] != "<":
         return win32api.GetFullPathName(fname)
     return fname
 
+
 class DebugDocumentProvider(gateways.DebugDocumentProvider):
+
     def __init__(self, doc):
         self.doc = doc
 
@@ -31,15 +39,18 @@ class DebugDocumentProvider(gateways.DebugDocumentProvider):
     def GetDocument(self):
         return self.doc
 
-class DebugDocumentText(gateways.DebugDocumentInfo, gateways.DebugDocumentText, gateways.DebugDocument):
+
+class DebugDocumentText(gateways.DebugDocumentInfo,
+                        gateways.DebugDocumentText, gateways.DebugDocument):
     _com_interfaces_ = gateways.DebugDocumentInfo._com_interfaces_ + \
-                       gateways.DebugDocumentText._com_interfaces_ + \
-                       gateways.DebugDocument._com_interfaces_
+        gateways.DebugDocumentText._com_interfaces_ + \
+        gateways.DebugDocument._com_interfaces_
     _public_methods_ = gateways.DebugDocumentInfo._public_methods_ + \
-                       gateways.DebugDocumentText._public_methods_ + \
-                       gateways.DebugDocument._public_methods_
+        gateways.DebugDocumentText._public_methods_ + \
+        gateways.DebugDocument._public_methods_
     # A class which implements a DebugDocumentText, using the functionality
     # provided by a codeContainer
+
     def __init__(self, codeContainer):
         gateways.DebugDocumentText.__init__(self)
         gateways.DebugDocumentInfo.__init__(self)
@@ -51,6 +62,7 @@ class DebugDocumentText(gateways.DebugDocumentInfo, gateways.DebugDocumentText, 
 #               self.codeContainer._Close()
         self.codeContainer = None
     # IDebugDocumentInfo
+
     def GetName(self, dnt):
         return self.codeContainer.GetName(dnt)
 
@@ -63,16 +75,19 @@ class DebugDocumentText(gateways.DebugDocumentInfo, gateways.DebugDocumentText, 
     # IDebugDocumentText methods.
     # def GetDocumentAttributes
     def GetSize(self):
-#               trace("GetSize")
+        #               trace("GetSize")
         return self.codeContainer.GetNumLines(), self.codeContainer.GetNumChars()
+
     def GetPositionOfLine(self, cLineNumber):
         return self.codeContainer.GetPositionOfLine(cLineNumber)
+
     def GetLineOfPosition(self, charPos):
         return self.codeContainer.GetLineOfPosition(charPos)
+
     def GetText(self, charPos, maxChars, wantAttr):
         # Get all the attributes, else the tokenizer will get upset.
         # XXX - not yet!
-#               trace("GetText", charPos, maxChars, wantAttr)
+        #               trace("GetText", charPos, maxChars, wantAttr)
         cont = self.codeContainer
         attr = cont.GetSyntaxColorAttributes()
         return cont.GetText(), attr
@@ -89,6 +104,7 @@ class DebugDocumentText(gateways.DebugDocumentInfo, gateways.DebugDocumentText, 
         rc = self.codeContainer.GetCodeContextAtPosition(charPos)
         return rc.QueryInterface(axdebug.IID_IDebugDocumentContext)
 
+
 class CodeContainerProvider:
     """An abstract Python class which provides code containers!
 
@@ -98,10 +114,11 @@ class CodeContainerProvider:
     This provides a simple base imlpementation that simply supports
     a dictionary of nodes and providers.
     """
+
     def __init__(self):
         self.ccsAndNodes = {}
 
-    def AddCodeContainer(self, cc, node = None):
+    def AddCodeContainer(self, cc, node=None):
         fname = GetGoodFileName(cc.fileName)
         self.ccsAndNodes[fname] = cc, node
 

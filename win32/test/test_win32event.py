@@ -6,17 +6,19 @@ import os
 import sys
 from pywin32_testutil import int2long
 
+
 class TestWaitableTimer(unittest.TestCase):
+
     def testWaitableFireLong(self):
         h = win32event.CreateWaitableTimer(None, 0, None)
-        dt = int2long(-160) # 160 ns.
+        dt = int2long(-160)  # 160 ns.
         win32event.SetWaitableTimer(h, dt, 0, None, None, 0)
         rc = win32event.WaitForSingleObject(h, 1000)
         self.failUnlessEqual(rc, win32event.WAIT_OBJECT_0)
 
     def testWaitableFire(self):
         h = win32event.CreateWaitableTimer(None, 0, None)
-        dt = -160 # 160 ns.
+        dt = -160  # 160 ns.
         win32event.SetWaitableTimer(h, dt, 0, None, None, 0)
         rc = win32event.WaitForSingleObject(h, 1000)
         self.failUnlessEqual(rc, win32event.WAIT_OBJECT_0)
@@ -26,7 +28,7 @@ class TestWaitableTimer(unittest.TestCase):
         # for the sake of this, pass a long that doesn't fit in an int.
         dt = -2000000000
         win32event.SetWaitableTimer(h, dt, 0, None, None, 0)
-        rc = win32event.WaitForSingleObject(h, 10) # 10 ms.
+        rc = win32event.WaitForSingleObject(h, 10)  # 10 ms.
         self.failUnlessEqual(rc, win32event.WAIT_TIMEOUT)
 
     def testWaitableError(self):
@@ -37,6 +39,7 @@ class TestWaitableTimer(unittest.TestCase):
 
 
 class TestWaitFunctions(unittest.TestCase):
+
     def testMsgWaitForMultipleObjects(self):
         # this function used to segfault when called with an empty list
         res = win32event.MsgWaitForMultipleObjects([], 0, 0, 0)
@@ -111,5 +114,5 @@ class TestMutex(unittest.TestCase):
         self.assertRaises(pywintypes.error, win32event.ReleaseMutex, mutex)
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     unittest.main()

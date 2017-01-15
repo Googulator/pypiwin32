@@ -5,7 +5,9 @@ import win32con
 import array
 import pythoncom
 
+
 class TestBase(unittest.TestCase):
+
     def assertDictEquals(self, d, **kw):
         checked = dict()
         for n, v in kw.iteritems():
@@ -18,7 +20,9 @@ class TestBase(unittest.TestCase):
         passed_keys.sort()
         self.failUnlessEqual(checked_keys, passed_keys)
 
+
 class TestMenuItemInfo(TestBase):
+
     def _testPackUnpack(self, text):
         vals = dict(fType=win32con.MFT_MENUBARBREAK,
                     fState=win32con.MFS_CHECKED,
@@ -31,7 +35,8 @@ class TestMenuItemInfo(TestBase):
                     hbmpItem=321)
         mii, extras = win32gui_struct.PackMENUITEMINFO(**vals)
         fType, fState, wID, hSubMenu, hbmpChecked, hbmpUnchecked, \
-           dwItemData, text, hbmpItem = win32gui_struct.UnpackMENUITEMINFO(mii)
+            dwItemData, text, hbmpItem = win32gui_struct.UnpackMENUITEMINFO(
+                mii)
         self.assertDictEquals(vals, fType=fType, fState=fState, wID=wID,
                               hSubMenu=hSubMenu, hbmpChecked=hbmpChecked,
                               hbmpUnchecked=hbmpUnchecked,
@@ -47,7 +52,8 @@ class TestMenuItemInfo(TestBase):
     def testEmptyMenuItemInfo(self):
         mii, extra = win32gui_struct.EmptyMENUITEMINFO()
         fType, fState, wID, hSubMenu, hbmpChecked, hbmpUnchecked, \
-           dwItemData, text, hbmpItem = win32gui_struct.UnpackMENUITEMINFO(mii)
+            dwItemData, text, hbmpItem = win32gui_struct.UnpackMENUITEMINFO(
+                mii)
         self.failUnlessEqual(fType, 0)
         self.failUnlessEqual(fState, 0)
         self.failUnlessEqual(wID, 0)
@@ -64,13 +70,14 @@ class TestMenuItemInfo(TestBase):
 
 
 class TestMenuInfo(TestBase):
+
     def testPackUnpack(self):
         vals = dict(dwStyle=1, cyMax=2, hbrBack=3, dwContextHelpID=4,
                     dwMenuData=5)
 
         mi = win32gui_struct.PackMENUINFO(**vals)
         dwStyle, cyMax, hbrBack, dwContextHelpID, dwMenuData = \
-                        win32gui_struct.UnpackMENUINFO(mi)
+            win32gui_struct.UnpackMENUINFO(mi)
 
         self.assertDictEquals(vals, dwStyle=dwStyle, cyMax=cyMax,
                               hbrBack=hbrBack,
@@ -80,7 +87,7 @@ class TestMenuInfo(TestBase):
     def testEmptyMenuItemInfo(self):
         mi = win32gui_struct.EmptyMENUINFO()
         dwStyle, cyMax, hbrBack, dwContextHelpID, dwMenuData = \
-                                win32gui_struct.UnpackMENUINFO(mi)
+            win32gui_struct.UnpackMENUINFO(mi)
         self.failUnlessEqual(dwStyle, 0)
         self.failUnlessEqual(cyMax, 0)
         self.failUnlessEqual(hbrBack, 0)
@@ -89,13 +96,14 @@ class TestMenuInfo(TestBase):
 
 
 class TestTreeViewItem(TestBase):
+
     def _testPackUnpack(self, text):
         vals = dict(hitem=1, state=2, stateMask=3, text=text, image=4,
                     selimage=5, citems=6, param=7)
 
         ti, extra = win32gui_struct.PackTVITEM(**vals)
         hitem, state, stateMask, text, image, selimage, citems, param = \
-                            win32gui_struct.UnpackTVITEM(ti)
+            win32gui_struct.UnpackTVITEM(ti)
 
         self.assertDictEquals(vals, hitem=hitem, state=state,
                               stateMask=stateMask, text=text, image=image,
@@ -110,7 +118,7 @@ class TestTreeViewItem(TestBase):
     def testEmpty(self):
         ti, extras = win32gui_struct.EmptyTVITEM(0)
         hitem, state, stateMask, text, image, selimage, citems, param = \
-                            win32gui_struct.UnpackTVITEM(ti)
+            win32gui_struct.UnpackTVITEM(ti)
         self.failUnlessEqual(hitem, 0)
         self.failUnlessEqual(state, 0)
         self.failUnlessEqual(stateMask, 0)
@@ -120,14 +128,16 @@ class TestTreeViewItem(TestBase):
         self.failUnlessEqual(citems, 0)
         self.failUnlessEqual(param, 0)
 
+
 class TestListViewItem(TestBase):
+
     def _testPackUnpack(self, text):
         vals = dict(item=None, subItem=None, state=1, stateMask=2,
                     text=text, image=3, param=4, indent=5)
 
         ti, extra = win32gui_struct.PackLVITEM(**vals)
         item, subItem, state, stateMask, text, image, param, indent = \
-                            win32gui_struct.UnpackLVITEM(ti)
+            win32gui_struct.UnpackLVITEM(ti)
 
         # patch expected values.
         vals['item'] = 0
@@ -145,7 +155,7 @@ class TestListViewItem(TestBase):
     def testEmpty(self):
         ti, extras = win32gui_struct.EmptyLVITEM(1, 2)
         item, subItem, state, stateMask, text, image, param, indent = \
-                            win32gui_struct.UnpackLVITEM(ti)
+            win32gui_struct.UnpackLVITEM(ti)
         self.failUnlessEqual(item, 1)
         self.failUnlessEqual(subItem, 2)
         self.failUnlessEqual(state, 0)
@@ -157,12 +167,13 @@ class TestListViewItem(TestBase):
 
 
 class TestLVColumn(TestBase):
+
     def _testPackUnpack(self, text):
         vals = dict(fmt=1, cx=2, text=text, subItem=3, image=4, order=5)
 
         ti, extra = win32gui_struct.PackLVCOLUMN(**vals)
         fmt, cx, text, subItem, image, order = \
-                            win32gui_struct.UnpackLVCOLUMN(ti)
+            win32gui_struct.UnpackLVCOLUMN(ti)
 
         self.assertDictEquals(vals, fmt=fmt, cx=cx, text=text, subItem=subItem,
                               image=image, order=order)
@@ -176,7 +187,7 @@ class TestLVColumn(TestBase):
     def testEmpty(self):
         ti, extras = win32gui_struct.EmptyLVCOLUMN()
         fmt, cx, text, subItem, image, order = \
-                            win32gui_struct.UnpackLVCOLUMN(ti)
+            win32gui_struct.UnpackLVCOLUMN(ti)
         self.failUnlessEqual(fmt, 0)
         self.failUnlessEqual(cx, 0)
         self.failUnlessEqual(text, '')
@@ -186,6 +197,7 @@ class TestLVColumn(TestBase):
 
 
 class TestDEV_BROADCAST_HANDLE(TestBase):
+
     def testPackUnpack(self):
         s = win32gui_struct.PackDEV_BROADCAST_HANDLE(123)
         c = array.array("b", s)
@@ -202,6 +214,7 @@ class TestDEV_BROADCAST_HANDLE(TestBase):
 
 
 class TestDEV_BROADCAST_DEVICEINTERFACE(TestBase):
+
     def testPackUnpack(self):
         s = win32gui_struct.PackDEV_BROADCAST_DEVICEINTERFACE(pythoncom.IID_IUnknown,
                                                               "hello")
@@ -212,6 +225,7 @@ class TestDEV_BROADCAST_DEVICEINTERFACE(TestBase):
 
 
 class TestDEV_BROADCAST_VOLUME(TestBase):
+
     def testPackUnpack(self):
         s = win32gui_struct.PackDEV_BROADCAST_VOLUME(123, 456)
         c = array.array("b", s)
@@ -219,5 +233,5 @@ class TestDEV_BROADCAST_VOLUME(TestBase):
         self.failUnlessEqual(got.unitmask, 123)
         self.failUnlessEqual(got.flags, 456)
 
-if __name__=='__main__':
+if __name__ == '__main__':
     unittest.main()

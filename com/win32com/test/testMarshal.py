@@ -21,9 +21,11 @@ this is a pain in the but!
 
 """
 
-import threading, traceback
+import threading
+import traceback
 import win32com.client
-import win32event, win32api
+import win32event
+import win32api
 import pythoncom
 import unittest
 
@@ -31,7 +33,9 @@ from testServers import InterpCase
 
 freeThreaded = 1
 
+
 class ThreadInterpCase(InterpCase):
+
     def _testInterpInThread(self, stopEvent, interp):
         try:
             self._doTestInThread(interp)
@@ -43,18 +47,20 @@ class ThreadInterpCase(InterpCase):
         myThread = win32api.GetCurrentThreadId()
 
         if freeThreaded:
-            interp = pythoncom.CoGetInterfaceAndReleaseStream(interp, pythoncom.IID_IDispatch)
+            interp = pythoncom.CoGetInterfaceAndReleaseStream(
+                interp, pythoncom.IID_IDispatch)
             interp = win32com.client.Dispatch(interp)
 
         interp.Exec("import win32api")
-        #print "The test thread id is %d, Python.Interpreter's thread ID is %d" % (myThread, interp.Eval("win32api.GetCurrentThreadId()"))
+        # print "The test thread id is %d, Python.Interpreter's thread ID is
+        # %d" % (myThread, interp.Eval("win32api.GetCurrentThreadId()"))
         pythoncom.CoUninitialize()
 
     def BeginThreadsSimpleMarshal(self, numThreads):
         """Creates multiple threads using simple (but slower) marshalling.
-    
+
         Single interpreter object, but a new stream is created per thread.
-    
+
         Returns the handles the threads will set when complete.
         """
         interp = win32com.client.Dispatch("Python.Interpreter")
@@ -63,9 +69,12 @@ class ThreadInterpCase(InterpCase):
         for i in range(numThreads):
             hEvent = win32event.CreateEvent(None, 0, 0, None)
             events.append(hEvent)
-            interpStream = pythoncom.CoMarshalInterThreadInterfaceInStream(pythoncom.IID_IDispatch, interp._oleobj_)
-            t = threading.Thread(target=self._testInterpInThread, args=(hEvent, interpStream))
-            t.setDaemon(1) # so errors dont cause shutdown hang
+            interpStream = pythoncom.CoMarshalInterThreadInterfaceInStream(
+                pythoncom.IID_IDispatch, interp._oleobj_)
+            t = threading.Thread(
+                target=self._testInterpInThread, args=(
+                    hEvent, interpStream))
+            t.setDaemon(1)  # so errors dont cause shutdown hang
             t.start()
             threads.append(t)
         interp = None
@@ -77,52 +86,57 @@ class ThreadInterpCase(InterpCase):
     # I think that refers to CoMarshalInterface though...
     def BeginThreadsFastMarshal(self, numThreads):
         """Creates multiple threads using fast (but complex) marshalling.
-    
+
         The marshal stream is created once, and each thread uses the same stream
-    
+
         Returns the handles the threads will set when complete.
         """
         interp = win32com.client.Dispatch("Python.Interpreter")
         if freeThreaded:
-            interp = pythoncom.CoMarshalInterThreadInterfaceInStream(pythoncom.IID_IDispatch, interp._oleobj_)
+            interp = pythoncom.CoMarshalInterThreadInterfaceInStream(
+                pythoncom.IID_IDispatch, interp._oleobj_)
         events = []
         threads = []
         for i in range(numThreads):
             hEvent = win32event.CreateEvent(None, 0, 0, None)
-            t = threading.Thread(target=self._testInterpInThread, args=(hEvent, interp))
-            t.setDaemon(1) # so errors dont cause shutdown hang
+            t = threading.Thread(
+                target=self._testInterpInThread, args=(
+                    hEvent, interp))
+            t.setDaemon(1)  # so errors dont cause shutdown hang
             t.start()
             events.append(hEvent)
             threads.append(t)
         return threads, events
 
-    def _DoTestMarshal(self, fn, bCoWait = 0):
-        #print "The main thread is %d" % (win32api.GetCurrentThreadId())
+    def _DoTestMarshal(self, fn, bCoWait=0):
+        # print "The main thread is %d" % (win32api.GetCurrentThreadId())
         threads, events = fn(2)
         numFinished = 0
-        while 1:
+        while True:
             try:
                 if bCoWait:
                     rc = pythoncom.CoWaitForMultipleHandles(0, 2000, events)
                 else:
                     # Specifying "bWaitAll" here will wait for messages *and* all events
                     # (which is pretty useless)
-                    rc = win32event.MsgWaitForMultipleObjects(events, 0, 2000, win32event.QS_ALLINPUT)
-                if rc >= win32event.WAIT_OBJECT_0 and rc < win32event.WAIT_OBJECT_0+len(events):
+                    rc = win32event.MsgWaitForMultipleObjects(
+                        events, 0, 2000, win32event.QS_ALLINPUT)
+                if rc >= win32event.WAIT_OBJECT_0 and rc < win32event.WAIT_OBJECT_0 + \
+                        len(events):
                     numFinished = numFinished + 1
                     if numFinished >= len(events):
                         break
-                elif rc==win32event.WAIT_OBJECT_0 + len(events): # a message
+                elif rc == win32event.WAIT_OBJECT_0 + len(events):  # a message
                     # This is critical - whole apartment model demo will hang.
                     pythoncom.PumpWaitingMessages()
-                else: # Timeout
+                else:  # Timeout
                     print "Waiting for thread to stop with interfaces=%d, gateways=%d" % (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount())
             except KeyboardInterrupt:
                 break
         for t in threads:
             t.join(2)
             self.failIf(t.isAlive(), "thread failed to stop!?")
-        threads = None # threads hold references to args
+        threads = None  # threads hold references to args
         # Seems to be a leak here I can't locate :(
         #self.failUnlessEqual(pythoncom._GetInterfaceCount(), 0)
         #self.failUnlessEqual(pythoncom._GetGatewayCount(), 0)
@@ -136,5 +150,5 @@ class ThreadInterpCase(InterpCase):
 #    def testFastMarshal(self):
 #        self._DoTestMarshal(self.BeginThreadsFastMarshal)
 
-if __name__=='__main__':
+if __name__ == '__main__':
     unittest.main('testMarshal')

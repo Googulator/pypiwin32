@@ -3,7 +3,8 @@ import struct
 import sys
 import os
 import pywintypes
-import win32event, win32api
+import win32event
+import win32api
 import os
 from pywin32_testutil import str2bytes, TestSkipped
 import win32com.directsound.directsound as ds
@@ -14,14 +15,15 @@ import win32com.directsound.directsound as ds
 WAV_FORMAT_PCM = 1
 WAV_HEADER_SIZE = struct.calcsize('<4sl4s4slhhllhh4sl')
 
+
 def wav_header_unpack(data):
-    (riff, riffsize, wave, fmt, fmtsize, format, nchannels, samplespersecond, 
+    (riff, riffsize, wave, fmt, fmtsize, format, nchannels, samplespersecond,
      datarate, blockalign, bitspersample, data, datalength) \
-     = struct.unpack('<4sl4s4slhhllhh4sl', data)
+        = struct.unpack('<4sl4s4slhhllhh4sl', data)
 
     if riff != str2bytes('RIFF'):
         raise ValueError('invalid wav header')
-    
+
     if fmtsize != 16 or fmt != str2bytes('fmt ') or str2bytes(data) != 'data':
         # fmt chuck is not first chunk, directly followed by data chuck
         # It is nowhere required that they are, it is just very common
@@ -37,18 +39,21 @@ def wav_header_unpack(data):
 
     return wfx, datalength
 
+
 def wav_header_pack(wfx, datasize):
     return struct.pack('<4sl4s4slhhllhh4sl', 'RIFF', 36 + datasize,
                        'WAVE', 'fmt ', 16,
                        wfx.wFormatTag, wfx.nChannels, wfx.nSamplesPerSec,
                        wfx.nAvgBytesPerSec, wfx.nBlockAlign,
-                       wfx.wBitsPerSample, 'data', datasize);
+                       wfx.wBitsPerSample, 'data', datasize)
+
 
 class WAVEFORMATTest(unittest.TestCase):
+
     def test_1_Type(self):
         'WAVEFORMATEX type'
         w = pywintypes.WAVEFORMATEX()
-        self.failUnless(type(w) == pywintypes.WAVEFORMATEXType)
+        self.failUnless(isinstance(w, pywintypes.WAVEFORMATEXType))
 
     def test_2_Attr(self):
         'WAVEFORMATEX attribute access'
@@ -68,11 +73,13 @@ class WAVEFORMATTest(unittest.TestCase):
         self.failUnless(w.nBlockAlign == 4)
         self.failUnless(w.wBitsPerSample == 16)
 
+
 class DSCAPSTest(unittest.TestCase):
+
     def test_1_Type(self):
         'DSCAPS type'
         c = ds.DSCAPS()
-        self.failUnless(type(c) == ds.DSCAPSType)
+        self.failUnless(isinstance(c, ds.DSCAPSType))
 
     def test_2_Attr(self):
         'DSCAPS attribute access'
@@ -121,11 +128,13 @@ class DSCAPSTest(unittest.TestCase):
         self.failUnless(c.dwUnlockTransferRateHwBuffers == 20)
         self.failUnless(c.dwPlayCpuOverheadSwBuffers == 21)
 
+
 class DSBCAPSTest(unittest.TestCase):
+
     def test_1_Type(self):
         'DSBCAPS type'
         c = ds.DSBCAPS()
-        self.failUnless(type(c) == ds.DSBCAPSType)
+        self.failUnless(isinstance(c, ds.DSBCAPSType))
 
     def test_2_Attr(self):
         'DSBCAPS attribute access'
@@ -140,11 +149,13 @@ class DSBCAPSTest(unittest.TestCase):
         self.failUnless(c.dwUnlockTransferRate == 3)
         self.failUnless(c.dwPlayCpuOverhead == 4)
 
+
 class DSCCAPSTest(unittest.TestCase):
+
     def test_1_Type(self):
         'DSCCAPS type'
         c = ds.DSCCAPS()
-        self.failUnless(type(c) == ds.DSCCAPSType)
+        self.failUnless(isinstance(c, ds.DSCCAPSType))
 
     def test_2_Attr(self):
         'DSCCAPS attribute access'
@@ -157,11 +168,13 @@ class DSCCAPSTest(unittest.TestCase):
         self.failUnless(c.dwFormats == 2)
         self.failUnless(c.dwChannels == 4)
 
+
 class DSCBCAPSTest(unittest.TestCase):
+
     def test_1_Type(self):
         'DSCBCAPS type'
         c = ds.DSCBCAPS()
-        self.failUnless(type(c) == ds.DSCBCAPSType)
+        self.failUnless(isinstance(c, ds.DSCBCAPSType))
 
     def test_2_Attr(self):
         'DSCBCAPS attribute access'
@@ -172,11 +185,13 @@ class DSCBCAPSTest(unittest.TestCase):
         self.failUnless(c.dwFlags == 1)
         self.failUnless(c.dwBufferBytes == 2)
 
+
 class DSBUFFERDESCTest(unittest.TestCase):
+
     def test_1_Type(self):
         'DSBUFFERDESC type'
         c = ds.DSBUFFERDESC()
-        self.failUnless(type(c) == ds.DSBUFFERDESCType)
+        self.failUnless(isinstance(c, ds.DSBUFFERDESCType))
 
     def test_2_Attr(self):
         'DSBUFFERDESC attribute access'
@@ -208,11 +223,13 @@ class DSBUFFERDESCTest(unittest.TestCase):
         c = ds.DSBUFFERDESC()
         self.failUnlessRaises(ValueError, self.invalid_format, c)
 
+
 class DSCBUFFERDESCTest(unittest.TestCase):
+
     def test_1_Type(self):
         'DSCBUFFERDESC type'
         c = ds.DSCBUFFERDESC()
-        self.failUnless(type(c) == ds.DSCBUFFERDESCType)
+        self.failUnless(isinstance(c, ds.DSCBUFFERDESCType))
 
     def test_2_Attr(self):
         'DSCBUFFERDESC attribute access'
@@ -244,9 +261,10 @@ class DSCBUFFERDESCTest(unittest.TestCase):
         c = ds.DSCBUFFERDESC()
         self.failUnlessRaises(ValueError, self.invalid_format, c)
 
+
 class DirectSoundTest(unittest.TestCase):
     # basic tests - mostly just exercise the functions
-    
+
     def testEnumerate(self):
         '''DirectSoundEnumerate() sanity tests'''
 
@@ -255,7 +273,7 @@ class DirectSoundTest(unittest.TestCase):
         self.failUnless(len(devices))
         # if we have an entry, it must be a tuple of size 3
         self.failUnless(len(devices[0]) == 3)
-        
+
     def testCreate(self):
         '''DirectSoundCreate()'''
         d = ds.DirectSoundCreate(None, None)
@@ -272,7 +290,7 @@ class DirectSoundTest(unittest.TestCase):
             '.',
         ]
         for candidate in candidates:
-            fname=os.path.join(candidate, "01-Intro.wav")
+            fname = os.path.join(candidate, "01-Intro.wav")
             if os.path.isfile(fname):
                 break
         else:
@@ -303,9 +321,10 @@ class DirectSoundTest(unittest.TestCase):
 
         win32event.WaitForSingleObject(event, -1)
 
+
 class DirectSoundCaptureTest(unittest.TestCase):
     # basic tests - mostly just exercise the functions
-    
+
     def testEnumerate(self):
         '''DirectSoundCaptureEnumerate() sanity tests'''
 
@@ -314,7 +333,7 @@ class DirectSoundCaptureTest(unittest.TestCase):
         self.failUnless(len(devices))
         # if we have an entry, it must be a tuple of size 3
         self.failUnless(len(devices[0]) == 3)
-        
+
     def testCreate(self):
         '''DirectSoundCreate()'''
         d = ds.DirectSoundCaptureCreate(None, None)
@@ -323,7 +342,7 @@ class DirectSoundCaptureTest(unittest.TestCase):
         d = ds.DirectSoundCaptureCreate(None, None)
 
         sdesc = ds.DSCBUFFERDESC()
-        sdesc.dwBufferBytes = 352800 # 2 seconds
+        sdesc.dwBufferBytes = 352800  # 2 seconds
         sdesc.lpwfxFormat = pywintypes.WAVEFORMATEX()
         sdesc.lpwfxFormat.wFormatTag = pywintypes.WAVE_FORMAT_PCM
         sdesc.lpwfxFormat.nChannels = 2
@@ -345,7 +364,9 @@ class DirectSoundCaptureTest(unittest.TestCase):
         event.Close()
 
         data = buffer.Update(0, 352800)
-        fname=os.path.join(win32api.GetTempPath(), 'test_directsound_record.wav')
+        fname = os.path.join(
+            win32api.GetTempPath(),
+            'test_directsound_record.wav')
         f = open(fname, 'wb')
         f.write(wav_header_pack(sdesc.lpwfxFormat, 352800))
         f.write(data)

@@ -3,17 +3,27 @@
 import unittest
 from pywin32_testutil import str2bytes
 
-import win32api, win32con, win32event, winerror
-import sys, os
+import win32api
+import win32con
+import win32event
+import winerror
+import sys
+import os
 import tempfile
 import datetime
 
+
 class CurrentUserTestCase(unittest.TestCase):
+
     def testGetCurrentUser(self):
         name = "%s\\%s" % (win32api.GetDomainName(), win32api.GetUserName())
-        self.failUnless(name == win32api.GetUserNameEx(win32api.NameSamCompatible))
+        self.failUnless(
+            name == win32api.GetUserNameEx(
+                win32api.NameSamCompatible))
+
 
 class TestTime(unittest.TestCase):
+
     def testTimezone(self):
         # GetTimeZoneInformation
         rc, tzinfo = win32api.GetTimeZoneInformation()
@@ -27,6 +37,7 @@ class TestTime(unittest.TestCase):
         tz_str.encode()
         if not isinstance(tz_time, datetime.datetime):
             tz_time.Format()
+
     def TestDateFormat(self):
         DATE_LONGDATE = 2
         date_flags = DATE_LONGDATE
@@ -34,6 +45,7 @@ class TestTime(unittest.TestCase):
         win32api.GetDateFormat(0, date_flags, 0)
         win32api.GetDateFormat(0, date_flags, datetime.datetime.now())
         win32api.GetDateFormat(0, date_flags, time.time())
+
     def TestTimeFormat(self):
         win32api.GetTimeFormat(0, 0, None)
         win32api.GetTimeFormat(0, 0, 0)
@@ -43,70 +55,85 @@ class TestTime(unittest.TestCase):
 
 class Registry(unittest.TestCase):
     key_name = r'PythonTestHarness\Whatever'
+
     def test1(self):
         # This used to leave a stale exception behind.
         def reg_operation():
-            hkey = win32api.RegCreateKey(win32con.HKEY_CURRENT_USER, self.key_name)
-            x = 3/0 # or a statement like: raise 'error'
+            hkey = win32api.RegCreateKey(
+                win32con.HKEY_CURRENT_USER, self.key_name)
+            x = 3 / 0  # or a statement like: raise 'error'
         # do the test
         try:
             try:
                 try:
                     reg_operation()
                 except:
-                    1/0 # Force exception
+                    1 / 0  # Force exception
             finally:
-                win32api.RegDeleteKey(win32con.HKEY_CURRENT_USER, self.key_name)
+                win32api.RegDeleteKey(
+                    win32con.HKEY_CURRENT_USER, self.key_name)
         except ZeroDivisionError:
             pass
 
     def testValues(self):
         key_name = r'PythonTestHarness\win32api'
-        ## tuples containing value name, value type, data
-        values=(
+        # tuples containing value name, value type, data
+        values = (
             (None, win32con.REG_SZ, 'This is default unnamed value'),
-            ('REG_SZ', win32con.REG_SZ,'REG_SZ text data'),
+            ('REG_SZ', win32con.REG_SZ, 'REG_SZ text data'),
             ('REG_EXPAND_SZ', win32con.REG_EXPAND_SZ, '%systemdir%'),
-            ## REG_MULTI_SZ value needs to be a list since strings are returned as a list
-            ('REG_MULTI_SZ', win32con.REG_MULTI_SZ, ['string 1','string 2','string 3','string 4']),
+            # REG_MULTI_SZ value needs to be a list since strings are returned
+            # as a list
+            ('REG_MULTI_SZ', win32con.REG_MULTI_SZ, [
+             'string 1', 'string 2', 'string 3', 'string 4']),
             ('REG_MULTI_SZ_empty', win32con.REG_MULTI_SZ, []),
             ('REG_DWORD', win32con.REG_DWORD, 666),
             ('REG_QWORD', win32con.REG_QWORD, 2**33),
-            ('REG_BINARY', win32con.REG_BINARY, str2bytes('\x00\x01\x02\x03\x04\x05\x06\x07\x08\x01\x00')),
-            )
+            ('REG_BINARY', win32con.REG_BINARY, str2bytes(
+                '\x00\x01\x02\x03\x04\x05\x06\x07\x08\x01\x00')),
+        )
 
         hkey = win32api.RegCreateKey(win32con.HKEY_CURRENT_USER, key_name)
         for value_name, reg_type, data in values:
             win32api.RegSetValueEx(hkey, value_name, None, reg_type, data)
 
         for value_name, orig_type, orig_data in values:
-            data, typ=win32api.RegQueryValueEx(hkey, value_name)
+            data, typ = win32api.RegQueryValueEx(hkey, value_name)
             self.assertEqual(typ, orig_type)
             self.assertEqual(data, orig_data)
 
     def testNotifyChange(self):
         def change():
-            hkey = win32api.RegCreateKey(win32con.HKEY_CURRENT_USER, self.key_name)
+            hkey = win32api.RegCreateKey(
+                win32con.HKEY_CURRENT_USER, self.key_name)
             try:
                 win32api.RegSetValue(hkey, None, win32con.REG_SZ, "foo")
             finally:
-                win32api.RegDeleteKey(win32con.HKEY_CURRENT_USER, self.key_name)
+                win32api.RegDeleteKey(
+                    win32con.HKEY_CURRENT_USER, self.key_name)
 
-        evt = win32event.CreateEvent(None,0,0,None)
+        evt = win32event.CreateEvent(None, 0, 0, None)
         ## REG_NOTIFY_CHANGE_LAST_SET - values
         ## REG_CHANGE_NOTIFY_NAME - keys
-        ## REG_NOTIFY_CHANGE_SECURITY - security descriptor
-        ## REG_NOTIFY_CHANGE_ATTRIBUTES
-        win32api.RegNotifyChangeKeyValue(win32con.HKEY_CURRENT_USER,1,win32api.REG_NOTIFY_CHANGE_LAST_SET,evt,True)
-        ret_code=win32event.WaitForSingleObject(evt,0)
+        # REG_NOTIFY_CHANGE_SECURITY - security descriptor
+        # REG_NOTIFY_CHANGE_ATTRIBUTES
+        win32api.RegNotifyChangeKeyValue(
+            win32con.HKEY_CURRENT_USER,
+            1,
+            win32api.REG_NOTIFY_CHANGE_LAST_SET,
+            evt,
+            True)
+        ret_code = win32event.WaitForSingleObject(evt, 0)
         # Should be no change.
-        self.failUnless(ret_code==win32con.WAIT_TIMEOUT)
+        self.failUnless(ret_code == win32con.WAIT_TIMEOUT)
         change()
         # Our event should now be in a signalled state.
-        ret_code=win32event.WaitForSingleObject(evt,0)
-        self.failUnless(ret_code==win32con.WAIT_OBJECT_0)
+        ret_code = win32event.WaitForSingleObject(evt, 0)
+        self.failUnless(ret_code == win32con.WAIT_OBJECT_0)
+
 
 class FileNames(unittest.TestCase):
+
     def testShortLongPathNames(self):
         try:
             me = __file__
@@ -115,12 +142,17 @@ class FileNames(unittest.TestCase):
         fname = os.path.abspath(me).lower()
         short_name = win32api.GetShortPathName(fname).lower()
         long_name = win32api.GetLongPathName(short_name).lower()
-        self.failUnless(long_name==fname, \
+        self.failUnless(long_name == fname,
                         "Expected long name ('%s') to be original name ('%s')" % (long_name, fname))
-        self.failUnlessEqual(long_name, win32api.GetLongPathNameW(short_name).lower())
+        self.failUnlessEqual(
+            long_name,
+            win32api.GetLongPathNameW(short_name).lower())
         long_name = win32api.GetLongPathNameW(short_name).lower()
-        self.failUnless(type(long_name)==unicode, "GetLongPathNameW returned type '%s'" % (type(long_name),))
-        self.failUnless(long_name==fname, \
+        self.failUnless(
+            isinstance(
+                long_name, unicode), "GetLongPathNameW returned type '%s'" %
+            (type(long_name),))
+        self.failUnless(long_name == fname,
                         "Expected long name ('%s') to be original name ('%s')" % (long_name, fname))
 
     def testShortUnicodeNames(self):
@@ -133,12 +165,17 @@ class FileNames(unittest.TestCase):
         short_name = win32api.GetShortPathName(unicode(fname)).lower()
         self.failUnless(isinstance(short_name, unicode))
         long_name = win32api.GetLongPathName(short_name).lower()
-        self.failUnless(long_name==fname, \
+        self.failUnless(long_name == fname,
                         "Expected long name ('%s') to be original name ('%s')" % (long_name, fname))
-        self.failUnlessEqual(long_name, win32api.GetLongPathNameW(short_name).lower())
+        self.failUnlessEqual(
+            long_name,
+            win32api.GetLongPathNameW(short_name).lower())
         long_name = win32api.GetLongPathNameW(short_name).lower()
-        self.failUnless(type(long_name)==unicode, "GetLongPathNameW returned type '%s'" % (type(long_name),))
-        self.failUnless(long_name==fname, \
+        self.failUnless(
+            isinstance(
+                long_name, unicode), "GetLongPathNameW returned type '%s'" %
+            (type(long_name),))
+        self.failUnless(long_name == fname,
                         "Expected long name ('%s') to be original name ('%s')" % (long_name, fname))
 
     def testLongLongPathNames(self):
@@ -153,18 +190,18 @@ class FileNames(unittest.TestCase):
         fname = "\\\\?\\" + os.path.join(long_temp_dir, basename)
         try:
             win32file.CreateDirectoryW(fname, None)
-        except win32api.error, details:
-            if details.winerror!=winerror.ERROR_ALREADY_EXISTS:
+        except win32api.error as details:
+            if details.winerror != winerror.ERROR_ALREADY_EXISTS:
                 raise
         try:
             # GetFileAttributes automatically calls GetFileAttributesW when
             # passed unicode
             try:
                 attr = win32api.GetFileAttributes(fname)
-            except win32api.error, details:
+            except win32api.error as details:
                 if details.winerror != winerror.ERROR_FILENAME_EXCED_RANGE:
                     raise
-        
+
             attr = win32api.GetFileAttributes(unicode(fname))
             self.failUnless(attr & win32con.FILE_ATTRIBUTE_DIRECTORY, attr)
 
@@ -173,18 +210,22 @@ class FileNames(unittest.TestCase):
         finally:
             win32file.RemoveDirectory(fname)
 
+
 class FormatMessage(unittest.TestCase):
+
     def test_FromString(self):
         msg = "Hello %1, how are you %2?"
         inserts = ["Mark", "today"]
         result = win32api.FormatMessage(win32con.FORMAT_MESSAGE_FROM_STRING,
-                               msg, # source
-                               0, # ID
-                               0, # LangID
-                               inserts)
+                                        msg,  # source
+                                        0,  # ID
+                                        0,  # LangID
+                                        inserts)
         self.assertEqual(result, "Hello Mark, how are you today?")
 
+
 class Misc(unittest.TestCase):
+
     def test_last_error(self):
         for x in (0, 1, -1, winerror.TRUST_E_PROVIDER_UNKNOWN):
             win32api.SetLastError(x)

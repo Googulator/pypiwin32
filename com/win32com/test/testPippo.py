@@ -4,7 +4,9 @@ import pythoncom
 from win32com.client import Dispatch
 from win32com.client.gencache import EnsureDispatch
 
+
 class PippoTester(unittest.TestCase):
+
     def setUp(self):
         from win32com.test.util import RegisterPythonServer
         from win32com.test import pippo_server
@@ -26,8 +28,8 @@ class PippoTester(unittest.TestCase):
             object.Method1()
         object = None
         end = gtrc()
-        if end-start > 5:
-            self.fail("We lost %d references!" % (end-start,))
+        if end - start > 5:
+            self.fail("We lost %d references!" % (end - start,))
 
     def testResults(self):
         rc, out1 = self.object.Method2(123, 111)
@@ -48,8 +50,8 @@ class PippoTester(unittest.TestCase):
             object.Method1()
         object = None
         end = gtrc()
-        if end-start > 10:
-            self.fail("We lost %d references!" % (end-start,))
+        if end - start > 10:
+            self.fail("We lost %d references!" % (end - start,))
 
-if __name__=='__main__':
+if __name__ == '__main__':
     unittest.main()

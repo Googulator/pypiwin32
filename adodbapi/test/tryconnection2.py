@@ -3,6 +3,7 @@
 # It exists only to allow trapping exceptions using the "except [exception list], e" format
 # which is a syntax error in Python 3
 
+
 def try_connection(verbose, *args, **kwargs):
     import adodbapi
 
@@ -17,12 +18,12 @@ def try_connection(verbose, *args, **kwargs):
         pyroError = NotImplementedError  # (will not occur)
         remote = False
     try:
-        s = dbconnect(*args, **kwargs) # connect to server
+        s = dbconnect(*args, **kwargs)  # connect to server
         if verbose:
             print 'Connected to:', s.connection_string
             print 'which has tables:', s.get_table_names()
         s.close()  # thanks, it worked, goodbye
-    except (adodbapi.DatabaseError, pyroError), inst:
+    except (adodbapi.DatabaseError, pyroError) as inst:
         print inst.args[0]   # should be the error message
         print '***Failed getting connection using=', repr(args), repr(kwargs)
         if remote:
@@ -36,10 +37,12 @@ def try_connection(verbose, *args, **kwargs):
 
     return True, (args, kwargs, remote), dbconnect
 
-def try_operation_with_expected_exception(expected_exceptions, some_function, args, kwargs):
+
+def try_operation_with_expected_exception(
+        expected_exceptions, some_function, args, kwargs):
     try:
         some_function(*args, **kwargs)
-    except expected_exceptions, e:
+    except expected_exceptions as e:
         return True, e
     except:
         raise  # an exception other than the expected occurred
