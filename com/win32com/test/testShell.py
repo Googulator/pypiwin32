@@ -1,14 +1,14 @@
-import sys, os
-import struct
-import unittest
-import copy
 import datetime
+import os
+import struct
+import sys
+
 import win32timezone
 
 try:
-    sys_maxsize = sys.maxsize # 2.6 and later - maxsize != maxint on 64bits
+    sys_maxsize = sys.maxsize  # 2.6 and later - maxsize != maxint on 64bits
 except AttributeError:
-    sys_maxsize = sys.maxint
+    sys_maxsize = sys.maxsize
 
 import win32con
 import pythoncom
@@ -20,18 +20,24 @@ from win32com.storagecon import *
 import win32com.test.util
 from pywin32_testutil import str2bytes
 
+
 class ShellTester(win32com.test.util.TestCase):
+
     def testShellLink(self):
         desktop = str(shell.SHGetSpecialFolderPath(0, CSIDL_DESKTOP))
         num = 0
-        shellLink = pythoncom.CoCreateInstance(shell.CLSID_ShellLink, None, pythoncom.CLSCTX_INPROC_SERVER, shell.IID_IShellLink)
+        shellLink = pythoncom.CoCreateInstance(
+            shell.CLSID_ShellLink,
+            None,
+            pythoncom.CLSCTX_INPROC_SERVER,
+            shell.IID_IShellLink)
         persistFile = shellLink.QueryInterface(pythoncom.IID_IPersistFile)
         names = [os.path.join(desktop, n) for n in os.listdir(desktop)]
         programs = str(shell.SHGetSpecialFolderPath(0, CSIDL_PROGRAMS))
         names.extend([os.path.join(programs, n) for n in os.listdir(programs)])
         for name in names:
             try:
-                persistFile.Load(name,STGM_READ)
+                persistFile.Load(name, STGM_READ)
             except pythoncom.com_error:
                 continue
             # Resolve is slow - avoid it for our tests.
@@ -41,17 +47,19 @@ class ShellTester(win32com.test.util.TestCase):
             num += 1
         if num == 0:
             # This isn't a fatal error, but is unlikely.
-            print "Could not find any links on your desktop or programs dir, which is unusual"
+            print(
+                "Could not find any links on your desktop or programs dir, which is unusual")
 
     def testShellFolder(self):
         sf = shell.SHGetDesktopFolder()
         names_1 = []
-        for i in sf: # Magically calls EnumObjects
+        for i in sf:  # Magically calls EnumObjects
             name = sf.GetDisplayNameOf(i, SHGDN_NORMAL)
             names_1.append(name)
-        
-        # And get the enumerator manually    
-        enum = sf.EnumObjects(0, SHCONTF_FOLDERS | SHCONTF_NONFOLDERS | SHCONTF_INCLUDEHIDDEN)
+
+        # And get the enumerator manually
+        enum = sf.EnumObjects(
+            0, SHCONTF_FOLDERS | SHCONTF_NONFOLDERS | SHCONTF_INCLUDEHIDDEN)
         names_2 = []
         for i in enum:
             name = sf.GetDisplayNameOf(i, SHGDN_NORMAL)
@@ -60,7 +68,9 @@ class ShellTester(win32com.test.util.TestCase):
         names_2.sort()
         self.assertEqual(names_1, names_2)
 
+
 class PIDLTester(win32com.test.util.TestCase):
+
     def _rtPIDL(self, pidl):
         pidl_str = shell.PIDLAsString(pidl)
         pidl_rt = shell.StringAsPIDL(pidl_str)
@@ -78,7 +88,7 @@ class PIDLTester(win32com.test.util.TestCase):
 
     def testPIDL(self):
         # A PIDL of "\1" is:   cb    pidl   cb
-        expect =            str2bytes("\03\00"  "\1"  "\0\0")
+        expect = str2bytes("\03\00"  "\1"  "\0\0")
         self.assertEqual(shell.PIDLAsString([str2bytes("\1")]), expect)
         self._rtPIDL([str2bytes("\0")])
         self._rtPIDL([str2bytes("\1"), str2bytes("\2"), str2bytes("\3")])
@@ -87,19 +97,22 @@ class PIDLTester(win32com.test.util.TestCase):
         self.assertRaises(TypeError, shell.PIDLAsString, "foo")
 
     def testCIDA(self):
-        self._rtCIDA([str2bytes("\0")], [ [str2bytes("\0")] ])
-        self._rtCIDA([str2bytes("\1")], [ [str2bytes("\2")] ])
-        self._rtCIDA([str2bytes("\0")], [ [str2bytes("\0")], [str2bytes("\1")], [str2bytes("\2")] ])
+        self._rtCIDA([str2bytes("\0")], [[str2bytes("\0")]])
+        self._rtCIDA([str2bytes("\1")], [[str2bytes("\2")]])
+        self._rtCIDA([str2bytes("\0")], [[str2bytes("\0")],
+                                         [str2bytes("\1")], [str2bytes("\2")]])
 
     def testBadShortPIDL(self):
         # A too-short child element:   cb    pidl   cb
-        pidl =                       str2bytes("\01\00"  "\1")
+        pidl = str2bytes("\01\00"  "\1")
         self.assertRaises(ValueError, shell.StringAsPIDL, pidl)
 
         # ack - tried to test too long PIDLs, but a len of 0xFFFF may not
         # always fail.
 
+
 class FILEGROUPDESCRIPTORTester(win32com.test.util.TestCase):
+
     def _getTestTimes(self):
         if issubclass(pywintypes.TimeType, datetime.datetime):
             ctime = win32timezone.now()
@@ -114,10 +127,10 @@ class FILEGROUPDESCRIPTORTester(win32com.test.util.TestCase):
     def _testRT(self, fd):
         fgd_string = shell.FILEGROUPDESCRIPTORAsString([fd])
         fd2 = shell.StringAsFILEGROUPDESCRIPTOR(fgd_string)[0]
-        
+
         fd = fd.copy()
         fd2 = fd2.copy()
-        
+
         # The returned objects *always* have dwFlags and cFileName.
         if 'dwFlags' not in fd:
             del fd2['dwFlags']
@@ -149,9 +162,9 @@ class FILEGROUPDESCRIPTORTester(win32com.test.util.TestCase):
         ctime, atime, wtime = self._getTestTimes()
         d = dict(cFileName="foo.txt",
                  clsid=clsid,
-                 sizel=(1,2),
-                 pointl=(3,4),
-                 dwFileAttributes = win32con.FILE_ATTRIBUTE_NORMAL,
+                 sizel=(1, 2),
+                 pointl=(3, 4),
+                 dwFileAttributes=win32con.FILE_ATTRIBUTE_NORMAL,
                  ftCreationTime=ctime,
                  ftLastAccessTime=atime,
                  ftLastWriteTime=wtime,
@@ -162,30 +175,30 @@ class FILEGROUPDESCRIPTORTester(win32com.test.util.TestCase):
         # exercise a bug fixed in build 210 - multiple unicode objects failed.
         ctime, atime, wtime = self._getTestTimes()
         d = [dict(cFileName="foo.txt",
-                 sizel=(1,2),
-                 pointl=(3,4),
-                 dwFileAttributes = win32con.FILE_ATTRIBUTE_NORMAL,
-                 ftCreationTime=ctime,
-                 ftLastAccessTime=atime,
-                 ftLastWriteTime=wtime,
-                 nFileSize=sys_maxsize + 1),
-            dict(cFileName="foo2.txt",
-                 sizel=(1,2),
-                 pointl=(3,4),
-                 dwFileAttributes = win32con.FILE_ATTRIBUTE_NORMAL,
-                 ftCreationTime=ctime,
-                 ftLastAccessTime=atime,
-                 ftLastWriteTime=wtime,
-                 nFileSize=sys_maxsize + 1),
-            dict(cFileName=u"foo\xa9.txt",
-                 sizel=(1,2),
-                 pointl=(3,4),
-                 dwFileAttributes = win32con.FILE_ATTRIBUTE_NORMAL,
-                 ftCreationTime=ctime,
-                 ftLastAccessTime=atime,
-                 ftLastWriteTime=wtime,
-                 nFileSize=sys_maxsize + 1),
-            ]
+                  sizel=(1, 2),
+                  pointl=(3, 4),
+                  dwFileAttributes=win32con.FILE_ATTRIBUTE_NORMAL,
+                  ftCreationTime=ctime,
+                  ftLastAccessTime=atime,
+                  ftLastWriteTime=wtime,
+                  nFileSize=sys_maxsize + 1),
+             dict(cFileName="foo2.txt",
+                  sizel=(1, 2),
+                  pointl=(3, 4),
+                  dwFileAttributes=win32con.FILE_ATTRIBUTE_NORMAL,
+                  ftCreationTime=ctime,
+                  ftLastAccessTime=atime,
+                  ftLastWriteTime=wtime,
+                  nFileSize=sys_maxsize + 1),
+             dict(cFileName="foo\xa9.txt",
+                  sizel=(1, 2),
+                  pointl=(3, 4),
+                  dwFileAttributes=win32con.FILE_ATTRIBUTE_NORMAL,
+                  ftCreationTime=ctime,
+                  ftLastAccessTime=atime,
+                  ftLastWriteTime=wtime,
+                  nFileSize=sys_maxsize + 1),
+             ]
         s = shell.FILEGROUPDESCRIPTORAsString(d, 1)
         d2 = shell.StringAsFILEGROUPDESCRIPTOR(s)
         # clobber 'dwFlags' - they are not expected to be identical
@@ -193,13 +206,18 @@ class FILEGROUPDESCRIPTORTester(win32com.test.util.TestCase):
             del t['dwFlags']
         self.assertEqual(d, d2)
 
+
 class FileOperationTester(win32com.test.util.TestCase):
+
     def setUp(self):
         import tempfile
-        self.src_name = os.path.join(tempfile.gettempdir(), "pywin32_testshell")
-        self.dest_name = os.path.join(tempfile.gettempdir(), "pywin32_testshell_dest")
+        self.src_name = os.path.join(
+            tempfile.gettempdir(), "pywin32_testshell")
+        self.dest_name = os.path.join(
+            tempfile.gettempdir(),
+            "pywin32_testshell_dest")
         self.test_data = str2bytes("Hello from\0Python")
-        f=open(self.src_name, "wb")
+        f = open(self.src_name, "wb")
         f.write(self.test_data)
         f.close()
         try:
@@ -213,48 +231,48 @@ class FileOperationTester(win32com.test.util.TestCase):
                 os.unlink(fname)
 
     def testCopy(self):
-        s = (0, # hwnd,
-             FO_COPY, #operation
+        s = (0,  # hwnd,
+             FO_COPY,  # operation
              self.src_name,
              self.dest_name)
 
         rc, aborted = shell.SHFileOperation(s)
-        self.failUnless(not aborted)
-        self.failUnlessEqual(0, rc)
-        self.failUnless(os.path.isfile(self.src_name))
-        self.failUnless(os.path.isfile(self.dest_name))
+        self.assertTrue(not aborted)
+        self.assertEqual(0, rc)
+        self.assertTrue(os.path.isfile(self.src_name))
+        self.assertTrue(os.path.isfile(self.dest_name))
 
     def testRename(self):
-        s = (0, # hwnd,
-             FO_RENAME, #operation
+        s = (0,  # hwnd,
+             FO_RENAME,  # operation
              self.src_name,
              self.dest_name)
         rc, aborted = shell.SHFileOperation(s)
-        self.failUnless(not aborted)
-        self.failUnlessEqual(0, rc)
-        self.failUnless(os.path.isfile(self.dest_name))
-        self.failUnless(not os.path.isfile(self.src_name))
+        self.assertTrue(not aborted)
+        self.assertEqual(0, rc)
+        self.assertTrue(os.path.isfile(self.dest_name))
+        self.assertTrue(not os.path.isfile(self.src_name))
 
     def testMove(self):
-        s = (0, # hwnd,
-             FO_MOVE, #operation
+        s = (0,  # hwnd,
+             FO_MOVE,  # operation
              self.src_name,
              self.dest_name)
         rc, aborted = shell.SHFileOperation(s)
-        self.failUnless(not aborted)
-        self.failUnlessEqual(0, rc)
-        self.failUnless(os.path.isfile(self.dest_name))
-        self.failUnless(not os.path.isfile(self.src_name))
+        self.assertTrue(not aborted)
+        self.assertEqual(0, rc)
+        self.assertTrue(os.path.isfile(self.dest_name))
+        self.assertTrue(not os.path.isfile(self.src_name))
 
     def testDelete(self):
-        s = (0, # hwnd,
-             FO_DELETE, #operation
+        s = (0,  # hwnd,
+             FO_DELETE,  # operation
              self.src_name, None,
              FOF_NOCONFIRMATION)
         rc, aborted = shell.SHFileOperation(s)
-        self.failUnless(not aborted)
-        self.failUnlessEqual(0, rc)
-        self.failUnless(not os.path.isfile(self.src_name))
+        self.assertTrue(not aborted)
+        self.assertEqual(0, rc)
+        self.assertTrue(not os.path.isfile(self.src_name))
 
-if __name__=='__main__':
+if __name__ == '__main__':
     win32com.test.util.testmain()

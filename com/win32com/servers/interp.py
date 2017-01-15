@@ -15,10 +15,12 @@ from win32com.server.exception import Exception
 import winerror
 
 # Expose the Python interpreter.
+
+
 class Interpreter:
     """The interpreter object exposed via COM
     """
-    _public_methods_ = [ 'Exec', 'Eval' ]
+    _public_methods_ = ['Exec', 'Eval']
     # All registration stuff to support fully automatic register/unregister
     _reg_verprogid_ = "Python.Interpreter.2"
     _reg_progid_ = "Python.Interpreter"
@@ -32,21 +34,27 @@ class Interpreter:
     def Eval(self, exp):
         """Evaluate an expression.
         """
-        if type(exp) not in [str, unicode]:
-            raise Exception(desc="Must be a string",scode=winerror.DISP_E_TYPEMISMATCH)
+        if type(exp) not in [str, str]:
+            raise Exception(
+                desc="Must be a string",
+                scode=winerror.DISP_E_TYPEMISMATCH)
 
         return eval(str(exp), self.dict)
+
     def Exec(self, exp):
         """Execute a statement.
         """
-        if type(exp) not in [str, unicode]:
-            raise Exception(desc="Must be a string",scode=winerror.DISP_E_TYPEMISMATCH)
-        exec str(exp) in self.dict
+        if type(exp) not in [str, str]:
+            raise Exception(
+                desc="Must be a string",
+                scode=winerror.DISP_E_TYPEMISMATCH)
+        exec(str(exp), self.dict)
+
 
 def Register():
     import win32com.server.register
     return win32com.server.register.UseCommandLine(Interpreter)
 
-if __name__=='__main__':
-    print "Registering COM server..."
+if __name__ == '__main__':
+    print("Registering COM server...")
     Register()
