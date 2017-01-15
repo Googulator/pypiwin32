@@ -71,5 +71,5 @@ def DumpClipboard():
 if __name__ == '__main__':
     DumpClipboard()
     if pythoncom._GetInterfaceCount() + pythoncom._GetGatewayCount():
-        print("XXX - Leaving with %d/%d COM objects alive" % \
+        print("XXX - Leaving with %d/%d COM objects alive" %
               (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount()))

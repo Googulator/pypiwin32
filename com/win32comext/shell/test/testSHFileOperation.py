@@ -1,6 +1,7 @@
-from win32com.shell import shell, shellcon
-import win32api
 import os
+
+import win32api
+from win32com.shell import shell, shellcon
 
 
 def testSHFileOperation(file_cnt):
@@ -52,8 +53,9 @@ def testSHNAMEMAPPINGS(file_cnt):
             'sfo')[0] for x in range(file_cnt)]
     pFrom = '\0'.join(orig_fnames)
     pTo = '\0'.join(new_fnames)
-    rc, banyaborted, NameMappings = shell.SHFileOperation((0, shellcon.FO_MOVE, pFrom, pTo,
-                                                           shellcon.FOF_MULTIDESTFILES | shellcon.FOF_NOCONFIRMATION | shellcon.FOF_RENAMEONCOLLISION | shellcon.FOF_WANTMAPPINGHANDLE))
+    rc, banyaborted, NameMappings = shell.SHFileOperation(
+        (0, shellcon.FO_MOVE, pFrom, pTo,
+         shellcon.FOF_MULTIDESTFILES | shellcon.FOF_NOCONFIRMATION | shellcon.FOF_RENAMEONCOLLISION | shellcon.FOF_WANTMAPPINGHANDLE))
 
     for old_fname, new_fname in NameMappings:
         print('Old:', old_fname, 'New:', new_fname)

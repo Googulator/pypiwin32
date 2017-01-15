@@ -24,23 +24,26 @@ which always (with and without '-m') seems to return:
 > Result of 'auth' validation is 2701: Password must change at next logon
 """
 
+import optparse
 import sys
+from pprint import pprint
+
 import win32api
 import win32net
 import win32netcon
 
-import optparse
-from pprint import pprint
-
 
 def main():
-    parser = optparse.OptionParser("%prog [options] auth|change ...",
-                                   description="A win32net.NetValidatePasswordPolicy demo.")
+    parser = optparse.OptionParser(
+        "%prog [options] auth|change ...",
+        description="A win32net.NetValidatePasswordPolicy demo.")
 
-    parser.add_option("-u", "--username",
-                      action="store",
-                      help="The username to pass to the function (only for the "
-                           "change command")
+    parser.add_option(
+        "-u",
+        "--username",
+        action="store",
+        help="The username to pass to the function (only for the "
+             "change command")
 
     parser.add_option("-p", "--password",
                       action="store",
@@ -81,8 +84,8 @@ def main():
             parser.error("Invalid arg - must be 'auth' or 'change'")
 
         try:
-            fields, status = win32net.NetValidatePasswordPolicy(options.server,
-                                                                None, val_type, input)
+            fields, status = win32net.NetValidatePasswordPolicy(
+                options.server, None, val_type, input)
         except NotImplementedError:
             print("NetValidatePasswordPolicy not implemented on this platform.")
             return 1
@@ -94,8 +97,8 @@ def main():
             print("NET_VALIDATE_PERSISTED_FIELDS fields:")
             pprint(fields)
 
-        print("Result of %r validation is %d: %s" % \
-            (arg, status, win32api.FormatMessage(status).strip()))
+        print("Result of %r validation is %d: %s" %
+              (arg, status, win32api.FormatMessage(status).strip()))
 
     return 0
 

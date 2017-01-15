@@ -10,13 +10,13 @@ dialogs and other Windows UI resources.
 __author__ = "Adam Walker"
 __version__ = "0.11"
 
-import sys
 import os
 import shlex
 import stat
-import pprint
-import win32con
+import sys
+
 import commctrl
+import win32con
 
 _controlMap = {"DEFPUSHBUTTON": 0x80,
                "PUSHBUTTON": 0x80,
@@ -39,16 +39,17 @@ _controlMap = {"DEFPUSHBUTTON": 0x80,
 # disabled.  These defaults have been determined by experimentation, so may
 # not be completely accurate (most notably, some styles and/or control-types
 # may be missing.
-_addDefaults = {"EDITTEXT": win32con.WS_BORDER | win32con.WS_TABSTOP,
-                "GROUPBOX": win32con.BS_GROUPBOX,
-                "LTEXT": win32con.SS_LEFT,
-                "DEFPUSHBUTTON": win32con.BS_DEFPUSHBUTTON | win32con.WS_TABSTOP,
-                "PUSHBUTTON": win32con.WS_TABSTOP,
-                "CTEXT": win32con.SS_CENTER,
-                "RTEXT": win32con.SS_RIGHT,
-                "ICON": win32con.SS_ICON,
-                "LISTBOX": win32con.LBS_NOTIFY,
-                }
+_addDefaults = {
+    "EDITTEXT": win32con.WS_BORDER | win32con.WS_TABSTOP,
+    "GROUPBOX": win32con.BS_GROUPBOX,
+    "LTEXT": win32con.SS_LEFT,
+    "DEFPUSHBUTTON": win32con.BS_DEFPUSHBUTTON | win32con.WS_TABSTOP,
+    "PUSHBUTTON": win32con.WS_TABSTOP,
+    "CTEXT": win32con.SS_CENTER,
+    "RTEXT": win32con.SS_RIGHT,
+    "ICON": win32con.SS_ICON,
+    "LISTBOX": win32con.LBS_NOTIFY,
+}
 
 defaultControlStyle = win32con.WS_CHILD | win32con.WS_VISIBLE
 defaultControlStyleEx = 0

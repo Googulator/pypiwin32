@@ -1,23 +1,23 @@
-import unittest
-from pywin32_testutil import str2bytes, TestSkipped, testmain
-import win32api
-import win32file
-import win32pipe
-import pywintypes
-import winerror
-import win32event
-import win32con
-import ntsecuritycon
-import sys
+import datetime
 import os
+import random
+import shutil
+import socket
 import tempfile
 import threading
 import time
-import shutil
-import socket
-import datetime
-import random
+import unittest
+
+import ntsecuritycon
+import pywintypes
+import win32api
+import win32con
+import win32event
+import win32file
+import win32pipe
 import win32timezone
+import winerror
+from pywin32_testutil import str2bytes, TestSkipped, testmain
 
 try:
     set
@@ -125,10 +125,12 @@ class TestSimpleOps(unittest.TestCase):
             win32file.GetFileAttributesExW(testName))
 
         attr, ct, at, wt, size = win32file.GetFileAttributesEx(testName)
-        self.assertTrue(size == newSize,
-                        "Expected GetFileAttributesEx to return the same size as GetFileSize()")
-        self.assertTrue(attr == win32file.GetFileAttributes(testName),
-                        "Expected GetFileAttributesEx to return the same attributes as GetFileAttributes")
+        self.assertTrue(
+            size == newSize,
+            "Expected GetFileAttributesEx to return the same size as GetFileSize()")
+        self.assertTrue(
+            attr == win32file.GetFileAttributes(testName),
+            "Expected GetFileAttributesEx to return the same attributes as GetFileAttributes")
 
         h = None  # Close the file by removing the last reference to the handle!
 
@@ -142,13 +144,14 @@ class TestSimpleOps(unittest.TestCase):
         # Create a file in the %TEMP% directory.
         filename = os.path.join(win32api.GetTempPath(), "win32filetest.dat")
 
-        f = win32file.CreateFile(filename,
-                                 win32file.GENERIC_READ | win32file.GENERIC_WRITE,
-                                 0,
-                                 None,
-                                 win32file.CREATE_ALWAYS,
-                                 win32file.FILE_ATTRIBUTE_NORMAL,
-                                 0)
+        f = win32file.CreateFile(
+            filename,
+            win32file.GENERIC_READ | win32file.GENERIC_WRITE,
+            0,
+            None,
+            win32file.CREATE_ALWAYS,
+            win32file.FILE_ATTRIBUTE_NORMAL,
+            0)
         try:
             # Write some data
             data = str2bytes('Some data')
@@ -182,9 +185,14 @@ class TestSimpleOps(unittest.TestCase):
         filename = tempfile.mktemp("-testFileTimes")
         now_utc = win32timezone.utcnow()
         now_local = now_utc.astimezone(win32timezone.TimeZoneInfo.local())
-        h = win32file.CreateFile(filename,
-                                 win32file.GENERIC_READ | win32file.GENERIC_WRITE,
-                                 0, None, win32file.CREATE_ALWAYS, 0, 0)
+        h = win32file.CreateFile(
+            filename,
+            win32file.GENERIC_READ | win32file.GENERIC_WRITE,
+            0,
+            None,
+            win32file.CREATE_ALWAYS,
+            0,
+            0)
         try:
             win32file.SetFileTime(h, now_utc, now_utc, now_utc)
             ct, at, wt = win32file.GetFileTime(h)
@@ -222,9 +230,14 @@ class TestSimpleOps(unittest.TestCase):
         # Windows docs the 'last time' isn't valid until the last write
         # handle is closed - so create the file, then re-open it to check.
         open(filename, "w").close()
-        f = win32file.CreateFile(filename, win32file.GENERIC_READ | win32file.GENERIC_WRITE,
-                                 0, None,
-                                 win32con.OPEN_EXISTING, 0, None)
+        f = win32file.CreateFile(
+            filename,
+            win32file.GENERIC_READ | win32file.GENERIC_WRITE,
+            0,
+            None,
+            win32con.OPEN_EXISTING,
+            0,
+            None)
         try:
             ct, at, wt = win32file.GetFileTime(f)
             self.assertTrue(
@@ -310,8 +323,8 @@ class TestOverlapped(unittest.TestCase):
     def testCompletionPortsMultiple(self):
         # Mainly checking that we can "associate" an existing handle.  This
         # failed in build 203.
-        ioport = win32file.CreateIoCompletionPort(win32file.INVALID_HANDLE_VALUE,
-                                                  0, 0, 0)
+        ioport = win32file.CreateIoCompletionPort(
+            win32file.INVALID_HANDLE_VALUE, 0, 0, 0)
         socks = []
         for PORT in range(9123, 9125):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -360,8 +373,8 @@ class TestOverlapped(unittest.TestCase):
             # even if we fail, be sure to close the handle; prevents hangs
             # on Vista 64...
             try:
-                self.assertRaises(RuntimeError,
-                                      win32file.GetQueuedCompletionStatus, port, -1)
+                self.assertRaises(
+                    RuntimeError, win32file.GetQueuedCompletionStatus, port, -1)
             finally:
                 handle.Close()
             return
@@ -967,7 +980,7 @@ class TestWSAEnumNetworkEvents(unittest.TestCase):
         self.assertEqual(res, win32event.WAIT_OBJECT_0)
         events = win32file.WSAEnumNetworkEvents(client, client_event)
         self.assertEqual(events, {win32file.FD_CONNECT: 0,
-                                   win32file.FD_WRITE: 0})
+                                  win32file.FD_WRITE: 0})
         sent = 0
         data = str2bytes("x") * 16 * 1024
         while sent < 16 * 1024 * 1024:

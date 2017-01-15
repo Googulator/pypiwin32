@@ -13,14 +13,13 @@
 #   tools are installed, but you should always see the reason written
 #   to the Windows event log - see the IIS documentation for more.
 
+import sys
+
 from isapi import isapicon
 from isapi.simple import SimpleExtension
-import sys
-import os
-import stat
 
 if hasattr(sys, "isapidllhandle"):
-    import win32traceutil
+    pass
 
 # Notes on reloading
 # If your HttpFilterProc or HttpExtensionProc functions raises
@@ -59,7 +58,6 @@ if hasattr(sys, "isapidllhandle"):
 from isapi import InternalReloadException
 import win32event
 import win32file
-import winerror
 import win32con
 import threading
 
@@ -208,9 +206,11 @@ if __name__ == '__main__':
     # Setup our custom option parser.
     from optparse import OptionParser
     parser = OptionParser('')  # blank usage, so isapi sets it.
-    parser.add_option("", "--description",
-                      action="store",
-                      help="custom description to use for the virtual directory")
+    parser.add_option(
+        "",
+        "--description",
+        action="store",
+        help="custom description to use for the virtual directory")
 
     HandleCommandLine(params, opt_parser=parser,
                       custom_arg_handlers=custom_arg_handlers)

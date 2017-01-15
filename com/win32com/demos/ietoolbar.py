@@ -17,17 +17,14 @@ to catch WM_COMMAND messages.
 
 # imports section
 import sys
-import os
-from win32com import universal
-from win32com.client import gencache, DispatchWithEvents, Dispatch
-from win32com.client import constants, getevents
-import win32com
-import pythoncom
 import winreg
 
+import pythoncom
+import win32com
+from win32com.axcontrol import axcontrol
+from win32com.client import gencache
 from win32com.shell import shell
 from win32com.shell.shellcon import *
-from win32com.axcontrol import axcontrol
 
 try:
     # try to get styles (winxp)
@@ -317,9 +314,13 @@ def DllRegisterServer():
         subKey = winreg.SetValueEx(
             hkey, comclass._reg_clsid_, 0, winreg.REG_BINARY, "\0")
     except WindowsError:
-        print("Couldn't set registry value.\nhkey: %d\tCLSID: %s\n" % (hkey, comclass._reg_clsid_))
+        print(
+            "Couldn't set registry value.\nhkey: %d\tCLSID: %s\n" %
+            (hkey, comclass._reg_clsid_))
     else:
-        print("Set registry value.\nhkey: %d\tCLSID: %s\n" % (hkey, comclass._reg_clsid_))
+        print(
+            "Set registry value.\nhkey: %d\tCLSID: %s\n" %
+            (hkey, comclass._reg_clsid_))
     # TODO: implement reg settings for standard toolbar button
 
 # unregister plugin
@@ -336,7 +337,9 @@ def DllUnregisterServer():
             "SOFTWARE\\Microsoft\\Internet Explorer\\Toolbar")
         winreg.DeleteValue(hkey, comclass._reg_clsid_)
     except WindowsError:
-        print("Couldn't delete registry value.\nhkey: %d\tCLSID: %s\n" % (hkey, comclass._reg_clsid_))
+        print(
+            "Couldn't delete registry value.\nhkey: %d\tCLSID: %s\n" %
+            (hkey, comclass._reg_clsid_))
     else:
         print("Deleting reg key succeeded.\n")
 
@@ -352,4 +355,4 @@ if __name__ == '__main__':
         DllRegisterServer()
 else:
     # import trace utility for remote debugging
-    import win32traceutil
+    pass

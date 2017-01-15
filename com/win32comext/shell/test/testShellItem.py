@@ -1,6 +1,7 @@
 # Test IShellItem and related interfaces
-from win32com.shell import shell, shellcon, knownfolders
 import unittest
+
+from win32com.shell import shell, shellcon, knownfolders
 
 
 class TestShellItem(unittest.TestCase):
@@ -47,8 +48,8 @@ class TestShellItem(unittest.TestCase):
         self.assertEqual(name, item.GetDisplayName(name_flags))
 
     def test_create_in_known_folder(self):
-        item = shell.SHCreateItemInKnownFolder(knownfolders.FOLDERID_Desktop, 0,
-                                               None, shell.IID_IShellItem)
+        item = shell.SHCreateItemInKnownFolder(
+            knownfolders.FOLDERID_Desktop, 0, None, shell.IID_IShellItem)
         # this will do for now :)
 
     def test_create_item_with_parent(self):

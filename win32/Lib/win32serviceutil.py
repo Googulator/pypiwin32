@@ -6,14 +6,16 @@
 # when things go wrong - eg, not enough permissions to hit the
 # registry etc.
 
-import win32service
+import os
+import sys
+import warnings
+
+import pywintypes
 import win32api
 import win32con
+import win32service
 import winerror
-import sys
-import pywintypes
-import os
-import warnings
+
 error = RuntimeError
 
 
@@ -34,8 +36,9 @@ def LocatePythonServiceExe(exeName=None):
         return win32api.GetFullPathName(exeName)
     baseName = os.path.splitext(os.path.basename(exeName))[0]
     try:
-        exeName = win32api.RegQueryValue(win32con.HKEY_LOCAL_MACHINE,
-                                         "Software\\Python\\%s\\%s" % (baseName, sys.winver))
+        exeName = win32api.RegQueryValue(
+            win32con.HKEY_LOCAL_MACHINE, "Software\\Python\\%s\\%s" %
+                                         (baseName, sys.winver))
         if os.path.isfile(exeName):
             return exeName
         raise RuntimeError("The executable '%s' is registered as the Python "
@@ -190,8 +193,22 @@ def _GetCommandLine(exeName, exeArgs):
         return exeName
 
 
-def InstallService(pythonClassString, serviceName, displayName, startType=None, errorControl=None, bRunInteractive=0, serviceDeps=None, userName=None, password=None, exeName=None, perfMonIni=None, perfMonDll=None, exeArgs=None,
-                   description=None, delayedstart=None):
+def InstallService(
+        pythonClassString,
+        serviceName,
+        displayName,
+        startType=None,
+        errorControl=None,
+        bRunInteractive=0,
+        serviceDeps=None,
+        userName=None,
+        password=None,
+        exeName=None,
+        perfMonIni=None,
+        perfMonDll=None,
+        exeArgs=None,
+        description=None,
+        delayedstart=None):
     # Handle the default arguments.
     if startType is None:
         startType = win32service.SERVICE_DEMAND_START
@@ -244,10 +261,22 @@ def InstallService(pythonClassString, serviceName, displayName, startType=None, 
         InstallPerfmonForService(serviceName, perfMonIni, perfMonDll)
 
 
-def ChangeServiceConfig(pythonClassString, serviceName, startType=None, errorControl=None, bRunInteractive=0,
-                        serviceDeps=None, userName=None, password=None,
-                        exeName=None, displayName=None, perfMonIni=None, perfMonDll=None,
-                        exeArgs=None, description=None, delayedstart=None):
+def ChangeServiceConfig(
+        pythonClassString,
+        serviceName,
+        startType=None,
+        errorControl=None,
+        bRunInteractive=0,
+        serviceDeps=None,
+        userName=None,
+        password=None,
+        exeName=None,
+        displayName=None,
+        perfMonIni=None,
+        perfMonDll=None,
+        exeArgs=None,
+        description=None,
+        delayedstart=None):
     # Before doing anything, remove any perfmon counters.
     try:
         import perfmon
@@ -631,11 +660,14 @@ def usage():
         fname = os.path.split(sys.argv[0])[1]
     except:
         fname = sys.argv[0]
-    print("Usage: '%s [options] install|update|remove|start [...]|stop|restart [...]|debug [...]'" % fname)
+    print(
+        "Usage: '%s [options] install|update|remove|start [...]|stop|restart [...]|debug [...]'" %
+        fname)
     print("Options for 'install' and 'update' commands only:")
     print(" --username domain\\username : The Username the service is to run under")
     print(" --password password : The password for the username")
-    print(" --startup [manual|auto|disabled|delayed] : How the service starts, default = manual")
+    print(
+        " --startup [manual|auto|disabled|delayed] : How the service starts, default = manual")
     print(" --interactive : Allow the service to interact with the desktop.")
     print(" --perfmonini file: .ini file to use for registering performance monitor data")
     print(" --perfmondll file: .dll file to use when querying the service for")
@@ -797,8 +829,21 @@ def HandleCommandLine(cls, serviceClassString=None, argv=None,
         # but is unlikely to work, as the Python code controlling it failed.  Therefore
         # we remove the service if the first bit works, but the second doesnt!
         try:
-            InstallService(serviceClassString, serviceName, serviceDisplayName, serviceDeps=serviceDeps, startType=startup, bRunInteractive=interactive, userName=userName, password=password, exeName=exeName, perfMonIni=perfMonIni, perfMonDll=perfMonDll, exeArgs=exeArgs,
-                           description=description, delayedstart=delayedstart)
+            InstallService(
+                serviceClassString,
+                serviceName,
+                serviceDisplayName,
+                serviceDeps=serviceDeps,
+                startType=startup,
+                bRunInteractive=interactive,
+                userName=userName,
+                password=password,
+                exeName=exeName,
+                perfMonIni=perfMonIni,
+                perfMonDll=perfMonDll,
+                exeArgs=exeArgs,
+                description=description,
+                delayedstart=delayedstart)
             if customOptionHandler:
                 customOptionHandler(*(opts,))
             print("Service installed")
@@ -806,7 +851,9 @@ def HandleCommandLine(cls, serviceClassString=None, argv=None,
             if exc.winerror == winerror.ERROR_SERVICE_EXISTS:
                 arg = "update"  # Fall through to the "update" param!
             else:
-                print("Error installing service: %s (%d)" % (exc.strerror, exc.winerror))
+                print(
+                    "Error installing service: %s (%d)" %
+                    (exc.strerror, exc.winerror))
                 err = exc.winerror
         except ValueError as msg:  # Can be raised by custom option handler.
             print("Error installing service: %s" % str(msg))
@@ -841,13 +888,28 @@ def HandleCommandLine(cls, serviceClassString=None, argv=None,
             description = None
         print("Changing service configuration")
         try:
-            ChangeServiceConfig(serviceClassString, serviceName, serviceDeps=serviceDeps, startType=startup, bRunInteractive=interactive, userName=userName, password=password, exeName=exeName, displayName=serviceDisplayName, perfMonIni=perfMonIni, perfMonDll=perfMonDll, exeArgs=exeArgs,
-                                description=description, delayedstart=delayedstart)
+            ChangeServiceConfig(
+                serviceClassString,
+                serviceName,
+                serviceDeps=serviceDeps,
+                startType=startup,
+                bRunInteractive=interactive,
+                userName=userName,
+                password=password,
+                exeName=exeName,
+                displayName=serviceDisplayName,
+                perfMonIni=perfMonIni,
+                perfMonDll=perfMonDll,
+                exeArgs=exeArgs,
+                description=description,
+                delayedstart=delayedstart)
             if customOptionHandler:
                 customOptionHandler(*(opts,))
             print("Service updated")
         except win32service.error as exc:
-            print("Error changing service configuration: %s (%d)" % (exc.strerror, exc.winerror))
+            print(
+                "Error changing service configuration: %s (%d)" %
+                (exc.strerror, exc.winerror))
             err = exc.winerror
 
     elif arg == "remove":
@@ -857,7 +919,9 @@ def HandleCommandLine(cls, serviceClassString=None, argv=None,
             RemoveService(serviceName)
             print("Service removed")
         except win32service.error as exc:
-            print("Error removing service: %s (%d)" % (exc.strerror, exc.winerror))
+            print(
+                "Error removing service: %s (%d)" %
+                (exc.strerror, exc.winerror))
             err = exc.winerror
     elif arg == "stop":
         knownArg = 1
@@ -868,7 +932,9 @@ def HandleCommandLine(cls, serviceClassString=None, argv=None,
             else:
                 StopService(serviceName)
         except win32service.error as exc:
-            print("Error stopping service: %s (%d)" % (exc.strerror, exc.winerror))
+            print(
+                "Error stopping service: %s (%d)" %
+                (exc.strerror, exc.winerror))
             err = exc.winerror
     if not knownArg:
         err = -1

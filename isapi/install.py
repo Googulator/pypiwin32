@@ -2,18 +2,17 @@
 
 # this code adapted from "Tomcat JK2 ISAPI redirector", part of Apache
 # Created July 2004, Mark Hammond.
-import sys
-import os
 import imp
+import os
 import shutil
 import stat
-import operator
-from win32com.client import GetObject, Dispatch
-from win32com.client.gencache import EnsureModule, EnsureDispatch
-import win32api
-import pythoncom
-import winerror
+import sys
 import traceback
+
+import pythoncom
+import win32api
+import winerror
+from win32com.client import GetObject
 
 _APP_INPROC = 0
 _APP_OUTPROC = 1
@@ -379,8 +378,9 @@ def CreateISAPIFilter(filterParams, options):
     except pythoncom.com_error as exc:
         # Brand new sites don't have the '/Filters' collection - create it.
         # Any errors other than 'not found' we shouldn't ignore.
-        if winerror.HRESULT_FACILITY(exc.hresult) != winerror.FACILITY_WIN32 or \
-           winerror.HRESULT_CODE(exc.hresult) != winerror.ERROR_PATH_NOT_FOUND:
+        if winerror.HRESULT_FACILITY(
+                exc.hresult) != winerror.FACILITY_WIN32 or winerror.HRESULT_CODE(
+            exc.hresult) != winerror.ERROR_PATH_NOT_FOUND:
             raise
         server_ob = GetObject(server)
         filters = server_ob.Create(_IIS_FILTERS, "Filters")

@@ -3,29 +3,35 @@ Demonstrates prompting for credentials, saving, and loggging on with marshalled 
 Also shows how to load user's profile
 """
 
-import win32net
-import win32security
 import win32api
 import win32con
-import win32profile
 import win32cred
+import win32net
+import win32profile
+import win32security
 
 # Prompt for a username/pwd for local computer
 uiinfo = {
     'MessageText': 'Enter credentials for local machine',
     'CaptionText': 'win32cred_demo.py'}
-target, pwd, save = win32cred.CredUIPromptForCredentials(TargetName=win32api.GetComputerName(), AuthError=0,
-                                                         Flags=win32cred.CREDUI_FLAGS_DO_NOT_PERSIST | win32cred.CREDUI_FLAGS_SHOW_SAVE_CHECK_BOX,
-                                                         Save=False, UiInfo=uiinfo)
+target, pwd, save = win32cred.CredUIPromptForCredentials(TargetName=win32api.GetComputerName(
+), AuthError=0, Flags=win32cred.CREDUI_FLAGS_DO_NOT_PERSIST | win32cred.CREDUI_FLAGS_SHOW_SAVE_CHECK_BOX, Save=False,
+    UiInfo=uiinfo)
 
 attrs = [
     {'Keyword': 'attr1', 'Flags': 0, 'Value': 'unicode data'},
     {'Keyword': 'attr2', 'Flags': 0, 'Value': 'character data'}
 ]
-cred = {'Comment': 'Created by win32cred_demo.py', 'UserName': target, 'TargetAlias': None,
-        'TargetName': target, 'CredentialBlob': pwd, 'Flags': win32cred.CRED_FLAGS_USERNAME_TARGET,
-        'Persist': win32cred.CRED_PERSIST_ENTERPRISE, 'Type': win32cred.CRED_TYPE_DOMAIN_PASSWORD,
-        'Attributes': attrs}
+cred = {
+    'Comment': 'Created by win32cred_demo.py',
+    'UserName': target,
+    'TargetAlias': None,
+    'TargetName': target,
+    'CredentialBlob': pwd,
+    'Flags': win32cred.CRED_FLAGS_USERNAME_TARGET,
+    'Persist': win32cred.CRED_PERSIST_ENTERPRISE,
+    'Type': win32cred.CRED_TYPE_DOMAIN_PASSWORD,
+    'Attributes': attrs}
 win32cred.CredWrite(cred)
 pwd = None
 print(win32cred.CredRead(target, win32cred.CRED_TYPE_DOMAIN_PASSWORD))

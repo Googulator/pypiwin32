@@ -14,19 +14,27 @@ def DumpDB(db, bDeep=1):
 def DumpTables(db, bDeep=1):
     for tab in db.TableDefs:
         tab = db.TableDefs(tab.Name)  # Redundant lookup for testing purposes.
-        print("Table %s - Fields: %d, Attributes:%d" % (tab.Name, len(tab.Fields), tab.Attributes))
+        print("Table %s - Fields: %d, Attributes:%d" %
+              (tab.Name, len(tab.Fields), tab.Attributes))
         if bDeep:
             DumpFields(tab.Fields)
 
 
 def DumpFields(fields):
     for field in fields:
-        print("  %s, size=%d, reqd=%d, type=%d, defVal=%s" % (field.Name, field.Size, field.Required, field.Type, str(field.DefaultValue)))
+        print(
+            "  %s, size=%d, reqd=%d, type=%d, defVal=%s" %
+            (field.Name, field.Size, field.Required, field.Type, str(
+                field.DefaultValue)))
 
 
 def DumpRelations(db, bDeep=1):
     for relation in db.Relations:
-        print("Relation %s - %s->%s" % (relation.Name, relation.Table, relation.ForeignTable))
+        print(
+            "Relation %s - %s->%s" %
+            (relation.Name,
+             relation.Table,
+             relation.ForeignTable))
 
 # This dont work.  TLB says it is a Fields collection, but apparently not!
 ####            if bDeep: DumpFields(relation.Fields)

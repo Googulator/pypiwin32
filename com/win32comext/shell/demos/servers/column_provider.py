@@ -9,15 +9,13 @@
 # * Right-click an explorer column header - select "More"
 # * Locate column 'pyc size' or 'pyo size', and add it to the view.
 # This handler is providing that column data.
-import sys
 import os
 import stat
-import pythoncom
-from win32com.shell import shell, shellcon
+
 import commctrl
-import winerror
-from win32com.server.util import wrap
+import pythoncom
 from pywintypes import IID
+from win32com.shell import shell, shellcon
 
 IPersist_Methods = ["GetClassID"]
 IColumnProvider_Methods = IPersist_Methods + \
@@ -89,8 +87,8 @@ def DllRegisterServer():
     import winreg
     # Special ColumnProvider key
     key = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT,
-                            "Folder\\ShellEx\\ColumnHandlers\\" +
-                            str(ColumnProvider._reg_clsid_))
+                           "Folder\\ShellEx\\ColumnHandlers\\" +
+                           str(ColumnProvider._reg_clsid_))
     winreg.SetValueEx(key, None, 0, winreg.REG_SZ, ColumnProvider._reg_desc_)
     print(ColumnProvider._reg_desc_, "registration complete.")
 
@@ -99,8 +97,8 @@ def DllUnregisterServer():
     import winreg
     try:
         key = winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT,
-                                "Folder\\ShellEx\\ColumnHandlers\\" +
-                                str(ColumnProvider._reg_clsid_))
+                               "Folder\\ShellEx\\ColumnHandlers\\" +
+                               str(ColumnProvider._reg_clsid_))
     except WindowsError as details:
         import errno
         if details.errno != errno.ENOENT:

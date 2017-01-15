@@ -1,15 +1,14 @@
-import unittest
-import time
 import threading
-from pywin32_testutil import str2bytes  # py3k-friendly helper
+import time
+import unittest
 
-
-import win32pipe
-import win32file
-import win32event
 import pywintypes
-import winerror
 import win32con
+import win32event
+import win32file
+import win32pipe
+import winerror
+from pywin32_testutil import str2bytes  # py3k-friendly helper
 
 
 class PipeTests(unittest.TestCase):
@@ -36,14 +35,15 @@ class PipeTests(unittest.TestCase):
         sa = pywintypes.SECURITY_ATTRIBUTES()
         sa.SetSecurityDescriptorDacl(1, None, 0)
 
-        pipe_handle = win32pipe.CreateNamedPipe(self.pipename,
-                                                openMode,
-                                                pipeMode,
-                                                win32pipe.PIPE_UNLIMITED_INSTANCES,
-                                                0,
-                                                0,
-                                                2000,
-                                                sa)
+        pipe_handle = win32pipe.CreateNamedPipe(
+            self.pipename,
+            openMode,
+            pipeMode,
+            win32pipe.PIPE_UNLIMITED_INSTANCES,
+            0,
+            0,
+            2000,
+            sa)
 
         threading.Thread(
             target=self._serverThread,

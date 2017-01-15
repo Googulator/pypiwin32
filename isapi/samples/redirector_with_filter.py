@@ -32,16 +32,18 @@
 # This sample is very small - it avoid most error handling, etc.  It is for
 # demonstration purposes only.
 
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+
 from isapi import isapicon, threaded_extension
 from isapi.simple import SimpleFilter
-import sys
-import traceback
-import urllib.request, urllib.parse, urllib.error
 
 # sys.isapidllhandle will exist when we are loaded by the IIS framework.
 # In this case we redirect our output to the win32traceutil collector.
 if hasattr(sys, "isapidllhandle"):
-    import win32traceutil
+    pass
 
 # The site we are proxying.
 proxy = "http://www.python.org"
@@ -107,7 +109,9 @@ class Filter(SimpleFilter):
             if fc.FilterContext is None:
                 fc.FilterContext = 0
             fc.FilterContext += 1
-            print("This is request number %d on this connection" % fc.FilterContext)
+            print(
+                "This is request number %d on this connection" %
+                fc.FilterContext)
             return isapicon.SF_STATUS_REQ_HANDLED_NOTIFICATION
         else:
             print("Filter ignoring URL '%s'" % (url,))

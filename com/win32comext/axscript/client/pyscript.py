@@ -286,8 +286,16 @@ class PyScript(framework.COMScript):
         return subItemName[0].upper() + subItemName[1:] + \
             "_" + eventName[0].upper() + eventName[1:]
 
-    def DoAddScriptlet(self, defaultName, code, itemName, subItemName,
-                       eventName, delimiter, sourceContextCookie, startLineNumber):
+    def DoAddScriptlet(
+            self,
+            defaultName,
+            code,
+            itemName,
+            subItemName,
+            eventName,
+            delimiter,
+            sourceContextCookie,
+            startLineNumber):
         # Just store the code away - compile when called.  (JIT :-)
         item = self.GetNamedItem(itemName)
         if itemName == subItemName:  # Explicit handlers - eg <SCRIPT LANGUAGE="Python" for="TestForm" Event="onSubmit">
@@ -410,8 +418,8 @@ def DllRegisterServer():
 
 
 def Register(klass=PyScript):
-    ret = win32com.server.register.UseCommandLine(klass,
-                                                  finalize_register=DllRegisterServer)
+    ret = win32com.server.register.UseCommandLine(
+        klass, finalize_register=DllRegisterServer)
     return ret
 
 if __name__ == '__main__':

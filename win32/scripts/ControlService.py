@@ -27,10 +27,9 @@
 # Right now, we always try to get all the rights and fail when we can't
 
 
-from pywin.mfc import dialog
-import win32ui
 import win32con
 import win32service
+from pywin.mfc import dialog
 
 
 class StartupDlg(dialog.Dialog):
@@ -74,8 +73,18 @@ class StartupDlg(dialog.Dialog):
         starttype = self.GetCheckedRadioButton(
             self.IDC_BOOT, self.IDC_DISABLED) - self.IDC_BOOT
         try:
-            win32service.ChangeServiceConfig(self.service, win32service.SERVICE_NO_CHANGE, starttype,
-                                             win32service.SERVICE_NO_CHANGE, None, None, 0, None, None, None, None)
+            win32service.ChangeServiceConfig(
+                self.service,
+                win32service.SERVICE_NO_CHANGE,
+                starttype,
+                win32service.SERVICE_NO_CHANGE,
+                None,
+                None,
+                0,
+                None,
+                None,
+                None,
+                None)
         except:
             self.MessageBox('Unable to change startup configuration', None,
                             win32con.MB_ICONEXCLAMATION)
@@ -155,8 +164,16 @@ class ServiceDlg(dialog.Dialog):
         self.data = []
         for svc in svcs:
             try:
-                status = ('Unknown', 'Stopped', 'Starting', 'Stopping', 'Running',
-                          'Continuing', 'Pausing', 'Paused')[svc[2][1]]
+                status = (
+                    'Unknown',
+                    'Stopped',
+                    'Starting',
+                    'Stopping',
+                    'Running',
+                    'Continuing',
+                    'Pausing',
+                    'Paused')[
+                    svc[2][1]]
             except:
                 status = 'Unknown'
             s = win32service.OpenService(

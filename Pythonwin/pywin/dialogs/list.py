@@ -1,8 +1,8 @@
-from pywin.mfc import dialog
-import win32ui
-import win32con
 import commctrl
 import win32api
+import win32con
+import win32ui
+from pywin.mfc import dialog
 
 
 class ListDialog (dialog.Dialog):
@@ -128,7 +128,8 @@ def SelectFromLists(title, lists, headings):
 
 def test():
     #	print SelectFromList('Single list',  [1,2,3])
-    print(SelectFromLists('Multi-List', [('1', 1, 'a'), ('2', 2, 'b'), ('3', 3, 'c')], ['Col 1', 'Col 2']))
+    print(SelectFromLists('Multi-List',
+                          [('1', 1, 'a'), ('2', 2, 'b'), ('3', 3, 'c')], ['Col 1', 'Col 2']))
 
 if __name__ == '__main__':
     test()

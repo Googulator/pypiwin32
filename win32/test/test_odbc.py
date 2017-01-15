@@ -1,16 +1,14 @@
 # odbc test suite kindly contributed by Frank Millman.
-import sys
 import os
-import unittest
-import odbc
+import sys
 import tempfile
+import unittest
 
-from pywin32_testutil import str2bytes, str2memory, TestSkipped
-
-# We use the DAO ODBC driver
-from win32com.client.gencache import EnsureDispatch
-from win32com.client import constants
+import odbc
 import pythoncom
+from pywin32_testutil import str2bytes, str2memory, TestSkipped
+from win32com.client import constants
+from win32com.client.gencache import EnsureDispatch
 
 
 class TestStuff(unittest.TestCase):
@@ -121,8 +119,9 @@ class TestStuff(unittest.TestCase):
                 "insert into %s (userid, %s) values (?,?)" % (
                     self.tablename, fieldName),
                 ["Frank", value]), 1)
-            self.cur.execute("select %s from %s where userid = ?" % (fieldName, self.tablename),
-                             ["Frank"])
+            self.cur.execute(
+                "select %s from %s where userid = ?" %
+                (fieldName, self.tablename), ["Frank"])
             rows = self.cur.fetchmany()
             self.assertEqual(1, len(rows))
             row = rows[0]
@@ -175,10 +174,16 @@ class TestStuff(unittest.TestCase):
             self._test_val('datefield', d)
 
     def test_set_nonzero_length(self):
-        self.assertEqual(self.cur.execute("insert into %s (userid,username) "
-                                          "values (?,?)" % self.tablename, ['Frank', 'Frank Millman']), 1)
-        self.assertEqual(self.cur.execute("update %s set username = ?" % self.tablename,
-                                          ['Frank']), 1)
+        self.assertEqual(
+            self.cur.execute(
+                "insert into %s (userid,username) "
+                "values (?,?)" %
+                self.tablename, [
+                    'Frank', 'Frank Millman']), 1)
+        self.assertEqual(
+            self.cur.execute(
+                "update %s set username = ?" %
+                self.tablename, ['Frank']), 1)
         self.assertEqual(
             self.cur.execute(
                 "select * from %s" %
@@ -186,8 +191,12 @@ class TestStuff(unittest.TestCase):
         self.assertEqual(len(self.cur.fetchone()[1]), 5)
 
     def test_set_zero_length(self):
-        self.assertEqual(self.cur.execute("insert into %s (userid,username) "
-                                          "values (?,?)" % self.tablename, [str2bytes('Frank'), '']), 1)
+        self.assertEqual(
+            self.cur.execute(
+                "insert into %s (userid,username) "
+                "values (?,?)" %
+                self.tablename, [
+                    str2bytes('Frank'), '']), 1)
         self.assertEqual(
             self.cur.execute(
                 "select * from %s" %
@@ -195,8 +204,12 @@ class TestStuff(unittest.TestCase):
         self.assertEqual(len(self.cur.fetchone()[1]), 0)
 
     def test_set_zero_length_unicode(self):
-        self.assertEqual(self.cur.execute("insert into %s (userid,username) "
-                                          "values (?,?)" % self.tablename, ['Frank', '']), 1)
+        self.assertEqual(
+            self.cur.execute(
+                "insert into %s (userid,username) "
+                "values (?,?)" %
+                self.tablename, [
+                    'Frank', '']), 1)
         self.assertEqual(
             self.cur.execute(
                 "select * from %s" %

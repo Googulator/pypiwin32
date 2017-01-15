@@ -2,13 +2,13 @@
 # (at least as far as most IDLE extensions are concerned)
 
 import string
-import win32api
-import win32ui
-import win32con
 import sys
 
-from pywin.mfc.dialog import GetSimpleInput
+import win32api
+import win32con
+import win32ui
 from pywin import default_scintilla_encoding
+from pywin.mfc.dialog import GetSimpleInput
 
 wordchars = string.ascii_uppercase + string.ascii_lowercase + string.digits
 
@@ -520,7 +520,8 @@ def TestCheck(index, edit, expected=None):
 def TestGet(fr, to, t, expected):
     got = t.get(fr, to)
     if got != expected:
-        print("ERROR: get(%s, %s) expected %s, but got %s" % (repr(fr), repr(to), repr(expected), repr(got)))
+        print("ERROR: get(%s, %s) expected %s, but got %s" %
+              (repr(fr), repr(to), repr(expected), repr(got)))
 
 
 def test():

@@ -1,11 +1,8 @@
-from . import IDLEenvironment
-import string
-import win32ui
+import traceback
+
 import win32api
 import win32con
-from . import keycodes
-import sys
-import traceback
+import win32ui
 
 HANDLER_ARGS_GUESS = 0
 HANDLER_ARGS_NATIVE = 1
@@ -75,7 +72,12 @@ class BindingsManager:
     def update_keymap(self, keymap):
         self.keymap.update(keymap)
 
-    def bind(self, event, handler, handler_args_type=HANDLER_ARGS_GUESS, cid=0):
+    def bind(
+            self,
+            event,
+            handler,
+            handler_args_type=HANDLER_ARGS_GUESS,
+            cid=0):
         if handler is None:
             handler = SendCommandHandler(cid)
         self.bindings[event] = self._new_binding(handler, handler_args_type)

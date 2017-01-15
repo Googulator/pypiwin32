@@ -1,11 +1,12 @@
 # Creates a task-bar icon.  Run from Python.exe to see the
 # messages printed.
-import win32api
-import win32gui
-import win32con
-import winerror
-import sys
 import os
+import sys
+
+import win32api
+import win32con
+import win32gui
+import winerror
 
 
 class MainWindow:
@@ -36,9 +37,18 @@ class MainWindow:
 
         # Create the Window.
         style = win32con.WS_OVERLAPPED | win32con.WS_SYSMENU
-        self.hwnd = win32gui.CreateWindow(wc.lpszClassName, "Taskbar Demo", style,
-                                          0, 0, win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT,
-                                          0, 0, hinst, None)
+        self.hwnd = win32gui.CreateWindow(
+            wc.lpszClassName,
+            "Taskbar Demo",
+            style,
+            0,
+            0,
+            win32con.CW_USEDEFAULT,
+            win32con.CW_USEDEFAULT,
+            0,
+            0,
+            hinst,
+            None)
         win32gui.UpdateWindow(self.hwnd)
         self._DoCreateIcons()
 

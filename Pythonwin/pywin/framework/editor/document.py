@@ -1,14 +1,13 @@
 # We no longer support the old, non-colour editor!
 
-from pywin.mfc import docview, object
-from pywin.framework.editor import GetEditorOption
-import win32ui
 import os
-import win32con
-import string
-import traceback
-import win32api
 import shutil
+import traceback
+
+import win32api
+import win32con
+import win32ui
+from pywin.framework.editor import GetEditorOption
 
 BAK_NONE = 0
 BAK_DOT_BAK = 1
@@ -87,14 +86,16 @@ class EditorDocumentBase(ParentEditorDocument):
                 details)
             return 0
         except (UnicodeEncodeError, LookupError) as details:
-            rc = win32ui.MessageBox("Encoding failed: \r\n%s" % details +
-                                    '\r\nPlease add desired source encoding as first line of file, eg \r\n' +
-                                    '# -*- coding: mbcs -*-\r\n\r\n' +
-                                    'If you continue, the file will be saved as binary and will\r\n' +
-                                    'not be valid in the declared encoding.\r\n\r\n' +
-                                    'Save the file as binary with an invalid encoding?',
-                                    "File save failed",
-                                    win32con.MB_YESNO | win32con.MB_DEFBUTTON2)
+            rc = win32ui.MessageBox(
+                "Encoding failed: \r\n%s" %
+                details +
+                '\r\nPlease add desired source encoding as first line of file, eg \r\n' +
+                '# -*- coding: mbcs -*-\r\n\r\n' +
+                'If you continue, the file will be saved as binary and will\r\n' +
+                'not be valid in the declared encoding.\r\n\r\n' +
+                'Save the file as binary with an invalid encoding?',
+                "File save failed",
+                win32con.MB_YESNO | win32con.MB_DEFBUTTON2)
             if rc == win32con.IDYES:
                 try:
                     self.SaveFile(fileName, encoding="latin-1")
@@ -156,11 +157,15 @@ class EditorDocumentBase(ParentEditorDocument):
             newstat = os.stat(self.GetPathName())
         except os.error as exc:
             if not self.bReportedFileNotFound:
-                print("The file '%s' is open for editing, but\nchecking it for changes caused the error: %s" % (self.GetPathName(), exc.strerror))
+                print(
+                    "The file '%s' is open for editing, but\nchecking it for changes caused the error: %s" %
+                    (self.GetPathName(), exc.strerror))
                 self.bReportedFileNotFound = 1
             return
         if self.bReportedFileNotFound:
-            print("The file '%s' has re-appeared - continuing to watch for changes..." % (self.GetPathName(),))
+            print(
+                "The file '%s' has re-appeared - continuing to watch for changes..." %
+                (self.GetPathName(),))
             # Once found again we want to start complaining.
             self.bReportedFileNotFound = 0
         changed = (self.fileStat is None) or \
@@ -324,7 +329,11 @@ class FileWatchingThread(pywin.mfc.thread.WinThread):
                 self.watchEvent = win32api.FindFirstChangeNotification(
                     path, 0, filter)
             except win32api.error as exc:
-                print("Can not watch file", path, "for changes -", exc.strerror)
+                print(
+                    "Can not watch file",
+                    path,
+                    "for changes -",
+                    exc.strerror)
 
     def SignalStop(self):
         win32event.SetEvent(self.stopEvent)
@@ -347,7 +356,11 @@ class FileWatchingThread(pywin.mfc.thread.WinThread):
                     # this error.
                     win32api.FindNextChangeNotification(self.watchEvent)
                 except win32api.error as exc:
-                    print("Can not watch file", self.doc.GetPathName(), "for changes -", exc.strerror)
+                    print(
+                        "Can not watch file",
+                        self.doc.GetPathName(),
+                        "for changes -",
+                        exc.strerror)
                     break
 
         # close a circular reference

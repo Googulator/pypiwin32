@@ -1,10 +1,9 @@
 import sys
-from win32com.axscript.server.error import Exception
+
+import pythoncom
 from win32com.axscript import axscript
 from win32com.axscript.server import axsite
-import pythoncom
 from win32com.server import util, connect
-import win32com.server.policy
 
 
 class MySite(axsite.AXSite):
@@ -171,7 +170,8 @@ def dotestall():
 def testall():
     dotestall()
     pythoncom.CoUninitialize()
-    print("AXScript Host worked correctly - %d/%d COM objects left alive." % (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount()))
+    print("AXScript Host worked correctly - %d/%d COM objects left alive." %
+          (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount()))
 
 if __name__ == '__main__':
     testall()

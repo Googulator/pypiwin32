@@ -4,15 +4,16 @@
 # a "standard" MFC edit control (eg, control.GetTextLength(), control.GetSel()
 # plus many Scintilla specific features (eg control.SCIAddStyledText())
 
-from pywin.mfc import window
-from pywin import default_scintilla_encoding
+import array
+import os
+import struct
+
+import win32api
 import win32con
 import win32ui
-import win32api
-import array
-import struct
-import string
-import os
+from pywin import default_scintilla_encoding
+from pywin.mfc import window
+
 from . import scintillacon
 
 # Load Scintilla.dll to get access to the control.
@@ -67,12 +68,21 @@ class ScintillaControlInterface:
             length, linesAdded, msg, wParam, lParam, line, \
             foldLevelNow, foldLevelPrev, margin \
             = struct.unpack(format, bytes)
-        return ScintillaNotification(position=position, ch=ch,
-                                     modifiers=modifiers, modificationType=modificationType,
-                                     text_ptr=text_ptr, length=length, linesAdded=linesAdded,
-                                     msg=msg, wParam=wParam, lParam=lParam,
-                                     line=line, foldLevelNow=foldLevelNow, foldLevelPrev=foldLevelPrev,
-                                     margin=margin)
+        return ScintillaNotification(
+            position=position,
+            ch=ch,
+            modifiers=modifiers,
+            modificationType=modificationType,
+            text_ptr=text_ptr,
+            length=length,
+            linesAdded=linesAdded,
+            msg=msg,
+            wParam=wParam,
+            lParam=lParam,
+            line=line,
+            foldLevelNow=foldLevelNow,
+            foldLevelPrev=foldLevelPrev,
+            margin=margin)
 
     def SCIAddText(self, text):
         self.SendMessage(

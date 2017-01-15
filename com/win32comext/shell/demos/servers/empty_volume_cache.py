@@ -3,16 +3,15 @@
 #
 # * Execute this script to register the handler
 # * Start the "disk cleanup" tool - look for "pywin32 compiled files"
-import sys
 import os
 import stat
-import time
+import sys
+
 import pythoncom
-from win32com.shell import shell, shellcon
-from win32com.server.exception import COMException
 import win32gui
-import win32con
 import winerror
+from win32com.server.exception import COMException
+from win32com.shell import shell, shellcon
 
 # Our shell extension.
 IEmptyVolumeCache_Methods = "Initialize GetSpaceUsed Purge ShowProperties Deactivate".split()
@@ -166,7 +165,7 @@ def DllRegisterServer():
          % (EmptyVolumeCache._reg_desc_,)
     key = winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, kn)
     winreg.SetValueEx(key, None, 0, winreg.REG_SZ,
-                       EmptyVolumeCache._reg_clsid_)
+                      EmptyVolumeCache._reg_clsid_)
 
 
 def DllUnregisterServer():

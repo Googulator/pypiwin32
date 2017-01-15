@@ -15,8 +15,11 @@ for subk in win32api.RegEnumKeyExW(key):
     win32api.RegDeleteKey(key, subk[0])
 
 # reopen key in transacted mode
-transacted_key = win32api.RegOpenKeyTransacted(Key=win32con.HKEY_CURRENT_USER, SubKey=keyname,
-                                               Transaction=trans, samDesired=win32con.KEY_ALL_ACCESS)
+transacted_key = win32api.RegOpenKeyTransacted(
+    Key=win32con.HKEY_CURRENT_USER,
+    SubKey=keyname,
+    Transaction=trans,
+    samDesired=win32con.KEY_ALL_ACCESS)
 subkey, disp = win32api.RegCreateKeyEx(transacted_key, subkeyname, Transaction=trans,
                                        samDesired=win32con.KEY_ALL_ACCESS, Class=classname)
 

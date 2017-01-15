@@ -1,15 +1,10 @@
-import sys
-import traceback
+import os
 import string
-
-from win32com.axscript import axscript
-from win32com.axdebug import codecontainer, axdebug, gateways, documents, contexts, adb, expressions
-from win32com.axdebug.util import trace, _wrap, _wrap_remove
+import sys
 
 import pythoncom
-import win32api
-import winerror
-import os
+from win32com.axdebug import codecontainer, axdebug, documents, adb, expressions
+from win32com.axdebug.util import _wrap
 
 currentDebugger = None
 
@@ -250,4 +245,5 @@ def test():
 if __name__ == '__main__':
     print("About to test the debugging interfaces!")
     test()
-    print(" %d/%d com objects still alive" % (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount()))
+    print(" %d/%d com objects still alive" %
+          (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount()))

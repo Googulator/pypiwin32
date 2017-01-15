@@ -34,8 +34,8 @@ def find_pdh_counter_localized_name(english_name, machine_name=None):
     if not counter_english_map:
         import win32api
         import win32con
-        counter_reg_value = win32api.RegQueryValueEx(win32con.HKEY_PERFORMANCE_DATA,
-                                                     "Counter 009")
+        counter_reg_value = win32api.RegQueryValueEx(
+            win32con.HKEY_PERFORMANCE_DATA, "Counter 009")
         counter_list = counter_reg_value[0]
         for i in range(0, len(counter_list) - 1, 2):
             try:
@@ -160,8 +160,9 @@ def BrowseCallBackDemo(counters):
         result = GetPerformanceAttributes(object, counterName, instance, index,
                                           win32pdh.PDH_FMT_DOUBLE, machine)
         print("Value of '%s' is" % counter, result)
-        print("Added '%s' on object '%s' (machine %s), instance %s(%d)-parent of %s" \
-              % (counterName, object, machine, instance, index, parentInstance))
+        print(
+            "Added '%s' on object '%s' (machine %s), instance %s(%d)-parent of %s" %
+            (counterName, object, machine, instance, index, parentInstance))
     return 0
 
 

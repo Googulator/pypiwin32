@@ -1,18 +1,18 @@
 """
 Various utilities for running/importing a script
 """
+import bdb
+import linecache
+import os
 import sys
-import win32ui
+import traceback
+
+import __main__
 import win32api
 import win32con
-import __main__
+import win32ui
 from pywin.mfc import dialog
 from pywin.mfc.docview import TreeView
-import os
-import string
-import traceback
-import linecache
-import bdb
 
 from .cmdline import ParseArgs
 
@@ -90,7 +90,9 @@ def IsOnPythonPath(path):
             if syspath and win32ui.FullPath(syspath) == path:
                 return 1
         except win32ui.error as details:
-            print("Warning: The sys.path entry '%s' is invalid\n%s" % (syspath, details))
+            print(
+                "Warning: The sys.path entry '%s' is invalid\n%s" %
+                (syspath, details))
     return 0
 
 
@@ -110,11 +112,20 @@ def GetPackageModuleName(fileName):
             path, modBit = os.path.split(path)
             modBits.append(modBit)
             # If on path, _and_ existing package of that name loaded.
-            if IsOnPythonPath(path) and modBit in sys.modules and \
-                    (os.path.exists(os.path.join(path, modBit, '__init__.py')) or
-                     os.path.exists(os.path.join(path, modBit, '__init__.pyc')) or
-                     os.path.exists(os.path.join(path, modBit, '__init__.pyo'))
-                     ):
+            if IsOnPythonPath(path) and modBit in sys.modules and (
+                            os.path.exists(
+                                os.path.join(
+                                    path,
+                                    modBit,
+                                    '__init__.py')) or os.path.exists(
+                            os.path.join(
+                                path,
+                                modBit,
+                                '__init__.pyc')) or os.path.exists(
+                        os.path.join(
+                            path,
+                            modBit,
+                            '__init__.pyo'))):
                 modBits.reverse()
                 return ".".join(modBits) + "." + fname, newPathReturn
             # Not found - look a level higher
@@ -176,10 +187,10 @@ def GetActiveFileName(bAutoSave=1):
         doc = active.GetDocument()
         pathName = doc.GetPathName()
 
-        if bAutoSave and \
-                (len(pathName) > 0 or
-                 doc.GetTitle()[:8] == "Untitled" or
-                 doc.GetTitle()[:6] == "Script"):  # if not a special purpose window
+        if bAutoSave and (
+                            len(pathName) > 0 or doc.GetTitle()[
+                                                 :8] == "Untitled" or doc.GetTitle()[
+                                                                      :6] == "Script"):  # if not a special purpose window
             if doc.IsModified():
                 try:
                     doc.OnSaveDocument(pathName)
@@ -420,7 +431,11 @@ def ImportFile():
     if pathName is None:
         openFlags = win32con.OFN_OVERWRITEPROMPT | win32con.OFN_FILEMUSTEXIST
         dlg = win32ui.CreateFileDialog(
-            1, None, None, openFlags, "Python Scripts (*.py;*.pyw)|*.py;*.pyw;*.pyx||")
+            1,
+            None,
+            None,
+            openFlags,
+            "Python Scripts (*.py;*.pyw)|*.py;*.pyw;*.pyx||")
         dlg.SetOFNTitle("Import Script")
         if dlg.DoModal() != win32con.IDOK:
             return 0
@@ -644,7 +659,9 @@ def FindTabNanny():
     try:
         os.stat(fname)
     except os.error:
-        print("WARNING - The file '%s' can not be located in path '%s'" % (filename, path))
+        print(
+            "WARNING - The file '%s' can not be located in path '%s'" %
+            (filename, path))
         return None
 
     tabnannyhome, tabnannybase = os.path.split(fname)

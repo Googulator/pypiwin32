@@ -5,14 +5,15 @@
 
 """
 
+import re
 import sys
 import traceback
-from win32com.axscript import axscript
-import winerror
+
+import pythoncom
 import win32com.server.exception
 import win32com.server.util
-import pythoncom
-import re
+import winerror
+from win32com.axscript import axscript
 
 debugging = 0
 
@@ -75,11 +76,12 @@ class AXScriptException(win32com.server.exception.COMException):
 
     def __init__(self, site, codeBlock, exc_type, exc_value, exc_traceback):
         # set properties base class shares via base ctor...
-        win32com.server.exception.COMException.__init__(self,
-                                                        description="Unknown Exception",
-                                                        scode=winerror.DISP_E_EXCEPTION,
-                                                        source="Python ActiveX Scripting Engine",
-                                                        )
+        win32com.server.exception.COMException.__init__(
+            self,
+            description="Unknown Exception",
+            scode=winerror.DISP_E_EXCEPTION,
+            source="Python ActiveX Scripting Engine",
+        )
 
         # And my other values...
         if codeBlock is None:
@@ -251,7 +253,8 @@ def ProcessAXScriptException(scriptingSite, debugManager, exceptionInstance):
         result = scriptingSite.OnScriptError(gateway)
     except pythoncom.com_error as details:
         print("**OnScriptError failed:", details)
-        print("Exception description:'%s'" % (repr(exceptionInstance.description)))
+        print("Exception description:'%s'" %
+              (repr(exceptionInstance.description)))
         print("Exception text:'%s'" % (repr(exceptionInstance.linetext)))
         result = winerror.S_FALSE
 

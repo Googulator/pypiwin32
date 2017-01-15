@@ -16,10 +16,10 @@
 # Does not regenerate the Visual C++ 6 project files but does the VS .NET
 # project file.
 
+import glob
+import os
 import string
 import sys
-import os
-import glob
 
 # EOL constants
 CR = "\r"
@@ -269,7 +269,13 @@ def RegenerateAll():
             "//",
             NATIVE,
             lexerProperties)
-        Generate(root + "scite/boundscheck/vcproj.gen",
-                 root + "scite/boundscheck/SciTE.vcproj", "#", NATIVE, lexFiles)
+        Generate(
+            root +
+            "scite/boundscheck/vcproj.gen",
+            root +
+            "scite/boundscheck/SciTE.vcproj",
+            "#",
+            NATIVE,
+            lexFiles)
 
 RegenerateAll()

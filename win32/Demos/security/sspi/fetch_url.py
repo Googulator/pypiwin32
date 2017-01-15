@@ -7,11 +7,11 @@ is used.  This script does follow simple 302 redirections, so pointing at the
 root of an IIS server is should work.
 """
 
+import http.client
 import optparse  # sorry, this demo needs 2.3+
+import urllib.parse
 from base64 import encodestring, decodestring
 
-import http.client
-import urllib.parse
 from sspi import ClientAuth
 
 options = None  # set to optparse options object
@@ -84,7 +84,9 @@ def open_url(host, url):
                     data = decodestring(scheme[len(auth_scheme) + 1:])
                     break
             else:
-                print("Could not find scheme '%s' in schemes %r" % (auth_scheme, schemes))
+                print(
+                    "Could not find scheme '%s' in schemes %r" %
+                    (auth_scheme, schemes))
                 break
 
             resp.read()
@@ -93,7 +95,8 @@ def open_url(host, url):
         # Worked!
         # Check we can read it again without re-authenticating.
         if resp.will_close:
-            print("EEEK - response will close, but NTLM is per connection - it must stay open")
+            print(
+                "EEEK - response will close, but NTLM is per connection - it must stay open")
         body = resp.read()
         if options.show_body:
             print("Final response body:")
@@ -122,8 +125,11 @@ if __name__ == '__main__':
     parser.add_option("", "--show-body", action="store_true",
                       help="print the body of each response as it is received")
 
-    parser.add_option("", "--show-headers", action="store_true",
-                      help="print the headers of each response as it is received")
+    parser.add_option(
+        "",
+        "--show-headers",
+        action="store_true",
+        help="print the headers of each response as it is received")
 
     parser.add_option("", "--user", action="store",
                       help="The username to login with")
@@ -139,7 +145,8 @@ if __name__ == '__main__':
         print("Run with --help for usage details")
         args = ["http://localhost/localstart.asp"]
     for url in args:
-        scheme, netloc, path, params, query, fragment = urllib.parse.urlparse(url)
+        scheme, netloc, path, params, query, fragment = urllib.parse.urlparse(
+            url)
         if (scheme != "http") or params or query or fragment:
             parser.error("Scheme must be http, URL must be simple")
 

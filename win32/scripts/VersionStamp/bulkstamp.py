@@ -30,10 +30,11 @@
 # Any line beginning with "#" will be ignored. Empty lines are okay.
 #
 
-import sys
-import os
-import verstamp
 import fnmatch
+import os
+import sys
+
+import verstamp
 import win32api
 
 numStamped = 0
@@ -64,7 +65,13 @@ def walk(arg, dirname, names):
                         verstamp.stamp(vars, pathname, desc, is_dll=is_dll)
                         numStamped = numStamped + 1
                     except win32api.error as exc:
-                        print("Could not stamp", pathname, "Error", exc.winerror, "-", exc.strerror)
+                        print(
+                            "Could not stamp",
+                            pathname,
+                            "Error",
+                            exc.winerror,
+                            "-",
+                            exc.strerror)
                 else:
                     print('WARNING: description not provided for:', name)
                     # skip branding this - assume already branded or handled elsewhere
@@ -85,7 +92,9 @@ def load_descriptions(fname, vars):
             if idx1 == -1 or idx2 < idx1:
                 idx1 = idx2
             if idx1 == -1:
-                print('ERROR: bad syntax in description file at line %d.' % (i + 1))
+                print(
+                    'ERROR: bad syntax in description file at line %d.' %
+                    (i + 1))
                 sys.exit(1)
 
             key = line[:idx1]

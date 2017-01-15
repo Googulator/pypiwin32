@@ -1,8 +1,9 @@
 # Some registry helpers.
+import os
+import sys
+
 import win32api
 import win32con
-import sys
-import os
 
 error = "Registry utility error"
 
@@ -175,8 +176,11 @@ def UnregisterModule(modName):
        modName -- The name of the module, as used by import.
     """
     try:
-        win32api.RegDeleteKey(GetRootKey(),
-                              BuildDefaultPythonKey() + "\\Modules\\%s" % modName)
+        win32api.RegDeleteKey(
+            GetRootKey(),
+            BuildDefaultPythonKey() +
+            "\\Modules\\%s" %
+            modName)
     except win32api.error as exc:
         import winerror
         if exc.winerror != winerror.ERROR_FILE_NOT_FOUND:
@@ -218,8 +222,13 @@ def RegisterHelpFile(helpFile, helpPath, helpDesc=None, bCheckFile=1):
     except os.error:
         raise ValueError("Help file does not exist")
     # Now register with Python itself.
-    win32api.RegSetValue(GetRootKey(),
-                         BuildDefaultPythonKey() + "\\Help\\%s" % helpDesc, win32con.REG_SZ, fullHelpFile)
+    win32api.RegSetValue(
+        GetRootKey(),
+        BuildDefaultPythonKey() +
+        "\\Help\\%s" %
+        helpDesc,
+        win32con.REG_SZ,
+        fullHelpFile)
 
 
 def UnregisterHelpFile(helpFile, helpDesc=None):
@@ -247,8 +256,11 @@ def UnregisterHelpFile(helpFile, helpDesc=None):
     if helpDesc is None:
         helpDesc = helpFile
     try:
-        win32api.RegDeleteKey(GetRootKey(),
-                              BuildDefaultPythonKey() + "\\Help\\%s" % helpDesc)
+        win32api.RegDeleteKey(
+            GetRootKey(),
+            BuildDefaultPythonKey() +
+            "\\Help\\%s" %
+            helpDesc)
     except win32api.error as exc:
         import winerror
         if exc.winerror != winerror.ERROR_FILE_NOT_FOUND:
@@ -268,7 +280,9 @@ def RegisterCoreDLL(coredllName=None):
         try:
             os.stat(coredllName)
         except os.error:
-            print("Warning: Registering non-existant core DLL %s" % coredllName)
+            print(
+                "Warning: Registering non-existant core DLL %s" %
+                coredllName)
 
     hKey = win32api.RegCreateKey(GetRootKey(), BuildDefaultPythonKey())
     try:

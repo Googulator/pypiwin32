@@ -19,19 +19,14 @@ specify --target-spn with the username under which the *server* is running.
 See the SSPI documentation for more details.
 """
 
-
-import sys
-import struct
-import socketserver
-import win32api
 import http.client
+import optparse  # sorry, this demo needs 2.3+
+import socketserver
+import struct
 import traceback
 
-import win32security
 import sspi
-import sspicon
-
-import optparse  # sorry, this demo needs 2.3+
+import win32api
 
 options = None  # set to optparse object.
 
@@ -140,8 +135,12 @@ if __name__ == '__main__':
     parser = optparse.OptionParser("%prog [options] client|server",
                                    description=__doc__)
 
-    parser.add_option("", "--package", action="store", default="NTLM",
-                      help="The SSPI package to use (eg, Kerberos) - default is NTLM")
+    parser.add_option(
+        "",
+        "--package",
+        action="store",
+        default="NTLM",
+        help="The SSPI package to use (eg, Kerberos) - default is NTLM")
 
     parser.add_option("", "--target-spn", action="store",
                       help="""The target security provider name to use. The

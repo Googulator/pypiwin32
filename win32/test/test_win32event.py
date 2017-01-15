@@ -1,9 +1,7 @@
 import unittest
-import win32event
+
 import pywintypes
-import time
-import os
-import sys
+import win32event
 from pywin32_testutil import int2long
 
 
@@ -67,11 +65,11 @@ class TestEvent(unittest.TestCase):
 
     def assertSignaled(self, event):
         self.assertEqual(win32event.WaitForSingleObject(event, 0),
-                          win32event.WAIT_OBJECT_0)
+                         win32event.WAIT_OBJECT_0)
 
     def assertNotSignaled(self, event):
         self.assertEqual(win32event.WaitForSingleObject(event, 0),
-                          win32event.WAIT_TIMEOUT)
+                         win32event.WAIT_TIMEOUT)
 
     def testCreateEvent(self):
         event = win32event.CreateEvent(None, False, False, None)

@@ -1,14 +1,12 @@
 # Tests for the win32security module.
-import sys
-import os
 import unittest
-import winerror
-from pywin32_testutil import testmain, TestSkipped, ob2memory
 
+import ntsecuritycon
 import win32api
 import win32con
 import win32security
-import ntsecuritycon
+import winerror
+from pywin32_testutil import testmain, TestSkipped, ob2memory
 
 
 class SecurityTests(unittest.TestCase):
@@ -22,8 +20,10 @@ class SecurityTests(unittest.TestCase):
         pass
 
     def testEqual(self):
-        self.assertEqual(win32security.LookupAccountName('', 'Administrator')[0],
-                             win32security.LookupAccountName('', 'Administrator')[0])
+        self.assertEqual(
+            win32security.LookupAccountName(
+                '', 'Administrator')[0], win32security.LookupAccountName(
+                '', 'Administrator')[0])
 
     def testNESID(self):
         self.assertTrue(self.pwr_sid == self.pwr_sid)
@@ -41,8 +41,12 @@ class SecurityTests(unittest.TestCase):
         self.assertEqual(d['foo'], self.pwr_sid)
 
     def testBuffer(self):
-        self.assertEqual(ob2memory(win32security.LookupAccountName('', 'Administrator')[0]),
-                             ob2memory(win32security.LookupAccountName('', 'Administrator')[0]))
+        self.assertEqual(
+            ob2memory(
+                win32security.LookupAccountName(
+                    '', 'Administrator')[0]), ob2memory(
+                win32security.LookupAccountName(
+                    '', 'Administrator')[0]))
 
     def testMemory(self):
         pwr_sid = self.pwr_sid
@@ -108,9 +112,19 @@ class TestDS(DomainTests):
         # again, not checking much, just exercising the code.
         h = win32security.DsBind()
         for (status, ignore, site) in win32security.DsListSites(h):
-            for (status, ignore, server) in win32security.DsListServersInSite(h, site):
+            for (
+                    status,
+                    ignore,
+                    server) in win32security.DsListServersInSite(
+                h,
+                site):
                 info = win32security.DsListInfoForServer(h, server)
-            for (status, ignore, domain) in win32security.DsListDomainsInSite(h, site):
+            for (
+                    status,
+                    ignore,
+                    domain) in win32security.DsListDomainsInSite(
+                h,
+                site):
                 pass
 
     def testDsCrackNames(self):
@@ -127,9 +141,13 @@ class TestDS(DomainTests):
         expected = win32api.GetUserNameEx(win32api.NameCanonical)
         fmt_offered = ntsecuritycon.DS_FQDN_1779_NAME
         name = win32api.GetUserNameEx(fmt_offered)
-        result = win32security.DsCrackNames(None, ntsecuritycon.DS_NAME_FLAG_SYNTACTICAL_ONLY,
-                                            fmt_offered, ntsecuritycon.DS_CANONICAL_NAME,
-                                            (name,))
+        result = win32security.DsCrackNames(
+            None,
+            ntsecuritycon.DS_NAME_FLAG_SYNTACTICAL_ONLY,
+            fmt_offered,
+            ntsecuritycon.DS_CANONICAL_NAME,
+            (name,
+             ))
         self.assertEqual(expected, result[0][2])
 
 

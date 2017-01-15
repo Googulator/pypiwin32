@@ -1,15 +1,12 @@
 import sys
+import unittest
+
 import pythoncom
-from win32com.axscript.server.error import Exception
+import win32com.test.util
 from win32com.axscript import axscript
 from win32com.axscript.server import axsite
-from win32com.server import util, connect
-import win32com.server.policy
 from win32com.client.dynamic import Dispatch
-from win32com.server.exception import COMException
-
-import unittest
-import win32com.test.util
+from win32com.server import util, connect
 
 verbose = "-v" in sys.argv
 
@@ -187,8 +184,9 @@ class EngineTester(win32com.test.util.TestCase):
             ob = Dispatch(engine.GetScriptDispatch())
             try:
                 ob.hello("Goober")
-                self.assertTrue(expected_exc is None,
-                                "Expected %r, but no exception seen" % (expected_exc,))
+                self.assertTrue(
+                    expected_exc is None, "Expected %r, but no exception seen" %
+                    (expected_exc,))
             except pythoncom.com_error:
                 if expected_exc is None:
                     self.fail(

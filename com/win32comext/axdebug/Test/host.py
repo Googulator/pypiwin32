@@ -1,18 +1,12 @@
-import sys
+import os
 import traceback
-import string
-import win32com.server.util
-from win32com.client.util import Enumerator
-from win32com.server.exception import Exception
-from win32com.axscript import axscript
-from win32com.axdebug import axdebug, gateways, documents, contexts, adb
-from win32com.axdebug.util import trace, _wrap, _wrap_remove
-from win32com.axdebug import codecontainer
 
 import pythoncom
 import win32api
 import winerror
-import os
+from win32com.axdebug import axdebug, gateways, adb
+from win32com.axdebug.util import trace
+from win32com.server.exception import Exception
 
 
 class ExternalConnection:
@@ -184,4 +178,5 @@ if __name__ == '__main__':
     import win32com.axdebug.util
 
     win32com.axdebug.util._dump_wrapped()
-    print(" %d/%d com objects still alive" % (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount()))
+    print(" %d/%d com objects still alive" %
+          (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount()))

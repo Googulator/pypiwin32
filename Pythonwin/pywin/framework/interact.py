@@ -4,24 +4,23 @@
 # Interactive Shell Window
 ##
 
-import sys
-import os
+import array
 import code
+import os
 import string
+import sys
+import traceback
 
-import win32ui
+import __main__
+import afxres
+import pywin.framework.app
+import pywin.scintilla.IDLEenvironment
+import pywin.scintilla.control
+import pywin.scintilla.formatter
 import win32api
 import win32clipboard
 import win32con
-import traceback
-import afxres
-import array
-import __main__
-
-import pywin.scintilla.formatter
-import pywin.scintilla.control
-import pywin.scintilla.IDLEenvironment
-import pywin.framework.app
+import win32ui
 
 # sequential after ID_GOTO_LINE defined in editor.py
 ID_EDIT_COPY_CODE = 0xe2002
@@ -337,7 +336,13 @@ class InteractiveCore:
         if rcfile:
             import __main__
             try:
-                exec(compile(open(rcfile).read(), rcfile, 'exec'), __main__.__dict__, __main__.__dict__)
+                exec(
+                    compile(
+                        open(rcfile).read(),
+                        rcfile,
+                        'exec'),
+                    __main__.__dict__,
+                    __main__.__dict__)
             except:
                 sys.stderr.write(
                     ">>> \nError executing PYTHONSTARTUP script %r\n" %
@@ -724,8 +729,16 @@ class CInteractivePython(winout.WindowOutput):
 
     def __init__(self, makeDoc=None, makeFrame=None):
         self.IsFinalDestroy = 0
-        winout.WindowOutput.__init__(self, sectionProfile, sectionProfile,
-                                     winout.flags.WQ_LINE, 1, None, makeDoc, makeFrame, InteractiveView)
+        winout.WindowOutput.__init__(
+            self,
+            sectionProfile,
+            sectionProfile,
+            winout.flags.WQ_LINE,
+            1,
+            None,
+            makeDoc,
+            makeFrame,
+            InteractiveView)
         self.Create()
 
     def OnViewDestroy(self, view):

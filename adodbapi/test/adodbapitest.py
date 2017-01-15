@@ -24,11 +24,11 @@
     Updates by Vernon Cole
 """
 
-import unittest
-import sys
+import copy
 import datetime
 import decimal
-import copy
+import sys
+import unittest
 
 try:
     import win32com.client
@@ -249,8 +249,8 @@ class CommonDBTests(unittest.TestCase):
                 # now a completly weird user defined convertion
                 adodbapi.variantConversions[
                     ado_consts.adNumeric] = lambda x: '!!This function returns a funny unicode string %s!!' % x
-                self.helpTestDataType("numeric(18,2)", 'NUMBER', '3.45',
-                                      allowedReturnValues=['!!This function returns a funny unicode string 3.45!!'])
+                self.helpTestDataType("numeric(18,2)", 'NUMBER', '3.45', allowedReturnValues=[
+                    '!!This function returns a funny unicode string 3.45!!'])
             finally:
                 # now reset the converter to its original function
                 # Restore the original convertion function
@@ -357,11 +357,16 @@ class CommonDBTests(unittest.TestCase):
             else:
                 if allowedReturnValues:
                     ok = False
-                    self.assertTrue(rs[0] in allowedReturnValues,
-                                    'Value "%s" not in %s' % (repr(rs[0]), allowedReturnValues))
+                    self.assertTrue(
+                        rs[0] in allowedReturnValues,
+                        'Value "%s" not in %s' %
+                        (repr(
+                            rs[0]),
+                         allowedReturnValues))
                 else:
-                    self.assertEqual(rs[0], pyData,
-                                      'Values are not equal recvd="%s", expected="%s"' % (rs[0], pyData))
+                    self.assertEqual(
+                        rs[0], pyData, 'Values are not equal recvd="%s", expected="%s"' %
+                                       (rs[0], pyData))
 
     def testDataTypeFloat(self):
         self.helpTestDataType("real", 'NUMBER', 3.45, compareAlmostEqual=True)
@@ -372,16 +377,36 @@ class CommonDBTests(unittest.TestCase):
             compareAlmostEqual=True)
 
     def testDataTypeDecmal(self):
-        self.helpTestDataType("decimal(18,2)", 'NUMBER', 3.45,
-                              allowedReturnValues=['3.45', '3,45', decimal.Decimal('3.45')])
-        self.helpTestDataType("numeric(18,2)", 'NUMBER', 3.45,
-                              allowedReturnValues=['3.45', '3,45', decimal.Decimal('3.45')])
-        self.helpTestDataType("decimal(20,2)", 'NUMBER', 444444444444444444,
-                              allowedReturnValues=['444444444444444444.00', '444444444444444444,00',
-                                                   decimal.Decimal('444444444444444444')])
+        self.helpTestDataType(
+            "decimal(18,2)",
+            'NUMBER',
+            3.45,
+            allowedReturnValues=[
+                '3.45',
+                '3,45',
+                decimal.Decimal('3.45')])
+        self.helpTestDataType(
+            "numeric(18,2)",
+            'NUMBER',
+            3.45,
+            allowedReturnValues=[
+                '3.45',
+                '3,45',
+                decimal.Decimal('3.45')])
+        self.helpTestDataType(
+            "decimal(20,2)",
+            'NUMBER',
+            444444444444444444,
+            allowedReturnValues=[
+                '444444444444444444.00',
+                '444444444444444444,00',
+                decimal.Decimal('444444444444444444')])
         if self.getEngine() == 'MSSQL':
-            self.helpTestDataType("uniqueidentifier", 'UUID', '{71A4F49E-39F3-42B1-A41E-48FF154996E6}',
-                                  allowedReturnValues=['{71A4F49E-39F3-42B1-A41E-48FF154996E6}'])
+            self.helpTestDataType(
+                "uniqueidentifier",
+                'UUID',
+                '{71A4F49E-39F3-42B1-A41E-48FF154996E6}',
+                allowedReturnValues=['{71A4F49E-39F3-42B1-A41E-48FF154996E6}'])
 
     def testDataTypeMoney(self):  # v2.1 Cole -- use decimal for money
         if self.getEngine() == 'MySQL':
@@ -390,7 +415,9 @@ class CommonDBTests(unittest.TestCase):
                 'NUMBER',
                 decimal.Decimal('-922337203685477.5808'))
         elif self.getEngine() == 'PostgreSQL':
-            self.helpTestDataType("money", 'NUMBER', decimal.Decimal('-922337203685477.5808'),
+            self.helpTestDataType("money",
+                                  'NUMBER',
+                                  decimal.Decimal('-922337203685477.5808'),
                                   compareAlmostEqual=True,
                                   allowedReturnValues=[-922337203685477.5808,
                                                        decimal.Decimal('-922337203685477.5808')])
@@ -410,8 +437,13 @@ class CommonDBTests(unittest.TestCase):
             # Does not work correctly with access
             self.helpTestDataType("bit", 'NUMBER', 1)
         if self.getEngine() in ['MSSQL', 'PostgreSQL']:
-            self.helpTestDataType("bigint", 'NUMBER', 3000000000,
-                                  allowedReturnValues=[3000000000, int(3000000000)])
+            self.helpTestDataType(
+                "bigint",
+                'NUMBER',
+                3000000000,
+                allowedReturnValues=[
+                    3000000000,
+                    int(3000000000)])
         self.helpTestDataType("int", 'NUMBER', 2147483647)
 
     def testDataTypeChar(self):
@@ -449,12 +481,14 @@ class CommonDBTests(unittest.TestCase):
         self.helpTestDataType(dt, 'DATETIME', adodbapi.Date(2002, 10, 28),
                               compareAlmostEqual=True)
         if self.getEngine() not in ['MySQL', 'PostgreSQL']:
-            self.helpTestDataType("smalldatetime", 'DATETIME', adodbapi.Date(2002, 10, 28),
-                                  compareAlmostEqual=True)
+            self.helpTestDataType(
+                "smalldatetime", 'DATETIME', adodbapi.Date(
+                    2002, 10, 28), compareAlmostEqual=True)
         if tag != 'pythontime' and self.getEngine() not in [
                 'MySQL', 'PostgreSQL']:  # fails when using pythonTime
-            self.helpTestDataType(dt, 'DATETIME', adodbapi.Timestamp(2002, 10, 28, 12, 15, 1),
-                                  compareAlmostEqual=True)
+            self.helpTestDataType(
+                dt, 'DATETIME', adodbapi.Timestamp(
+                    2002, 10, 28, 12, 15, 1), compareAlmostEqual=True)
 
     def testDataTypeBinary(self):
         binfld = str2bytes('\x07\x00\xE2\x40*')
@@ -463,13 +497,22 @@ class CommonDBTests(unittest.TestCase):
             self.helpTestDataType("bytea", 'BINARY', adodbapi.Binary(binfld),
                                   allowedReturnValues=arv)
         else:
-            self.helpTestDataType("binary(5)", 'BINARY', adodbapi.Binary(binfld),
-                                  allowedReturnValues=arv)
-            self.helpTestDataType("varbinary(100)", 'BINARY', adodbapi.Binary(binfld),
-                                  allowedReturnValues=arv)
+            self.helpTestDataType(
+                "binary(5)",
+                'BINARY',
+                adodbapi.Binary(binfld),
+                allowedReturnValues=arv)
+            self.helpTestDataType(
+                "varbinary(100)",
+                'BINARY',
+                adodbapi.Binary(binfld),
+                allowedReturnValues=arv)
             if self.getEngine() != 'MySQL':
-                self.helpTestDataType("image", 'BINARY', adodbapi.Binary(binfld),
-                                      allowedReturnValues=arv)
+                self.helpTestDataType(
+                    "image",
+                    'BINARY',
+                    adodbapi.Binary(binfld),
+                    allowedReturnValues=arv)
 
     def helpRollbackTblTemp(self):
         self.helpForceDropOnTblTemp()
@@ -641,8 +684,9 @@ class CommonDBTests(unittest.TestCase):
         for inParam in inputs:
             fldId += 1
             try:
-                crsr.execute("INSERT INTO xx_%s (fldId,fldTwo,fldThree,fldFour) VALUES (?,?,?,?)" % config.tmp,
-                             (fldId, inParam[0], inParam[1], inParam[2]))
+                crsr.execute(
+                    "INSERT INTO xx_%s (fldId,fldTwo,fldThree,fldFour) VALUES (?,?,?,?)" %
+                    config.tmp, (fldId, inParam[0], inParam[1], inParam[2]))
             except:
                 if self.remote:
                     for message in crsr.messages:
@@ -701,8 +745,7 @@ class CommonDBTests(unittest.TestCase):
         fldId = 2
         for inParam in inputs:
             fldId += 1
-            sql = "INSERT INTO xx_" + \
-                  config.tmp + \
+            sql = "INSERT INTO xx_" + config.tmp + \
                   " (fldId,fldConst,fldData) VALUES (%s,'thi%s :may cause? trouble', %s)"
             try:
                 crsr.execute(sql, (fldId, inParam))
@@ -757,8 +800,10 @@ class CommonDBTests(unittest.TestCase):
         for inParam in inputs:
             fldId += 1
             try:
-                crsr.execute("INSERT INTO xx_%s (fldId,fldData) VALUES (:Id,:f_Val)" % config.tmp,
-                             {"f_Val": inParam, 'Id': fldId})
+                crsr.execute(
+                    "INSERT INTO xx_%s (fldId,fldData) VALUES (:Id,:f_Val)" %
+                    config.tmp, {
+                        "f_Val": inParam, 'Id': fldId})
             except:
                 if self.remote:
                     for message in crsr.messages:
@@ -800,8 +845,10 @@ class CommonDBTests(unittest.TestCase):
         for inParam in inputs:
             fldId += 1
             try:
-                crsr.execute("INSERT INTO xx_%s (fldId,fldData) VALUES (%%(Id)s,%%(f_Val)s)" % config.tmp,
-                             {"f_Val": inParam, 'Id': fldId})
+                crsr.execute(
+                    "INSERT INTO xx_%s (fldId,fldData) VALUES (%%(Id)s,%%(f_Val)s)" %
+                    config.tmp, {
+                        "f_Val": inParam, 'Id': fldId})
             except:
                 if self.remote:
                     for message in crsr.messages:
@@ -843,8 +890,12 @@ class CommonDBTests(unittest.TestCase):
         for inParam in inputs:
             fldId += 1
             try:
-                crsr.execute("INSERT INTO xx_" + config.tmp +
-                             " (fldId,fldConst,fldData) VALUES (?,'thi%s :may cause? troub:1e', ?)", (fldId, inParam))
+                crsr.execute(
+                    "INSERT INTO xx_" +
+                    config.tmp +
+                    " (fldId,fldConst,fldData) VALUES (?,'thi%s :may cause? troub:1e', ?)",
+                    (fldId,
+                     inParam))
             except:
                 if self.remote:
                     for message in crsr.messages:
@@ -865,8 +916,10 @@ class CommonDBTests(unittest.TestCase):
         for inParam in inputs:
             fldId += 1
             try:
-                crsr.execute("INSERT INTO xx_%s (fldId,fldData) VALUES (:Id,:f_Val)" % config.tmp,
-                             {"f_Val": inParam, 'Id': fldId})
+                crsr.execute(
+                    "INSERT INTO xx_%s (fldId,fldData) VALUES (:Id,:f_Val)" %
+                    config.tmp, {
+                        "f_Val": inParam, 'Id': fldId})
             except:
                 if self.remote:
                     for message in crsr.messages:
@@ -1083,9 +1136,9 @@ class TestADOwithSQLServer(CommonDBTests):
         retvalues = crsr.callproc('sp_DeleteMe_OnlyForTesting')
         row = crsr.fetchone()
         self.assertEqual(row[0], 0)
-        assert crsr.nextset() == True, 'Operation should succeed'
+        assert crsr.nextset(), 'Operation should succeed'
         assert not crsr.fetchall(), 'Should be an empty second set'
-        assert crsr.nextset() == True, 'third set should be present'
+        assert crsr.nextset(), 'third set should be present'
         rowdesc = crsr.fetchall()
         self.assertEqual(rowdesc[0][0], 8)
         assert crsr.nextset() is None, 'No more return sets, should return None'
@@ -1144,8 +1197,8 @@ class TestADOwithSQLServer(CommonDBTests):
             {'parameters': ['this is wrong', 'Anne', 'not Alice']}
         )
         if result[0]:  # the expected exception was raised
-            assert '@theInput' in str(result[1]) or 'DatabaseError' in str(result), \
-                'Identifies the wrong erroneous parameter'
+            assert '@theInput' in str(result[1]) or 'DatabaseError' in str(
+                result), 'Identifies the wrong erroneous parameter'
         else:
             assert result[0], result[1]  # incorrect or no exception
         self.conn.rollback()

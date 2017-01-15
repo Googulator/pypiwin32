@@ -8,10 +8,11 @@
 
 import sys
 
-from . import dynamic
-from . import gencache
 import pythoncom
 import pywintypes
+
+from . import dynamic
+from . import gencache
 
 _PyIDispatchType = pythoncom.TypeIIDs[pythoncom.IID_IDispatch]
 
@@ -470,7 +471,11 @@ def Record(name, object):
             "The structure '%s' is not defined in module '%s'" %
             (name, package))
     return pythoncom.GetRecordFromGuids(
-        module.CLSID, module.MajorVersion, module.MinorVersion, module.LCID, struct_guid)
+        module.CLSID,
+        module.MajorVersion,
+        module.MinorVersion,
+        module.LCID,
+        struct_guid)
 
 
 ############################################

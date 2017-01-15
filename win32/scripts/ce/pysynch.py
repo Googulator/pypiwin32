@@ -1,14 +1,15 @@
 # Simple CE synchronisation utility with Python features.
 
-import wincerapi
-import win32api
-import win32file
+import fnmatch
 import getopt
-import sys
 import os
 import string
+import sys
+
+import win32api
 import win32con
-import fnmatch
+import win32file
+import wincerapi
 
 
 class InvalidUsage(Exception):
@@ -222,7 +223,9 @@ def dir(args):
             attr_string = "     "
             if info[0] & win32con.FILE_ATTRIBUTE_DIRECTORY:
                 attr_string = "<DIR>"
-            print("%s  %s %10d %s" % (date_str, attr_string, info[5], rel_name))
+            print(
+                "%s  %s %10d %s" %
+                (date_str, attr_string, info[5], rel_name))
             total_size = total_size + info[5]
         print(" " * 14 + "%3d files, %10d bytes" % (len(files), total_size))
 
@@ -282,7 +285,8 @@ def main():
     wincerapi.CeRapiInit()
     try:
         verinfo = wincerapi.CeGetVersionEx()
-        print("Connected to device, CE version %d.%d %s" % (verinfo[0], verinfo[1], verinfo[4]))
+        print("Connected to device, CE version %d.%d %s" %
+              (verinfo[0], verinfo[1], verinfo[4]))
         try:
             fn(sys.argv[2:])
         except InvalidUsage as msg:

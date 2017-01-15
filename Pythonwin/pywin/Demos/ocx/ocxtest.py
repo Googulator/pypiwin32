@@ -5,14 +5,13 @@
 #
 # The .py files behind the OCXs will be automatically generated and imported.
 
-from pywin.mfc import dialog, window, activex
-import win32ui
-import win32uiole
-import win32con
-import os
-import sys
-import win32api
 import glob
+import os
+
+import win32api
+import win32con
+import win32ui
+from pywin.mfc import dialog, window, activex
 from win32com.client import gencache
 
 
@@ -138,7 +137,14 @@ def GetTestVideoDialogClass():
                 self.olectl = activex.MakeControlInstance(
                     videoControlModule.ActiveMovie)
                 self.olectl.CreateControl(
-                    "", win32con.WS_TABSTOP | win32con.WS_VISIBLE, (7, 43, 500, 300), self._obj_, 131)
+                    "",
+                    win32con.WS_TABSTOP | win32con.WS_VISIBLE,
+                    (7,
+                     43,
+                     500,
+                     300),
+                    self._obj_,
+                    131)
             except win32ui.error:
                 self.MessageBox("The Video Control could not be created")
                 self.olectl = None

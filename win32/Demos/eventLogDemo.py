@@ -1,9 +1,8 @@
-import win32evtlog
 import win32api
 import win32con
-import win32security  # To translate NT Sids to account names.
-
+import win32evtlog
 import win32evtlogutil
+import win32security  # To translate NT Sids to account names.
 
 
 def ReadLog(computer, logType="Application", dumpEachRecord=0):
@@ -32,7 +31,8 @@ def ReadLog(computer, logType="Application", dumpEachRecord=0):
             else:
                 user_desc = None
             if dumpEachRecord:
-                print("Event record from %r generated at %s" % (object.SourceName, object.TimeGenerated.Format()))
+                print("Event record from %r generated at %s" %
+                      (object.SourceName, object.TimeGenerated.Format()))
                 if user_desc:
                     print(user_desc)
                 try:
@@ -46,7 +46,9 @@ def ReadLog(computer, logType="Application", dumpEachRecord=0):
     if numRecords == num:
         print("Successfully read all", numRecords, "records")
     else:
-        print("Couldn't get all records - reported %d, but found %d" % (numRecords, num))
+        print(
+            "Couldn't get all records - reported %d, but found %d" %
+            (numRecords, num))
         print("(Note that some other app may have written records while we were running!)")
     win32evtlog.CloseEventLog(h)
 
@@ -99,17 +101,32 @@ def test():
         my_sid = win32security.GetTokenInformation(
             th, win32security.TokenUser)[0]
 
-        win32evtlogutil.ReportEvent(logType, 2,
-                                    strings=[
-                                        "The message text for event 2", "Another insert"],
-                                    data="Raw\0Data".encode("ascii"), sid=my_sid)
-        win32evtlogutil.ReportEvent(logType, 1, eventType=win32evtlog.EVENTLOG_WARNING_TYPE,
-                                    strings=[
-                                        "A warning", "An even more dire warning"],
-                                    data="Raw\0Data".encode("ascii"), sid=my_sid)
-        win32evtlogutil.ReportEvent(logType, 1, eventType=win32evtlog.EVENTLOG_INFORMATION_TYPE,
-                                    strings=["An info", "Too much info"],
-                                    data="Raw\0Data".encode("ascii"), sid=my_sid)
+        win32evtlogutil.ReportEvent(
+            logType,
+            2,
+            strings=[
+                "The message text for event 2",
+                "Another insert"],
+            data="Raw\0Data".encode("ascii"),
+            sid=my_sid)
+        win32evtlogutil.ReportEvent(
+            logType,
+            1,
+            eventType=win32evtlog.EVENTLOG_WARNING_TYPE,
+            strings=[
+                "A warning",
+                "An even more dire warning"],
+            data="Raw\0Data".encode("ascii"),
+            sid=my_sid)
+        win32evtlogutil.ReportEvent(
+            logType,
+            1,
+            eventType=win32evtlog.EVENTLOG_INFORMATION_TYPE,
+            strings=[
+                "An info",
+                "Too much info"],
+            data="Raw\0Data".encode("ascii"),
+            sid=my_sid)
         print("Successfully wrote 3 records to the log")
 
     if do_read:

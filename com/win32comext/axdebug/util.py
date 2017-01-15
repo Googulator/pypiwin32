@@ -1,12 +1,13 @@
 # Utility function for wrapping objects.  Centralising allows me to turn
 # debugging on and off for the entire package in a single spot.
 
-import sys
-import win32com.server.util
-from win32com.server.exception import Exception
-import winerror
-import win32api
 import os
+import sys
+
+import win32api
+import win32com.server.util
+import winerror
+from win32com.server.exception import Exception
 
 try:
     os.environ["DEBUG_AXDEBUG"]
@@ -77,7 +78,9 @@ def RaiseNotImpl(who=None):
     except:
         frame = sys.exc_info()[2].tb_frame
     while frame:
-        print("File: %s, Line: %d" % (frame.f_code.co_filename, frame.f_lineno))
+        print(
+            "File: %s, Line: %d" %
+            (frame.f_code.co_filename, frame.f_lineno))
         frame = frame.f_back
 
     # and raise the exception for COM
@@ -92,8 +95,8 @@ class Dispatcher(win32com.server.policy.DispatcherWin32trace):
     def __init__(self, policyClass, object):
         win32com.server.policy.DispatcherTrace.__init__(
             self, policyClass, object)
-        import win32traceutil  # Sets up everything.
-# print "Object with win32trace dispatcher created (object=%s)" % `object`
+
+    # print "Object with win32trace dispatcher created (object=%s)" % `object`
 
     def _QueryInterface_(self, iid):
         rc = win32com.server.policy.DispatcherBase._QueryInterface_(self, iid)
@@ -102,7 +105,14 @@ class Dispatcher(win32com.server.policy.DispatcherWin32trace):
         return rc
 
     def _Invoke_(self, dispid, lcid, wFlags, args):
-        print("In Invoke with", dispid, lcid, wFlags, args, "with object", self.policy._obj_)
+        print(
+            "In Invoke with",
+            dispid,
+            lcid,
+            wFlags,
+            args,
+            "with object",
+            self.policy._obj_)
         try:
             rc = win32com.server.policy.DispatcherBase._Invoke_(
                 self, dispid, lcid, wFlags, args)
@@ -116,7 +126,9 @@ class Dispatcher(win32com.server.policy.DispatcherWin32trace):
                 desc = " (" + str(v.description) + ")"
             except AttributeError:
                 desc = ""
-            print("*** Invoke of %s raised COM exception 0x%x%s" % (dispid, scode, desc))
+            print(
+                "*** Invoke of %s raised COM exception 0x%x%s" %
+                (dispid, scode, desc))
         except:
             print("*** Invoke of %s failed:" % dispid)
             typ, val, tb = sys.exc_info()

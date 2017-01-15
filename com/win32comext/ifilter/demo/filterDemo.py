@@ -1,11 +1,9 @@
-import pythoncom
-import pywintypes
+from functools import reduce
 
+import pythoncom
+from win32com import storagecon
 from win32com.ifilter import ifilter
 from win32com.ifilter.ifiltercon import *
-
-from win32com import storagecon
-from functools import reduce
 
 
 class FileParser:
@@ -18,19 +16,20 @@ class FileParser:
     PIDH_IMGSRC = "IMG.SRC"
 
     # conversion map to convert ifilter properties to more user friendly names
-    propertyToName = {PSGUID_STORAGE: {PIDS_BODY: 'body'},
-
-                      PSGUID_SUMMARYINFORMATION: {PIDSI_TITLE: 'title',
-                                                  PIDSI_SUBJECT: 'description',
-                                                  PIDSI_AUTHOR: 'author',
-                                                  PIDSI_KEYWORDS: 'keywords',
-                                                  PIDSI_COMMENTS: 'comments'},
-
-                      PSGUID_HTMLINFORMATION: {PIDH_DESCRIPTION: 'description'},
-
-                      PSGUID_HTML2_INFORMATION: {PIDH_HREF: 'href',
-                                                 PIDH_IMGSRC: 'img'}
-                      }
+    propertyToName = {
+        PSGUID_STORAGE: {
+            PIDS_BODY: 'body'},
+        PSGUID_SUMMARYINFORMATION: {
+            PIDSI_TITLE: 'title',
+            PIDSI_SUBJECT: 'description',
+            PIDSI_AUTHOR: 'author',
+            PIDSI_KEYWORDS: 'keywords',
+            PIDSI_COMMENTS: 'comments'},
+        PSGUID_HTMLINFORMATION: {
+            PIDH_DESCRIPTION: 'description'},
+        PSGUID_HTML2_INFORMATION: {
+            PIDH_HREF: 'href',
+            PIDH_IMGSRC: 'img'}}
 
     def __init__(self, verbose=False):
         self.f = None
@@ -219,7 +218,8 @@ class FileParser:
 
 def _usage():
     import os
-    print("Usage: %s filename [verbose [dumpbody]]" % (os.path.basename(sys.argv[0]),))
+    print("Usage: %s filename [verbose [dumpbody]]" %
+          (os.path.basename(sys.argv[0]),))
     print()
     print("Where:-")
     print("filename = name of the file to extract text & properties from")
@@ -271,7 +271,11 @@ if __name__ == "__main__":
     for propName, propValue in propMap.items():
         print(propName, ":", end=' ')
         if propName == 'body':
-            print("<%s length: %d>" % (propName, reduce(operator.add, [len(p) for p in propValue]),))
+            print(
+                "<%s length: %d>" %
+                (propName, reduce(
+                    operator.add, [
+                        len(p) for p in propValue]),))
         elif isinstance(propValue, type([])):
             print()
             for pv in propValue:

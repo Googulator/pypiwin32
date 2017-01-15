@@ -1,7 +1,7 @@
-import sys
 import string
-import pythoncom
+import sys
 
+import pythoncom
 import win32api
 from win32com.adsi import *
 
@@ -156,7 +156,9 @@ def DumpSchema2():
             import win32com.util
             iid_name = win32com.util.IIDToInterfaceName(item.PrimaryInterface)
             if verbose_level >= 2:
-                print("Class: Name=%s, Flags=%s, Primary Interface=%s" % (item.Name, desc, iid_name))
+                print(
+                    "Class: Name=%s, Flags=%s, Primary Interface=%s" %
+                    (item.Name, desc, iid_name))
             nclass = nclass + 1
         elif item_class == "property":
             if item.MultiValued:
@@ -169,7 +171,9 @@ def DumpSchema2():
         elif item_class == "syntax":
             data_type = vt_map.get(item.OleAutoDataType, "<unknown type>")
             if verbose_level >= 2:
-                print("Syntax: Name=%s, Datatype = %s" % (item.Name, data_type))
+                print(
+                    "Syntax: Name=%s, Datatype = %s" %
+                    (item.Name, data_type))
             nsyntax = nsyntax + 1
     if verbose_level >= 1:
         print("Processed", nclass, "classes")
@@ -209,7 +213,10 @@ def DumpLocalGroups():
 
 def usage(tests):
     import os
-    print("Usage: %s [-s server ] [-v] [Test ...]" % os.path.basename(sys.argv[0]))
+    print(
+        "Usage: %s [-s server ] [-v] [Test ...]" %
+        os.path.basename(
+            sys.argv[0]))
     print("  -v : Verbose - print more information")
     print("  -s : server - execute the tests against the named server")
     print("where Test is one of:")

@@ -2,20 +2,18 @@
 # designed to be a simple sample, but instead is a hotch-potch of things
 # that attempts to exercise the framework.
 
+import sys
+
 from isapi import isapicon
 from isapi.simple import SimpleExtension
-import sys
-import os
-import stat
 
 if hasattr(sys, "isapidllhandle"):
-    import win32traceutil
+    pass
 
 # We use the same reload support as 'advanced.py' demonstrates.
 from isapi import InternalReloadException
 import win32event
 import win32file
-import winerror
 import win32con
 import threading
 
@@ -105,7 +103,10 @@ class Extension(SimpleExtension):
             ecb.SendResponseHeaders(
                 "200 OK", "Content-Type: text/html\r\n\r\n", 0)
             print("<HTML><BODY>", file=ecb)
-            print("The root of this site is at", ecb.MapURLToPath("/"), file=ecb)
+            print(
+                "The root of this site is at",
+                ecb.MapURLToPath("/"),
+                file=ecb)
             print("</BODY></HTML>", file=ecb)
             ecb.close()
         return isapicon.HSE_STATUS_SUCCESS
@@ -168,9 +169,11 @@ if __name__ == '__main__':
     # Setup our custom option parser.
     from optparse import OptionParser
     parser = OptionParser('')  # blank usage, so isapi sets it.
-    parser.add_option("", "--description",
-                      action="store",
-                      help="custom description to use for the virtual directory")
+    parser.add_option(
+        "",
+        "--description",
+        action="store",
+        help="custom description to use for the virtual directory")
 
     HandleCommandLine(params, opt_parser=parser,
                       custom_arg_handlers=custom_arg_handlers)

@@ -40,11 +40,12 @@ import sys
 import time
 from functools import reduce
 
-from . import scriptutils
 import win32api
 import win32con
 import win32ui
 from pywin.mfc import docview, dialog, window
+
+from . import scriptutils
 
 
 def getsubdirs(d):
@@ -422,8 +423,7 @@ class TheDocument(docview.RichEditDoc):
 
     def GetParams(self):
         return self.dirpattern + '\t' + self.filpattern + '\t' + self.greppattern + '\t' + \
-            repr(self.casesensitive) + '\t' + \
-            repr(self.recurse) + '\t' + repr(self.verbose)
+               repr(self.casesensitive) + '\t' + repr(self.recurse) + '\t' + repr(self.verbose)
 
     def OnSaveDocument(self, filename):
         #       print 'OnSaveDocument() filename=',filename
@@ -519,8 +519,9 @@ class TheView(docview.RichEditView):
             if m:
                 if first:
                     first = 0
-                    cmnt = dialog.GetSimpleInput("Add to %s lines" % (line_end - line_start + 1),
-                                                 addspecific and "  #$pycheck_no=%(errtext)s" or "  #$pycheck_no")
+                    cmnt = dialog.GetSimpleInput(
+                        "Add to %s lines" % (line_end - line_start + 1),
+                        addspecific and "  #$pycheck_no=%(errtext)s" or "  #$pycheck_no")
                     if not cmnt:
                         return 0
                 ##import pywin.debugger;pywin.debugger.set_trace()

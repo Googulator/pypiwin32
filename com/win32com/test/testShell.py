@@ -1,9 +1,8 @@
-import sys
+import datetime
 import os
 import struct
-import unittest
-import copy
-import datetime
+import sys
+
 import win32timezone
 
 try:
@@ -48,7 +47,8 @@ class ShellTester(win32com.test.util.TestCase):
             num += 1
         if num == 0:
             # This isn't a fatal error, but is unlikely.
-            print("Could not find any links on your desktop or programs dir, which is unusual")
+            print(
+                "Could not find any links on your desktop or programs dir, which is unusual")
 
     def testShellFolder(self):
         sf = shell.SHGetDesktopFolder()

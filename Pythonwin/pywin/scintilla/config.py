@@ -8,24 +8,23 @@
 # .py file, and put the config info in a docstring.  Then
 # pass a CStringIO file (rather than a filename) to the
 # config manager.
-import sys
-import string
-from . import keycodes
-import marshal
-import stat
-import os
-import types
-import traceback
-import pywin
 import glob
 import imp
+import marshal
+import os
+import stat
+import sys
+import traceback
+import types
 
+import pywin
 import win32api
+
+from . import keycodes
 
 debugging = 0
 if debugging:
     # Some trace statements fire before the interactive window is open.
-    import win32traceutil
 
     def trace(*args):
         sys.stderr.write(" ".join(map(str, args)) + "\n")
@@ -42,7 +41,9 @@ def split_line(line, lineno):
     sep_pos = line.rfind("=")
     if sep_pos == -1:
         if line.strip():
-            print("Warning: Line %d: %s is an invalid entry" % (lineno, repr(line)))
+            print(
+                "Warning: Line %d: %s is an invalid entry" %
+                (lineno, repr(line)))
             return None, None
         return "", ""
     return line[:sep_pos].strip(), line[sep_pos + 1:].strip()
@@ -68,9 +69,12 @@ def find_config_file(f):
 
 
 def find_config_files():
-    return [os.path.split(x)[1]
-            for x in [os.path.splitext(x)[0] for x in glob.glob(os.path.join(pywin.__path__[0], "*.cfg"))]
-            ]
+    return [
+        os.path.split(x)[1] for x in [
+            os.path.splitext(x)[0] for x in glob.glob(
+                os.path.join(
+                    pywin.__path__[0],
+                    "*.cfg"))]]
 
 
 class ConfigManager:
@@ -321,8 +325,9 @@ class ConfigManager:
         except SyntaxError as details:
             errlineno = details.lineno + start_lineno
             # Should handle syntax errors better here, and offset the lineno.
-            self.report_error("Compiling extension code failed:\r\nFile: %s\r\nLine %d\r\n%s"
-                              % (details.filename, errlineno, details.msg))
+            self.report_error(
+                "Compiling extension code failed:\r\nFile: %s\r\nLine %d\r\n%s" %
+                (details.filename, errlineno, details.msg))
         return line, lineno
 
     def _load_idle_extensions(self, sub_section, fp, lineno):

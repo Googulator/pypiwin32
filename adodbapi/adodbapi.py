@@ -29,14 +29,15 @@ or, after running through 2to3.py, CPython 3.0 or later.
 __version__ = '2.6.0.6'
 version = 'adodbapi v' + __version__
 
-import sys
 import copy
 import decimal
 import os
+import sys
 
-import process_connect_string
-from . import ado_consts as adc
 import apibase as api
+import process_connect_string
+
+from . import ado_consts as adc
 
 try:
     verbose = int(os.environ['ADODBAPI_VERBOSE'])
@@ -48,8 +49,7 @@ if verbose:
 # --- define objects to smooth out IronPython <-> CPython differences
 onWin32 = False  # assume the worst
 if api.onIronPython:
-    from System import Activator, Type, DBNull, DateTime, Array, Byte
-    from System import Decimal as SystemDecimal
+    from System import Activator, Type
     from clr import Reference
 
     def Dispatch(dispatch):
@@ -434,8 +434,12 @@ class Connection(object):
             return
         elif name == 'paramstyle':
             if value not in api.accepted_paramstyles:
-                self._raiseConnectionError(api.NotSupportedError,
-                                           'paramstyle="%s" not in:%s' % (value, repr(api.accepted_paramstyles)))
+                self._raiseConnectionError(
+                    api.NotSupportedError,
+                    'paramstyle="%s" not in:%s' %
+                    (value,
+                     repr(
+                         api.accepted_paramstyles)))
         elif name == 'variantConversions':
             # make a new copy -- no changes in the default, please
             value = copy.copy(value)
@@ -481,9 +485,15 @@ class Connection(object):
             print('ADO Errors:(%i)' % j)
         for e in self.connector.Errors:
             print('Description: %s' % e.Description)
-            print('Error: %s %s ' % (e.Number, adc.adoErrors.get(e.Number, "unknown")))
+            print(
+                'Error: %s %s ' %
+                (e.Number,
+                 adc.adoErrors.get(
+                     e.Number,
+                     "unknown")))
             if e.Number == adc.ado_error_TIMEOUT:
-                print('Timeout Error: Try using adodbpi.connect(constr,timeout=Nseconds)')
+                print(
+                    'Timeout Error: Try using adodbpi.connect(constr,timeout=Nseconds)')
             print('Source: %s' % e.Source)
             print('NativeError: %s' % e.NativeError)
             print('SQL State: %s' % e.SQLState)
@@ -578,7 +588,8 @@ class Cursor(object):
         self.arraysize = 1
         connection._i_am_here(self)
         if verbose:
-            print('%s New cursor at %X on conn %X' % (version, id(self), id(self.connection)))
+            print('%s New cursor at %X on conn %X' %
+                  (version, id(self), id(self.connection)))
 
     def __iter__(self):                   # [2.1 Zamarev]
         return iter(self.fetchone, None)  # [2.1 Zamarev]
@@ -724,8 +735,10 @@ class Cursor(object):
             self.cmd.CommandText = command_text
             self.cmd.Prepared = bool(self._ado_prepared)
         except:
-            self._raiseCursorError(api.DatabaseError,
-                                   'Error creating new ADODB.Command object for "%s"' % repr(command_text))
+            self._raiseCursorError(
+                api.DatabaseError,
+                'Error creating new ADODB.Command object for "%s"' %
+                repr(command_text))
 
     def _execute_command(self):
         # Stored procedures may have an integer return value
@@ -747,8 +760,8 @@ class Cursor(object):
             _message = ""
             if hasattr(e, 'args'):
                 _message += str(e.args) + "\n"
-            _message += "Command:\n%s\nParameters:\n%s" % (self.cmd.CommandText,
-                                                           format_parameters(self.cmd.Parameters, True))
+            _message += "Command:\n%s\nParameters:\n%s" % (
+                self.cmd.CommandText, format_parameters(self.cmd.Parameters, True))
             klass = self.connection._suggest_error_class()
             self._raiseCursorError(klass, _message)
         try:
@@ -774,12 +787,12 @@ class Cursor(object):
         retLst = []  # store procedures may return altered parameters, including an added "return value" item
         for p in tuple(self.cmd.Parameters):
             if verbose > 2:
-                print('Returned=Name: %s, Dir.: %s, Type: %s, Size: %s, Value: "%s",' \
-                      " Precision: %s, NumericScale: %s" % \
-                    (p.Name, adc.directions[p.Direction],
-                     adc.adTypeNames.get(p.Type, str(
-                         p.Type) + ' (unknown type)'),
-                     p.Size, p.Value, p.Precision, p.NumericScale))
+                print('Returned=Name: %s, Dir.: %s, Type: %s, Size: %s, Value: "%s",'
+                      " Precision: %s, NumericScale: %s" %
+                      (p.Name, adc.directions[p.Direction],
+                       adc.adTypeNames.get(p.Type, str(
+                           p.Type) + ' (unknown type)'),
+                       p.Size, p.Value, p.Precision, p.NumericScale))
             pyObject = api.convert_to_python(
                 p.Value, api.variantConversions[p.Type])
             if p.Direction == adc.adParamReturnValue:
@@ -807,7 +820,11 @@ class Cursor(object):
         self._new_command(procname, command_type=adc.adCmdStoredProc)
         self._buildADOparameterList(parameters, sproc=True)
         if verbose > 2:
-            print('Calling Stored Proc with Params=', format_parameters(self.cmd.Parameters, True))
+            print(
+                'Calling Stored Proc with Params=',
+                format_parameters(
+                    self.cmd.Parameters,
+                    True))
         self._execute_command()
         return self.get_returned_parameters()
 
@@ -830,7 +847,11 @@ class Cursor(object):
             try:  # attempt to use ADO's parameter list
                 self.cmd.Parameters.Refresh()
                 if verbose > 2:
-                    print('ADO detected Params=', format_parameters(self.cmd.Parameters, True))
+                    print(
+                        'ADO detected Params=',
+                        format_parameters(
+                            self.cmd.Parameters,
+                            True))
                     print('Program Parameters=', repr(parameters))
                 parameters_known = True
             except api.Error:
@@ -839,8 +860,9 @@ class Cursor(object):
                 pass
             else:
                 if len(parameters) != self.cmd.Parameters.Count - 1:
-                    raise api.ProgrammingError('You must supply %d parameters for this stored procedure' %
-                                               (self.cmd.Parameters.Count - 1))
+                    raise api.ProgrammingError(
+                        'You must supply %d parameters for this stored procedure' %
+                        (self.cmd.Parameters.Count - 1))
         if sproc or parameters != []:
             i = 0
             if parameters_known:  # use ado parameter list

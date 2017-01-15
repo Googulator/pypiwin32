@@ -1,12 +1,27 @@
-import win32file
 import win32api
-import os
+import win32file
 
 
-def ProgressRoutine(TotalFileSize, TotalBytesTransferred, StreamSize, StreamBytesTransferred,
-                    StreamNumber, CallbackReason, SourceFile, DestinationFile, Data):
+def ProgressRoutine(
+        TotalFileSize,
+        TotalBytesTransferred,
+        StreamSize,
+        StreamBytesTransferred,
+        StreamNumber,
+        CallbackReason,
+        SourceFile,
+        DestinationFile,
+        Data):
     print(Data)
-    print(TotalFileSize, TotalBytesTransferred, StreamSize, StreamBytesTransferred, StreamNumber, CallbackReason, SourceFile, DestinationFile)
+    print(
+        TotalFileSize,
+        TotalBytesTransferred,
+        StreamSize,
+        StreamBytesTransferred,
+        StreamNumber,
+        CallbackReason,
+        SourceFile,
+        DestinationFile)
     # if TotalBytesTransferred > 100000:
     # return win32file.PROGRESS_STOP
     return win32file.PROGRESS_CONTINUE

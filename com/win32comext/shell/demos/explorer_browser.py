@@ -56,9 +56,18 @@ class MainWindow:
         classAtom = win32gui.RegisterClass(wc)
         # Create the Window.
         style = win32con.WS_OVERLAPPEDWINDOW | win32con.WS_VISIBLE
-        self.hwnd = win32gui.CreateWindow(classAtom, "Python IExplorerBrowser demo", style,
-                                          0, 0, win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT,
-                                          0, 0, hinst, None)
+        self.hwnd = win32gui.CreateWindow(
+            classAtom,
+            "Python IExplorerBrowser demo",
+            style,
+            0,
+            0,
+            win32con.CW_USEDEFAULT,
+            win32con.CW_USEDEFAULT,
+            0,
+            0,
+            hinst,
+            None)
         eb = pythoncom.CoCreateInstance(
             shellcon.CLSID_ExplorerBrowser,
             None,
@@ -95,7 +104,7 @@ class MainWindow:
                                    shell.IID_INameSpaceTreeControl)
         except pythoncom.com_error as exc:
             # this should really only fail if no "nav" frame exists...
-            print("Strange - failed to get the tree control even though " \
+            print("Strange - failed to get the tree control even though "
                   "we asked for a EBO_SHOWFRAMES")
             print(exc)
         else:

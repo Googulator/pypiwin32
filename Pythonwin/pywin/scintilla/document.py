@@ -1,12 +1,13 @@
-import win32ui
-from pywin.mfc import docview
-from pywin import default_scintilla_encoding
-from . import scintillacon
-import win32con
-import string
-import os
 import codecs
 import re
+import string
+
+import win32con
+import win32ui
+from pywin import default_scintilla_encoding
+from pywin.mfc import docview
+
+from . import scintillacon
 
 crlf_bytes = "\r\n".encode("ascii")
 lf_bytes = "\n".encode("ascii")
@@ -47,8 +48,9 @@ class CScintillaDocument(ParentScintillaDocument):
             finally:
                 f.close()
         except IOError:
-            rc = win32ui.MessageBox("Could not load the file from %s\n\nDo you want to create a new file?" % filename,
-                                    "Pythonwin", win32con.MB_YESNO | win32con.MB_ICONWARNING)
+            rc = win32ui.MessageBox(
+                "Could not load the file from %s\n\nDo you want to create a new file?" %
+                filename, "Pythonwin", win32con.MB_YESNO | win32con.MB_ICONWARNING)
             if rc == win32con.IDNO:
                 return 0
             assert rc == win32con.IDYES, rc
@@ -128,10 +130,14 @@ class CScintillaDocument(ParentScintillaDocument):
         try:
             dec = text.decode(source_encoding)
         except UnicodeError:
-            print("WARNING: Failed to decode bytes from '%s' encoding - treating as latin1" % source_encoding)
+            print(
+                "WARNING: Failed to decode bytes from '%s' encoding - treating as latin1" %
+                source_encoding)
             dec = text.decode('latin1')
         except LookupError:
-            print("WARNING: Invalid encoding '%s' specified - treating as latin1" % source_encoding)
+            print(
+                "WARNING: Invalid encoding '%s' specified - treating as latin1" %
+                source_encoding)
             dec = text.decode('latin1')
         # and put it back as utf8 - this shouldn't fail.
         text = dec.encode(default_scintilla_encoding)

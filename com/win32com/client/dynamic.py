@@ -20,12 +20,11 @@ import traceback
 import types
 
 import pythoncom
+import win32com.client  # Needed as code we eval() references it.
 import winerror
-from . import build
-
 from pywintypes import IIDType
 
-import win32com.client  # Needed as code we eval() references it.
+from . import build
 
 debugging = 0			# General debugging
 debugging_attr = 0  # Debugging dynamic attribute lookups.
@@ -375,7 +374,8 @@ class CDispatch:
             # "Dispatch" in the exec'd code is win32com.client.Dispatch, not ours.
             globNameSpace = globals().copy()
             globNameSpace["Dispatch"] = win32com.client.Dispatch
-            exec(codeObject, globNameSpace, tempNameSpace)  # self.__dict__, self.__dict__
+            # self.__dict__, self.__dict__
+            exec(codeObject, globNameSpace, tempNameSpace)
             name = methodName
             # Save the function in map.
             fn = self._builtMethods_[name] = tempNameSpace[name]

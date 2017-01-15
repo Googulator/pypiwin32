@@ -9,9 +9,9 @@
 #   the context menu.
 
 import pythoncom
-from win32com.shell import shell, shellcon
-import win32gui
 import win32con
+import win32gui
+from win32com.shell import shell, shellcon
 
 
 class ShellExtension:
@@ -84,7 +84,7 @@ class ShellExtension:
 def DllRegisterServer():
     import winreg
     key = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT,
-                            "Python.File\\shellex")
+                           "Python.File\\shellex")
     subkey = winreg.CreateKey(key, "ContextMenuHandlers")
     subkey2 = winreg.CreateKey(subkey, "PythonSample")
     winreg.SetValueEx(
@@ -99,8 +99,9 @@ def DllRegisterServer():
 def DllUnregisterServer():
     import winreg
     try:
-        key = winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT,
-                                "Python.File\\shellex\\ContextMenuHandlers\\PythonSample")
+        key = winreg.DeleteKey(
+            winreg.HKEY_CLASSES_ROOT,
+            "Python.File\\shellex\\ContextMenuHandlers\\PythonSample")
     except WindowsError as details:
         import errno
         if details.errno != errno.ENOENT:

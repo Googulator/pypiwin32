@@ -34,8 +34,9 @@
 # The rest are tested here.
 
 
-from win32com.server.util import wrap
 import pythoncom
+from win32com.server.util import wrap
+
 from .util import CheckClean
 
 numErrors = 0
@@ -132,7 +133,9 @@ def TestMultiInterface():
     o3 = o2.QueryInterface(pythoncom.IID_IPersistStorage)
     FailObjectIdentity(o2, o3, "IID_IExternalConnection->IID_IPersistStorage")
     FailObjectIdentity(
-        o, o3, "IID_IPersistStorage->IID_IExternalConnection->IID_IPersistStorage")
+        o,
+        o3,
+        "IID_IPersistStorage->IID_IExternalConnection->IID_IPersistStorage")
 
 
 def test():

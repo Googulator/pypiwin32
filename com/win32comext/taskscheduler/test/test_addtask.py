@@ -1,12 +1,17 @@
-import pythoncom
-import sys
 import os
+import sys
 import time
+
+import pythoncom
 import win32api
 from win32com.taskscheduler import taskscheduler
+
 task_name = 'test_addtask.job'
-ts = pythoncom.CoCreateInstance(taskscheduler.CLSID_CTaskScheduler, None,
-                                pythoncom.CLSCTX_INPROC_SERVER, taskscheduler.IID_ITaskScheduler)
+ts = pythoncom.CoCreateInstance(
+    taskscheduler.CLSID_CTaskScheduler,
+    None,
+    pythoncom.CLSCTX_INPROC_SERVER,
+    taskscheduler.IID_ITaskScheduler)
 tasks = ts.Enum()
 for task in tasks:
     print(task)

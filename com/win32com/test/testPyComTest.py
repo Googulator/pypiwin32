@@ -3,7 +3,6 @@
 
 import sys
 sys.coinit_flags = 0  # Must be free-threaded!
-import win32api
 import pythoncom
 import time
 import pywintypes
@@ -11,7 +10,6 @@ import os
 import winerror
 import win32com
 import win32com.client.connect
-from win32com.test.util import CheckClean
 from win32com.client import constants, DispatchBaseClass, CastTo, VARIANT
 from win32com.test.util import RegisterPythonServer
 from pywin32_testutil import str2memory
@@ -24,8 +22,13 @@ importMsg = "**** PyCOMTest is not installed ***\n  PyCOMTest is a Python test s
 error = Exception
 
 # This test uses a Python implemented COM server - ensure correctly registered.
-RegisterPythonServer(os.path.join(os.path.dirname(__file__), '..', "servers", "test_pycomtest.py"),
-                     "Python.Test.PyCOMTest")
+RegisterPythonServer(
+    os.path.join(
+        os.path.dirname(__file__),
+        '..',
+        "servers",
+        "test_pycomtest.py"),
+    "Python.Test.PyCOMTest")
 
 from win32com.client import gencache
 try:

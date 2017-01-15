@@ -1,8 +1,9 @@
 # rastest.py - test/demonstrate the win32ras module.
 # Much of the code here contributed by Jethro Wright.
 
-import sys
 import os
+import sys
+
 import win32ras
 
 # Build a little dictionary of RAS states to decent strings.
@@ -75,7 +76,9 @@ def Connect(entryName, bUseCallback):
     #       hras, rc = win32ras.Dial(None, None, (entryName, ),theCallback)
     #       print hras, rc
         if not bUseCallback and rc != 0:
-            print("Could not dial the RAS connection:", win32ras.GetErrorString(rc))
+            print(
+                "Could not dial the RAS connection:",
+                win32ras.GetErrorString(rc))
             hras = HangUp(hras)
         #       don't wait here if there's no need to....
         elif bUseCallback and win32event.WaitForSingleObject(callbackEvent, 60000) != win32event.WAIT_OBJECT_0:

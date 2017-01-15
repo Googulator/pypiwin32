@@ -114,8 +114,8 @@ class ArgFormatter:
         #	 indirection was applied (plus the builtin amount)
         # the second return element is the variable declaration; it
         #	 should simply be builtin indirection
-        return self.GetIndirectedArgName(self.builtinIndirection, self.arg.indirectionLevel + self.builtinIndirection), \
-            "%s %s" % (self.GetUnconstType(), self.arg.name)
+        return self.GetIndirectedArgName(self.builtinIndirection, self.arg.indirectionLevel +
+                                         self.builtinIndirection), "%s %s" % (self.GetUnconstType(), self.arg.name)
 
     def GetInterfaceArgCleanup(self):
         "Return cleanup code for C++ args passed to the interface method."
@@ -805,7 +805,13 @@ class Argument:
             self.unc_type = self.type
 
         if VERBOSE:
-            print("	   Arg %s of type %s%s (%s)" % (self.name, self.type, "*" * self.indirectionLevel, self.inout))
+            print(
+                "	   Arg %s of type %s%s (%s)" %
+                (self.name,
+                 self.type,
+                 "*" *
+                 self.indirectionLevel,
+                 self.inout))
 
     def HasAttribute(self, typ):
         """Determines if the argument has the specific attribute.
@@ -853,9 +859,12 @@ class Method:
         self.result = mo.group(2)
         if self.result != "HRESULT":
             if self.result == "DWORD":  # DWORD is for old old stuff?
-                print("Warning: Old style interface detected - compilation errors likely!")
+                print(
+                    "Warning: Old style interface detected - compilation errors likely!")
             else:
-                print("Method %s - Only HRESULT return types are supported." % self.name)
+                print(
+                    "Method %s - Only HRESULT return types are supported." %
+                    self.name)
 #				raise error_not_supported,		if VERBOSE:
             print("	 Method %s %s(" % (self.result, self.name))
         while True:
@@ -950,4 +959,10 @@ def test_regex(r, text):
     if res == -1:
         print("** Not found")
     else:
-        print("%d\n%s\n%s\n%s\n%s" % (res, r.group(1), r.group(2), r.group(3), r.group(4)))
+        print(
+            "%d\n%s\n%s\n%s\n%s" %
+            (res,
+             r.group(1),
+             r.group(2),
+             r.group(3),
+             r.group(4)))

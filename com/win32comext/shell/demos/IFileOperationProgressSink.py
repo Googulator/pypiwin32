@@ -2,11 +2,11 @@
 # some basic info
 
 import pythoncom
-from win32com.shell import shell, shellcon
 from win32com.server.policy import DesignatedWrapPolicy
+from win32com.shell import shell, shellcon
 
-tsf_flags = list((k, v)
-                 for k, v in list(shellcon.__dict__.items()) if k.startswith('TSF_'))
+tsf_flags = list((k, v) for k, v in list(
+    shellcon.__dict__.items()) if k.startswith('TSF_'))
 
 
 def decode_flags(flags):
@@ -25,11 +25,22 @@ def decode_flags(flags):
 class FileOperationProgressSink(DesignatedWrapPolicy):
     _com_interfaces_ = [shell.IID_IFileOperationProgressSink]
     _public_methods_ = [
-        "StartOperations", "FinishOperations", "PreRenameItem", "PostRenameItem",
-        "PreMoveItem", "PostMoveItem", "PreCopyItem", "PostCopyItem", "PreDeleteItem",
-        "PostDeleteItem", "PreNewItem", "PostNewItem", "UpdateProgress",
-        "ResetTimer", "PauseTimer", "ResumeTimer"
-    ]
+        "StartOperations",
+        "FinishOperations",
+        "PreRenameItem",
+        "PostRenameItem",
+        "PreMoveItem",
+        "PostMoveItem",
+        "PreCopyItem",
+        "PostCopyItem",
+        "PreDeleteItem",
+        "PostDeleteItem",
+        "PreNewItem",
+        "PostNewItem",
+        "UpdateProgress",
+        "ResetTimer",
+        "PauseTimer",
+        "ResumeTimer"]
 
     def __init__(self):
         self._wrap_(self)
@@ -41,8 +52,10 @@ class FileOperationProgressSink(DesignatedWrapPolicy):
         print(('FinishOperations: HRESULT ', Result))
 
     def PreRenameItem(self, Flags, Item, NewName):
-        print(('PreRenameItem: Renaming ' + Item.GetDisplayName(shellcon.SHGDN_FORPARSING) +
-              ' to ' + NewName))
+        print(('PreRenameItem: Renaming ' +
+               Item.GetDisplayName(shellcon.SHGDN_FORPARSING) +
+               ' to ' +
+               NewName))
 
     def PostRenameItem(self, Flags, Item, NewName, hrRename, NewlyCreated):
         if NewlyCreated is not None:
@@ -50,12 +63,17 @@ class FileOperationProgressSink(DesignatedWrapPolicy):
         else:
             newfile = 'not renamed, HRESULT ' + str(hrRename)
         print(('PostRenameItem: renamed ' +
-              Item.GetDisplayName(shellcon.SHGDN_FORPARSING) + ' to ' + newfile))
+               Item.GetDisplayName(shellcon.SHGDN_FORPARSING) +
+               ' to ' +
+               newfile))
 
     def PreMoveItem(self, Flags, Item, DestinationFolder, NewName):
         print(('PreMoveItem: Moving ' +
-              Item.GetDisplayName(shellcon.SHGDN_FORPARSING) + ' to ' +
-              DestinationFolder.GetDisplayName(shellcon.SHGDN_FORPARSING) + '\\' + str(NewName)))
+               Item.GetDisplayName(shellcon.SHGDN_FORPARSING) +
+               ' to ' +
+               DestinationFolder.GetDisplayName(shellcon.SHGDN_FORPARSING) +
+               '\\' +
+               str(NewName)))
 
     def PostMoveItem(self, Flags, Item, DestinationFolder,
                      NewName, hrMove, NewlyCreated):
@@ -64,14 +82,19 @@ class FileOperationProgressSink(DesignatedWrapPolicy):
         else:
             newfile = 'not copied, HRESULT ' + str(hrMove)
         print(('PostMoveItem: Moved ' +
-              Item.GetDisplayName(shellcon.SHGDN_FORPARSING) + ' to ' + newfile))
+               Item.GetDisplayName(shellcon.SHGDN_FORPARSING) +
+               ' to ' +
+               newfile))
 
     def PreCopyItem(self, Flags, Item, DestinationFolder, NewName):
         if not NewName:
             NewName = ''
         print(('PreCopyItem: Copying ' +
-              Item.GetDisplayName(shellcon.SHGDN_FORPARSING) + ' to ' +
-              DestinationFolder.GetDisplayName(shellcon.SHGDN_FORPARSING) + '\\' + NewName))
+               Item.GetDisplayName(shellcon.SHGDN_FORPARSING) +
+               ' to ' +
+               DestinationFolder.GetDisplayName(shellcon.SHGDN_FORPARSING) +
+               '\\' +
+               NewName))
         print(('Flags: ', decode_flags(Flags)))
 
     def PostCopyItem(self, Flags, Item, DestinationFolder,

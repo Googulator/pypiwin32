@@ -5,12 +5,11 @@
 
 # Very simple -  queries a modem for ATI responses
 
-import win32ui
-import win32uiole
+import pythoncom
 import win32con
+import win32ui
 from pywin.mfc import dialog, activex
 from win32com.client import gencache
-import pythoncom
 
 SERIAL_SETTINGS = '19200,n,8,1'
 SERIAL_PORT = 2
@@ -74,9 +73,15 @@ class TestSerDialog(dialog.Dialog):
 
         self.olectl = MySerialControl(self)
         try:
-            self.olectl.CreateControl("OCX",
-                                      win32con.WS_TABSTOP | win32con.WS_VISIBLE,
-                                      (7, 43, 500, 300), self._obj_, 131)
+            self.olectl.CreateControl(
+                "OCX",
+                win32con.WS_TABSTOP | win32con.WS_VISIBLE,
+                (7,
+                 43,
+                 500,
+                 300),
+                self._obj_,
+                131)
         except win32ui.error:
             self.MessageBox("The Serial Control could not be created")
             self.olectl = None
@@ -88,7 +93,9 @@ class TestSerDialog(dialog.Dialog):
             try:
                 self.olectl.PortOpen = 1
             except pythoncom.com_error as details:
-                print("Could not open the specified serial port - %s" % (details.excepinfo[2]))
+                print(
+                    "Could not open the specified serial port - %s" %
+                    (details.excepinfo[2]))
                 self.EndDialog(win32con.IDCANCEL)
         return rc
 

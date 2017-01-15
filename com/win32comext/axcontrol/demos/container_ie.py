@@ -2,16 +2,16 @@
 # A nod to the Code Project's article "Embed an HTML control in your own
 # window using plain C"
 import sys
-from win32com.axcontrol import axcontrol
-from win32com.server.exception import COMException
-from win32com.server.util import wrap
-from win32com.client import Dispatch
 
 import pythoncom
+import win32api
 import win32con
 import win32gui
 import winerror
-import win32api
+from win32com.axcontrol import axcontrol
+from win32com.client import Dispatch
+from win32com.server.exception import COMException
+from win32com.server.util import wrap
 
 # Set to True to see debug output in the 'trace collector' window.
 debugging = False
@@ -179,15 +179,23 @@ class IEHost:
         #wc.hbrBackground = win32con.COLOR_WINDOW+1
         wc.lpfnWndProc = message_map
         class_atom = win32gui.RegisterClass(wc)
-        self.hwnd = win32gui.CreateWindow(wc.lpszClassName,
-                                          'Embedded browser',
-                                          win32con.WS_OVERLAPPEDWINDOW | win32con.WS_VISIBLE,
-                                          win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT,
-                                          0, 0, 0, None)
-        browser = pythoncom.CoCreateInstance("{8856F961-340A-11D0-A96B-00C04FD705A2}",
-                                             None,
-                                             pythoncom.CLSCTX_INPROC_SERVER | pythoncom.CLSCTX_INPROC_HANDLER,
-                                             axcontrol.IID_IOleObject)
+        self.hwnd = win32gui.CreateWindow(
+            wc.lpszClassName,
+            'Embedded browser',
+            win32con.WS_OVERLAPPEDWINDOW | win32con.WS_VISIBLE,
+            win32con.CW_USEDEFAULT,
+            win32con.CW_USEDEFAULT,
+            win32con.CW_USEDEFAULT,
+            win32con.CW_USEDEFAULT,
+            0,
+            0,
+            0,
+            None)
+        browser = pythoncom.CoCreateInstance(
+            "{8856F961-340A-11D0-A96B-00C04FD705A2}",
+            None,
+            pythoncom.CLSCTX_INPROC_SERVER | pythoncom.CLSCTX_INPROC_HANDLER,
+            axcontrol.IID_IOleObject)
         self.browser = browser
         site = wrap(
             SimpleSite(self),

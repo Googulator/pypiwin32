@@ -16,14 +16,15 @@ dynamically, or possibly even generate .html documentation for objects.
 #
 #        OleItem, DispatchItem, MapEntry, BuildCallList() is used by makepy
 
-import sys
+import datetime
 import string
+import sys
 from keyword import iskeyword
 
 import pythoncom
-from pywintypes import TimeType
 import winerror
-import datetime
+from pywintypes import TimeType
+
 
 # It isn't really clear what the quoting rules are in a C/IDL string and
 # literals like a quote char and backslashes makes life a little painful to
@@ -487,7 +488,9 @@ def _ResolveType(typerepr, itypeinfo):
                 0] == pythoncom.VT_USERDEFINED
             subrepr, sub_clsid, sub_doc = _ResolveType(subrepr, itypeinfo)
             if was_user and subrepr in [
-                    pythoncom.VT_DISPATCH, pythoncom.VT_UNKNOWN, pythoncom.VT_RECORD]:
+                pythoncom.VT_DISPATCH,
+                pythoncom.VT_UNKNOWN,
+                pythoncom.VT_RECORD]:
                 # Drop the VT_PTR indirection
                 return subrepr, sub_clsid, sub_doc
             # Change PTR indirection to byref
@@ -505,7 +508,8 @@ def _ResolveType(typerepr, itypeinfo):
                 resultTypeInfo = itypeinfo.GetRefTypeInfo(subrepr)
             except pythoncom.com_error as details:
                 if details.hresult in [
-                        winerror.TYPE_E_CANTLOADLIBRARY, winerror.TYPE_E_LIBNOTREGISTERED]:
+                    winerror.TYPE_E_CANTLOADLIBRARY,
+                    winerror.TYPE_E_LIBNOTREGISTERED]:
                     # an unregistered interface
                     return pythoncom.VT_UNKNOWN, None, None
                 raise

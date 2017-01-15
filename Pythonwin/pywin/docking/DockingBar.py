@@ -6,11 +6,12 @@
 # Currently we support only one child per DockingBar.  Later we need to add
 # support for multiple children.
 
+import struct
+
 import win32api
 import win32con
 import win32ui
 from pywin.mfc import afxres, window
-import struct
 
 clrBtnHilight = win32api.GetSysColor(win32con.COLOR_BTNHILIGHT)
 clrBtnShadow = win32api.GetSysColor(win32con.COLOR_BTNSHADOW)
@@ -68,8 +69,14 @@ class DockingBar(window.Wnd):
     def OnUpdateCmdUI(self, target, bDisableIfNoHndler):
         return self.UpdateDialogControls(target, bDisableIfNoHndler)
 
-    def CreateWindow(self, parent, childCreator, title, id, style=win32con.WS_CHILD |
-                     win32con.WS_VISIBLE | afxres.CBRS_LEFT, childCreatorArgs=()):
+    def CreateWindow(
+            self,
+            parent,
+            childCreator,
+            title,
+            id,
+            style=win32con.WS_CHILD | win32con.WS_VISIBLE | afxres.CBRS_LEFT,
+            childCreatorArgs=()):
         assert not ((style & afxres.CBRS_SIZE_FIXED) and (
             style & afxres.CBRS_SIZE_DYNAMIC)), "Invalid style"
         self.rectClose = self.rectBorder = self.rectGripper = self.rectTracker = 0, 0, 0, 0
@@ -223,9 +230,8 @@ class DockingBar(window.Wnd):
         nDockBarID = self.GetParent().GetDlgCtrlID()
         # Return if dropped at same location
         # no docking side change and no size change
-        if (nDockBarID == self.nDockBarID) and \
-                (flags & win32con.SWP_NOSIZE) and \
-                ((self._obj_.dwStyle & afxres.CBRS_BORDER_ANY) != afxres.CBRS_BORDER_ANY):
+        if (nDockBarID == self.nDockBarID) and (flags & win32con.SWP_NOSIZE) and (
+                    (self._obj_.dwStyle & afxres.CBRS_BORDER_ANY) != afxres.CBRS_BORDER_ANY):
             return
         self.nDockBarID = nDockBarID
 
@@ -594,7 +600,6 @@ def EditCreator(parent):
 
 
 def test():
-    import pywin.mfc.dialog
     global bar
     bar = DockingBar()
     creator = EditCreator

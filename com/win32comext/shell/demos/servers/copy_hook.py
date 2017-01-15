@@ -5,13 +5,10 @@
 # * Open Windows Explorer
 # * Attempt to move or copy a directory.
 # * Note our hook's dialog is displayed.
-import sys
-import os
-import pythoncom
-from win32com.shell import shell, shellcon
-import win32gui
 import win32con
-import winerror
+import win32gui
+from win32com.shell import shell
+
 
 # Our shell extension.
 
@@ -30,7 +27,15 @@ class ShellExtension:
         # IDNO Prevents the operation on this folder but continues with any other operations that have been approved (for example, a batch copy operation).
         # IDCANCEL Prevents the current operation and cancels any pending
         # operations.
-        print("CopyCallBack", hwnd, func, flags, srcName, srcAttr, destName, destAttr)
+        print(
+            "CopyCallBack",
+            hwnd,
+            func,
+            flags,
+            srcName,
+            srcAttr,
+            destName,
+            destAttr)
         return win32gui.MessageBox(hwnd, "Allow operation?", "CopyHook",
                                    win32con.MB_YESNO)
 
@@ -38,15 +43,15 @@ class ShellExtension:
 def DllRegisterServer():
     import winreg
     key = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT,
-                            "directory\\shellex\\CopyHookHandlers\\" +
-                            ShellExtension._reg_desc_)
+                           "directory\\shellex\\CopyHookHandlers\\" +
+                           ShellExtension._reg_desc_)
     winreg.SetValueEx(key, None, 0, winreg.REG_SZ,
-                       ShellExtension._reg_clsid_)
+                      ShellExtension._reg_clsid_)
     key = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT,
-                            "*\\shellex\\CopyHookHandlers\\" +
-                            ShellExtension._reg_desc_)
+                           "*\\shellex\\CopyHookHandlers\\" +
+                           ShellExtension._reg_desc_)
     winreg.SetValueEx(key, None, 0, winreg.REG_SZ,
-                       ShellExtension._reg_clsid_)
+                      ShellExtension._reg_clsid_)
     print(ShellExtension._reg_desc_, "registration complete.")
 
 
@@ -54,16 +59,16 @@ def DllUnregisterServer():
     import winreg
     try:
         key = winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT,
-                                "directory\\shellex\\CopyHookHandlers\\" +
-                                ShellExtension._reg_desc_)
+                               "directory\\shellex\\CopyHookHandlers\\" +
+                               ShellExtension._reg_desc_)
     except WindowsError as details:
         import errno
         if details.errno != errno.ENOENT:
             raise
     try:
         key = winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT,
-                                "*\\shellex\\CopyHookHandlers\\" +
-                                ShellExtension._reg_desc_)
+                               "*\\shellex\\CopyHookHandlers\\" +
+                               ShellExtension._reg_desc_)
     except WindowsError as details:
         import errno
         if details.errno != errno.ENOENT:

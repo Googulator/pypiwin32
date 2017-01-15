@@ -4,8 +4,8 @@
 
 import pywintypes
 import win32api
-import win32security
 import win32con
+import win32security
 import winerror
 from security_enums import TOKEN_GROUP_ATTRIBUTES, TOKEN_PRIVILEGE_ATTRIBUTES, \
     SECURITY_IMPERSONATION_LEVEL, TOKEN_TYPE, TOKEN_ELEVATION_TYPE
@@ -17,9 +17,14 @@ def dump_token(th):
     if token_type == win32security.TokenImpersonation:
         imp_lvl = win32security.GetTokenInformation(
             th, win32security.TokenImpersonationLevel)
-        print('TokenImpersonationLevel:', imp_lvl, SECURITY_IMPERSONATION_LEVEL.lookup_name(imp_lvl))
+        print('TokenImpersonationLevel:', imp_lvl,
+              SECURITY_IMPERSONATION_LEVEL.lookup_name(imp_lvl))
 
-    print('TokenSessionId:', win32security.GetTokenInformation(th, win32security.TokenSessionId))
+    print(
+        'TokenSessionId:',
+        win32security.GetTokenInformation(
+            th,
+            win32security.TokenSessionId))
 
     privs = win32security.GetTokenInformation(
         th, win32security.TokenPrivileges)
@@ -57,14 +62,31 @@ def dump_token(th):
         if details.winerror != winerror.ERROR_INVALID_PARAMETER:
             raise
         return None
-    print('TokenHasRestrictions:', win32security.GetTokenInformation(th, win32security.TokenHasRestrictions))
-    print('TokenMandatoryPolicy', win32security.GetTokenInformation(th, win32security.TokenMandatoryPolicy))
-    print('TokenVirtualizationAllowed:', win32security.GetTokenInformation(th, win32security.TokenVirtualizationAllowed))
-    print('TokenVirtualizationEnabled:', win32security.GetTokenInformation(th, win32security.TokenVirtualizationEnabled))
+    print(
+        'TokenHasRestrictions:',
+        win32security.GetTokenInformation(
+            th,
+            win32security.TokenHasRestrictions))
+    print(
+        'TokenMandatoryPolicy',
+        win32security.GetTokenInformation(
+            th,
+            win32security.TokenMandatoryPolicy))
+    print(
+        'TokenVirtualizationAllowed:',
+        win32security.GetTokenInformation(
+            th,
+            win32security.TokenVirtualizationAllowed))
+    print(
+        'TokenVirtualizationEnabled:',
+        win32security.GetTokenInformation(
+            th,
+            win32security.TokenVirtualizationEnabled))
 
     elevation_type = win32security.GetTokenInformation(
         th, win32security.TokenElevationType)
-    print('TokenElevationType:', elevation_type, TOKEN_ELEVATION_TYPE.lookup_name(elevation_type))
+    print('TokenElevationType:', elevation_type,
+          TOKEN_ELEVATION_TYPE.lookup_name(elevation_type))
     if elevation_type != win32security.TokenElevationTypeDefault:
         lt = win32security.GetTokenInformation(
             th, win32security.TokenLinkedToken)

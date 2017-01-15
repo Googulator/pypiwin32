@@ -53,8 +53,11 @@ class SyntEditView(SyntEditViewParent):
 
         self.HookMessage(self.OnRClick, win32con.WM_RBUTTONDOWN)
 
-        for id in [win32ui.ID_VIEW_FOLD_COLLAPSE, win32ui.ID_VIEW_FOLD_COLLAPSE_ALL,
-                   win32ui.ID_VIEW_FOLD_EXPAND, win32ui.ID_VIEW_FOLD_EXPAND_ALL]:
+        for id in [
+            win32ui.ID_VIEW_FOLD_COLLAPSE,
+            win32ui.ID_VIEW_FOLD_COLLAPSE_ALL,
+            win32ui.ID_VIEW_FOLD_EXPAND,
+            win32ui.ID_VIEW_FOLD_EXPAND_ALL]:
 
             self.HookCommand(self.OnCmdViewFold, id)
             self.HookCommandUpdate(self.OnUpdateViewFold, id)
@@ -505,8 +508,8 @@ class SyntEditView(SyntEditViewParent):
                 is_header = level & scintillacon.SC_FOLDLEVELHEADERFLAG
     #			print lineSeek, level_no, is_header
                 if level_no == 0 and is_header:
-                    if (expanding and not self.SCIGetFoldExpanded(lineSeek)) or \
-                            (not expanding and self.SCIGetFoldExpanded(lineSeek)):
+                    if (expanding and not self.SCIGetFoldExpanded(lineSeek)) or (
+                                not expanding and self.SCIGetFoldExpanded(lineSeek)):
                         self.SCIToggleFold(lineSeek)
         finally:
             win32ui.DoWaitCursor(-1)

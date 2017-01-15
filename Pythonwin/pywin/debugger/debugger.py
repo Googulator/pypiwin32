@@ -8,23 +8,23 @@
 # >>> import pywin.debugger
 # >>> pywin.debugger.GetDebugger().run("command")
 
-import pdb
 import bdb
-import sys
-import string
 import os
+import pdb
+import string
+import sys
+import traceback
 import types
 
-import win32ui
+import commctrl
+import pywin.docking.DockingBar
 import win32api
 import win32con
-import pywin.docking.DockingBar
-from pywin.mfc import dialog, object, afxres, window
+import win32ui
 from pywin.framework import app, interact, editor, scriptutils
 from pywin.framework.editor.color.coloreditor import MARKER_CURRENT, MARKER_BREAKPOINT
+from pywin.mfc import afxres, window
 from pywin.tools import browser, hierlist
-import commctrl
-import traceback
 
 #import win32traceutil
 if win32ui.UNICODE:
@@ -1114,5 +1114,11 @@ class Debugger(debugger_parent):
             # Can't find the source file - linecache may have it?
             import linecache
             line = linecache.getline(filename, lineno)
-            print("%s(%d): %s" % (os.path.basename(filename), lineno, line[:-1].expandtabs(4)))
+            print(
+                "%s(%d): %s" %
+                (os.path.basename(filename),
+                 lineno,
+                 line[
+                 :-
+                 1].expandtabs(4)))
             return 0

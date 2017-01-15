@@ -1,10 +1,9 @@
-from win32com import storagecon
+import unittest
+
 import pythoncom
-import os
 import win32api
 import win32com.test.util
-
-import unittest
+from win32com import storagecon
 
 
 class TestEnum(win32com.test.util.TestCase):
@@ -24,10 +23,11 @@ class TestEnum(win32com.test.util.TestCase):
 
         # FMTID_SummaryInformation FMTID_DocSummaryInformation
         # FMTID_UserDefinedProperties
-        psuser = pss.Create(pythoncom.FMTID_UserDefinedProperties,
-                            pythoncom.IID_IPropertySetStorage,
-                            storagecon.PROPSETFLAG_DEFAULT,
-                            storagecon.STGM_READWRITE | storagecon.STGM_CREATE | storagecon.STGM_SHARE_EXCLUSIVE)  # its very picky about flag combinations!
+        psuser = pss.Create(
+            pythoncom.FMTID_UserDefinedProperties,
+            pythoncom.IID_IPropertySetStorage,
+            storagecon.PROPSETFLAG_DEFAULT,
+            storagecon.STGM_READWRITE | storagecon.STGM_CREATE | storagecon.STGM_SHARE_EXCLUSIVE)  # its very picky about flag combinations!
         psuser.WriteMultiple((3, 4), ('hey', 'bubba'))
         psuser.WritePropertyNames((3, 4), ('property3', 'property4'))
         expected_summaries = []
@@ -35,10 +35,11 @@ class TestEnum(win32com.test.util.TestCase):
         expected_summaries.append(('property4', 4, pythoncom.VT_BSTR))
         psuser = None
 
-        pssum = pss.Create(pythoncom.FMTID_SummaryInformation,
-                           pythoncom.IID_IPropertySetStorage,
-                           storagecon.PROPSETFLAG_DEFAULT,
-                           storagecon.STGM_READWRITE | storagecon.STGM_CREATE | storagecon.STGM_SHARE_EXCLUSIVE)
+        pssum = pss.Create(
+            pythoncom.FMTID_SummaryInformation,
+            pythoncom.IID_IPropertySetStorage,
+            storagecon.PROPSETFLAG_DEFAULT,
+            storagecon.STGM_READWRITE | storagecon.STGM_CREATE | storagecon.STGM_SHARE_EXCLUSIVE)
         pssum.WriteMultiple(
             (storagecon.PIDSI_AUTHOR, storagecon.PIDSI_COMMENTS), ('me', 'comment'))
 

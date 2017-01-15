@@ -4,16 +4,16 @@
 #
 # We also grab the FileOpen command, to invoke our Python editor
 " The PythonWin application code. Manages most aspects of MDI, etc "
-import win32con
-import win32api
-import win32ui
-import sys
-import string
 import os
+import sys
+import traceback
+
+import regutil
+import win32api
+import win32con
+import win32ui
 from pywin.mfc import window, dialog, afxres
 from pywin.mfc.thread import WinApp
-import traceback
-import regutil
 
 from . import scriptutils
 
@@ -451,7 +451,8 @@ def CreateDefaultGUI(appClass=None):
     """Creates a default GUI environment
     """
     if appClass is None:
-        from . import intpyapp  # Bring in the default app - could be param'd later.
+        # Bring in the default app - could be param'd later.
+        from . import intpyapp
         appClass = intpyapp.InteractivePythonApp
     # Create and init the app.
     appClass().InitInstance()

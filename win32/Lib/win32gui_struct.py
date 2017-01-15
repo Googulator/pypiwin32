@@ -27,13 +27,14 @@
 # win32gui (ie, the Pack* functions) - but doesn't make as much sense for
 # the Unpack* functions, where the aim is user convenience.
 
-import sys
-import win32gui
-import win32con
-import struct
 import array
+import struct
+import sys
+
 import commctrl
 import pywintypes
+import win32con
+import win32gui
 
 is64bit = "64 bit" in sys.version
 
@@ -114,8 +115,11 @@ def UnpackNMITEMACTIVATE(lparam):
     else:
         format = format + "iiiiiiiP"
     buf = win32gui.PyMakeBuffer(struct.calcsize(format), lparam)
-    return _MakeResult("NMITEMACTIVATE hwndFrom idFrom code iItem iSubItem uNewState uOldState uChanged actionx actiony lParam",
-                       struct.unpack(format, buf))
+    return _MakeResult(
+        "NMITEMACTIVATE hwndFrom idFrom code iItem iSubItem uNewState uOldState uChanged actionx actiony lParam",
+        struct.unpack(
+            format,
+            buf))
 
 # MENUITEMINFO struct
 # http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/WinUI/WindowsUserInterface/Resources/Menus/MenuReference/MenuStructures/MENUITEMINFO.asp
@@ -241,10 +245,18 @@ def UnpackMENUITEMINFO(s):
         text = win32gui.PyGetString(lptext, cch)
     else:
         text = None
-    return _MakeResult("MENUITEMINFO fType fState wID hSubMenu hbmpChecked "
-                       "hbmpUnchecked dwItemData text hbmpItem",
-                       (fType, fState, wID, hSubMenu, hbmpChecked, hbmpUnchecked,
-                        dwItemData, text, hbmpItem))
+    return _MakeResult(
+        "MENUITEMINFO fType fState wID hSubMenu hbmpChecked "
+        "hbmpUnchecked dwItemData text hbmpItem",
+        (fType,
+         fState,
+         wID,
+         hSubMenu,
+         hbmpChecked,
+         hbmpUnchecked,
+         dwItemData,
+         text,
+         hbmpItem))
 
 
 def EmptyMENUITEMINFO(mask=None, text_buf_size=512):
@@ -342,8 +354,13 @@ def UnpackMENUINFO(s):
         dwContextHelpID = None
     if fMask & win32con.MIM_MENUDATA == 0:
         dwMenuData = None
-    return _MakeResult("MENUINFO dwStyle cyMax hbrBack dwContextHelpID dwMenuData",
-                       (dwStyle, cyMax, hbrBack, dwContextHelpID, dwMenuData))
+    return _MakeResult(
+        "MENUINFO dwStyle cyMax hbrBack dwContextHelpID dwMenuData",
+        (dwStyle,
+         cyMax,
+         hbrBack,
+         dwContextHelpID,
+         dwMenuData))
 
 
 def EmptyMENUINFO(mask=None):
@@ -474,10 +491,17 @@ def UnpackTVITEM(buffer):
         text = win32gui.PyGetString(item_textptr)
     else:
         text = None
-    return _MakeResult("TVITEM item_hItem item_state item_stateMask "
-                       "text item_image item_selimage item_cChildren item_param",
-                       (item_hItem, item_state, item_stateMask, text,
-                        item_image, item_selimage, item_cChildren, item_param))
+    return _MakeResult(
+        "TVITEM item_hItem item_state item_stateMask "
+        "text item_image item_selimage item_cChildren item_param",
+        (item_hItem,
+         item_state,
+         item_stateMask,
+         text,
+         item_image,
+         item_selimage,
+         item_cChildren,
+         item_param))
 
 # Unpack the lparm from a "TVNOTIFY" message
 

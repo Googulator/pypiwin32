@@ -5,23 +5,23 @@
 # than our own.
 # XXX - sadly, it doesn't work quite like the original sample.  Oh well,
 # another day...
-import sys
 import os
 import pickle
 import random
-import win32api
-import winxpgui as win32gui  # the needs vista, let alone xp!
-import win32con
-import winerror
+import sys
+
 import commctrl
 import pythoncom
-from win32com.util import IIDToInterfaceName
-from win32com.server.exception import COMException
-from win32com.server.util import wrap as _wrap
-from win32com.server.util import NewEnum as _NewEnum
-from win32com.shell import shell, shellcon
+import win32api
+import win32con
+import winerror
+import winxpgui as win32gui  # the needs vista, let alone xp!
 from win32com.axcontrol import axcontrol  # IObjectWithSite
 from win32com.propsys import propsys
+from win32com.server.exception import COMException
+from win32com.server.util import NewEnum as _NewEnum
+from win32com.server.util import wrap as _wrap
+from win32com.shell import shell, shellcon
 
 GUID = pythoncom.MakeIID
 
@@ -801,13 +801,16 @@ def DllRegisterServer():
         sys.exit(1)
 
     key = winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE,
-                            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\"
-                            "Explorer\\Desktop\\Namespace\\" +
-                            ShellFolder._reg_clsid_)
+                           "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\"
+                           "Explorer\\Desktop\\Namespace\\" +
+                           ShellFolder._reg_clsid_)
     winreg.SetValueEx(key, None, 0, winreg.REG_SZ, ShellFolder._reg_desc_)
     # And special shell keys under our CLSID
-    key = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT,
-                            "CLSID\\" + ShellFolder._reg_clsid_ + "\\ShellFolder")
+    key = winreg.CreateKey(
+        winreg.HKEY_CLASSES_ROOT,
+        "CLSID\\" +
+        ShellFolder._reg_clsid_ +
+        "\\ShellFolder")
     # 'Attributes' is an int stored as a binary! use struct
     attr = shellcon.SFGAO_FOLDER | shellcon.SFGAO_HASSUBFOLDER | \
         shellcon.SFGAO_BROWSABLE
@@ -828,9 +831,9 @@ def DllUnregisterServer():
     paths = [
         "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\Namespace\\" +
         ShellFolder._reg_clsid_,
-        "%s\\shellex\\ContextMenuHandlers\\%s" % (
-            ContextMenu._context_menu_type_,
-            ContextMenu._reg_desc_),
+        "%s\\shellex\\ContextMenuHandlers\\%s" %
+        (ContextMenu._context_menu_type_,
+         ContextMenu._reg_desc_),
     ]
     for path in paths:
         try:

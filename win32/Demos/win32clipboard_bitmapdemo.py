@@ -1,8 +1,7 @@
-import win32gui
 import win32api
 import win32clipboard
 import win32con
-import time
+import win32gui
 
 
 class ViewerWindow:
@@ -29,9 +28,15 @@ class ViewerWindow:
                 win32gui.SelectObject(dc, hf)
                 win32gui.SetBkMode(dc, win32con.TRANSPARENT)
                 win32gui.SetTextColor(dc, win32api.RGB(0, 0, 0))
-                win32gui.DrawText(dc, 'No bitmaps are in the clipboard\n(try pressing the PrtScn button)', -1,
-                                  (0, 0, wndwidth, wndheight),
-                                  win32con.DT_CENTER)
+                win32gui.DrawText(
+                    dc,
+                    'No bitmaps are in the clipboard\n(try pressing the PrtScn button)',
+                    -1,
+                    (0,
+                     0,
+                     wndwidth,
+                     wndheight),
+                    win32con.DT_CENTER)
             else:
                 bminfo = win32gui.GetObject(hbitmap)
                 dcDC = win32gui.CreateCompatibleDC(None)
@@ -87,9 +92,19 @@ class ViewerWindow:
         wc.hbrBackground = win32con.COLOR_WINDOW + 1
         wc.lpfnWndProc = wndproc
         class_atom = win32gui.RegisterClass(wc)
-        hwnd = win32gui.CreateWindowEx(0, class_atom, 'ClipboardViewer',
-                                       win32con.WS_CAPTION | win32con.WS_VISIBLE | win32con.WS_THICKFRAME | win32con.WS_SYSMENU,
-                                       100, 100, 900, 900, 0, 0, 0, None)
+        hwnd = win32gui.CreateWindowEx(
+            0,
+            class_atom,
+            'ClipboardViewer',
+            win32con.WS_CAPTION | win32con.WS_VISIBLE | win32con.WS_THICKFRAME | win32con.WS_SYSMENU,
+            100,
+            100,
+            900,
+            900,
+            0,
+            0,
+            0,
+            None)
         win32clipboard.SetClipboardViewer(hwnd)
         win32gui.PumpMessages()
         win32gui.UnregisterClass(class_atom, None)

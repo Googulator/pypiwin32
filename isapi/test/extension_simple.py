@@ -6,15 +6,9 @@
 # This will execute the method 'test1' below.  See below for the list of
 # test methods that are acceptable.
 
-from isapi import isapicon, threaded_extension, ExtensionError
-from isapi.simple import SimpleFilter
-import traceback
-import urllib.request, urllib.parse, urllib.error
-import winerror
-
-# If we have no console (eg, am running from inside IIS), redirect output
-# somewhere useful - in this case, the standard win32 trace collector.
 import win32api
+
+from isapi import threaded_extension, ExtensionError
 try:
     win32api.GetConsoleTitle()
 except win32api.error:
@@ -41,7 +35,11 @@ class Extension(threaded_extension.ThreadPoolExtension):
             return
         ecb.SendResponseHeaders("200 OK", "Content-type: text/html\r\n\r\n",
                                 False)
-        print("<HTML><BODY>Finished running test <i>", test_name, "</i>", file=ecb)
+        print(
+            "<HTML><BODY>Finished running test <i>",
+            test_name,
+            "</i>",
+            file=ecb)
         print("<pre>", file=ecb)
         print(result, file=ecb)
         print("</pre>", file=ecb)

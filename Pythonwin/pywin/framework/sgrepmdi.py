@@ -18,16 +18,15 @@
 # Hats off to Mark Hammond for providing an environment where I could cobble
 # something like this together in a couple evenings!
 
-import win32ui
-import win32api
-from pywin.mfc import docview, dialog, window
-import win32con
-import string
-import re
 import glob
 import os
-import stat
-import glob
+import re
+
+import win32api
+import win32con
+import win32ui
+from pywin.mfc import docview, dialog, window
+
 from . import scriptutils
 
 
@@ -336,8 +335,7 @@ class GrepDocument(docview.RichEditDoc):
 
     def GetParams(self):
         return self.dirpattern + '\t' + self.filpattern + '\t' + self.greppattern + '\t' + \
-            repr(self.casesensitive) + '\t' + \
-            repr(self.recurse) + '\t' + repr(self.verbose)
+               repr(self.casesensitive) + '\t' + repr(self.recurse) + '\t' + repr(self.verbose)
 
     def OnSaveDocument(self, filename):
         #		print 'OnSaveDocument() filename=',filename

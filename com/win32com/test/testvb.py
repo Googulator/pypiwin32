@@ -4,16 +4,16 @@
 #
 
 import sys
-import winerror
+import traceback
+
 import pythoncom
 import win32com.client
 import win32com.client.dynamic
 import win32com.client.gencache
-from win32com.server.util import NewCollection, wrap
-from win32com.test import util
+import winerror
 from pywin32_testutil import str2memory
-
-import traceback
+from win32com.server.util import wrap
+from win32com.test import util
 
 # for debugging
 useDispatcher = None
@@ -27,12 +27,16 @@ error = RuntimeError
 
 
 class TestObject:
-    _public_methods_ = ["CallbackVoidOneByRef", "CallbackResultOneByRef", "CallbackVoidTwoByRef",
-                        "CallbackString", "CallbackResultOneByRefButReturnNone",
-                        "CallbackVoidOneByRefButReturnNone",
-                        "CallbackArrayResult", "CallbackArrayResultOneArrayByRef",
-                        "CallbackArrayResultWrongSize"
-                        ]
+    _public_methods_ = [
+        "CallbackVoidOneByRef",
+        "CallbackResultOneByRef",
+        "CallbackVoidTwoByRef",
+        "CallbackString",
+        "CallbackResultOneByRefButReturnNone",
+        "CallbackVoidOneByRefButReturnNone",
+        "CallbackArrayResult",
+        "CallbackArrayResultOneArrayByRef",
+        "CallbackArrayResultWrongSize"]
 
     def CallbackVoidOneByRef(self, intVal):
         return intVal + 1

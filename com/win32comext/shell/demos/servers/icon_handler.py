@@ -6,17 +6,15 @@
 # * Execute this script to register the context menu.
 # * Open Windows Explorer, and browse to a directory with a .py file.
 # * Note the pretty, random selection of icons!
-import sys
-import os
-import pythoncom
-from win32com.shell import shell, shellcon
-import win32gui
-import win32con
-import winerror
-
-# Use glob to locate ico files, and random.choice to pick one.
 import glob
+import os
 import random
+import sys
+
+import pythoncom
+import winerror
+from win32com.shell import shell
+
 ico_files = glob.glob(os.path.join(sys.prefix, "*.ico"))
 if not ico_files:
     ico_files = glob.glob(os.path.join(sys.prefix, "PC", "*.ico"))
@@ -51,7 +49,7 @@ class ShellExtension:
 def DllRegisterServer():
     import winreg
     key = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT,
-                            "Python.File\\shellex")
+                           "Python.File\\shellex")
     subkey = winreg.CreateKey(key, "IconHandler")
     winreg.SetValueEx(
         subkey,
@@ -66,7 +64,7 @@ def DllUnregisterServer():
     import winreg
     try:
         key = winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT,
-                                "Python.File\\shellex\\IconHandler")
+                               "Python.File\\shellex\\IconHandler")
     except WindowsError as details:
         import errno
         if details.errno != errno.ENOENT:

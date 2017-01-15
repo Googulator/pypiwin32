@@ -2,13 +2,14 @@
 #
 # This connects to a CE device, and interacts with it.
 
-import wincerapi
-import win32event
-import win32api
-import win32con
+import getopt
 import os
 import sys
-import getopt
+
+import win32api
+import win32con
+import win32event
+import wincerapi
 
 
 def DumpPythonRegistry():
@@ -107,7 +108,9 @@ def DumpRemoteMachineStatus():
         batPerc = "unknown"
     else:
         batPerc = BatteryLifePercent
-    print("The batteries are at %s%%, and is currently being powered by %s" % (batPerc, power))
+    print(
+        "The batteries are at %s%%, and is currently being powered by %s" %
+        (batPerc, power))
 
     memLoad, totalPhys, availPhys, totalPage, availPage, totalVirt, availVirt = \
         wincerapi.CeGlobalMemoryStatus()
@@ -204,13 +207,15 @@ def main():
                 # We connected.
                 break
             else:
-                print("Waiting for Initialize to complete (picture a Cancel button here :)")
+                print(
+                    "Waiting for Initialize to complete (picture a Cancel button here :)")
     else:
         wincerapi.CeRapiInit()
     print("Connected to remote CE device.")
     try:
         verinfo = wincerapi.CeGetVersionEx()
-        print("The device is running windows CE version %d.%d - %s" % (verinfo[0], verinfo[1], verinfo[4]))
+        print("The device is running windows CE version %d.%d - %s" %
+              (verinfo[0], verinfo[1], verinfo[4]))
 
         if bDumpStatus:
             print("Dumping remote machine status")

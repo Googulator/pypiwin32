@@ -66,11 +66,12 @@ Examples:
 
 """
 
-import sys
 import os
+import sys
+
 import pythoncom
-from win32com.client import genpy, selecttlb, gencache
 from win32com.client import Dispatch
+from win32com.client import genpy, selecttlb, gencache
 
 # Default value of bForDemand - toggle this to change the world - see also
 # gencache.py
@@ -109,10 +110,12 @@ def ShowInfo(spec):
             else:
                 desc = tlb.GetDocumentation(-1)[0]
         print(desc)
-        print(" %s, lcid=%s, major=%s, minor=%s" % (tlbSpec.clsid, tlbSpec.lcid, tlbSpec.major, tlbSpec.minor))
+        print(" %s, lcid=%s, major=%s, minor=%s" %
+              (tlbSpec.clsid, tlbSpec.lcid, tlbSpec.major, tlbSpec.minor))
         print(" >>> # Use these commands in Python code to auto generate .py support")
         print(" >>> from win32com.client import gencache")
-        print(" >>> gencache.EnsureModule('%s', %s, %s, %s)" % (tlbSpec.clsid, tlbSpec.lcid, tlbSpec.major, tlbSpec.minor))
+        print(" >>> gencache.EnsureModule('%s', %s, %s, %s)" %
+              (tlbSpec.clsid, tlbSpec.lcid, tlbSpec.major, tlbSpec.minor))
 
 
 class SimpleProgress(genpy.GeneratorProgress):
@@ -151,8 +154,6 @@ class GUIProgress(SimpleProgress):
 
     def __init__(self, verboseLevel):
         # Import some modules we need to we can trap failure now.
-        import win32ui
-        import pywin
         SimpleProgress.__init__(self, verboseLevel)
         self.dialog = None
 
@@ -233,8 +234,14 @@ def GetTypeLibsForSpec(arg):
         sys.exit(1)
 
 
-def GenerateFromTypeLibSpec(typelibInfo, file=None, verboseLevel=None, progressInstance=None,
-                            bUnicodeToString=None, bForDemand=bForDemandDefault, bBuildHidden=1):
+def GenerateFromTypeLibSpec(
+        typelibInfo,
+        file=None,
+        verboseLevel=None,
+        progressInstance=None,
+        bUnicodeToString=None,
+        bForDemand=bForDemandDefault,
+        bBuildHidden=1):
     assert bUnicodeToString is None, "this is deprecated and will go away"
     if verboseLevel is None:
         verboseLevel = 0  # By default, we use no gui and no verbose level!
@@ -330,7 +337,11 @@ def GenerateFromTypeLibSpec(typelibInfo, file=None, verboseLevel=None, progressI
 
 
 def GenerateChildFromTypeLibSpec(
-        child, typelibInfo, verboseLevel=None, progressInstance=None, bUnicodeToString=None):
+        child,
+        typelibInfo,
+        verboseLevel=None,
+        progressInstance=None,
+        bUnicodeToString=None):
     assert bUnicodeToString is None, "this is deprecated and will go away"
     if verboseLevel is None:
         # By default, we use no gui, and no verbose level for the children.

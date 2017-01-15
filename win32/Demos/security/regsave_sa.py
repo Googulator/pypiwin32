@@ -1,24 +1,34 @@
 fname = 'h:\\tmp.reg'
 
+import os
+
+import ntsecuritycon
+import pywintypes
 import win32api
 import win32con
 import win32security
-import ntsecuritycon
-import pywintypes
-import os
+
 # regsave will not overwrite a file
 if os.path.isfile(fname):
     os.remove(fname)
 
-new_privs = ((win32security.LookupPrivilegeValue('', ntsecuritycon.SE_SECURITY_NAME), win32con.SE_PRIVILEGE_ENABLED),
-             (win32security.LookupPrivilegeValue(
-                 '', ntsecuritycon.SE_TCB_NAME), win32con.SE_PRIVILEGE_ENABLED),
-             (win32security.LookupPrivilegeValue(
-                 '', ntsecuritycon.SE_BACKUP_NAME), win32con.SE_PRIVILEGE_ENABLED),
-             (win32security.LookupPrivilegeValue(
-                 '', ntsecuritycon.SE_RESTORE_NAME), win32con.SE_PRIVILEGE_ENABLED)
-
-             )
+new_privs = (
+    (win32security.LookupPrivilegeValue(
+        '',
+        ntsecuritycon.SE_SECURITY_NAME),
+     win32con.SE_PRIVILEGE_ENABLED),
+    (win32security.LookupPrivilegeValue(
+        '',
+        ntsecuritycon.SE_TCB_NAME),
+     win32con.SE_PRIVILEGE_ENABLED),
+    (win32security.LookupPrivilegeValue(
+        '',
+        ntsecuritycon.SE_BACKUP_NAME),
+     win32con.SE_PRIVILEGE_ENABLED),
+    (win32security.LookupPrivilegeValue(
+        '',
+        ntsecuritycon.SE_RESTORE_NAME),
+     win32con.SE_PRIVILEGE_ENABLED))
 ph = win32api.GetCurrentProcess()
 th = win32security.OpenProcessToken(
     ph, win32security.TOKEN_ALL_ACCESS | win32con.TOKEN_ADJUST_PRIVILEGES)

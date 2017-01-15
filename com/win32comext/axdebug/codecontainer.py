@@ -4,15 +4,15 @@ A code container is a class which holds source code for a debugger.  It knows ho
 to color the text, and also how to translate lines into offsets, and back.
 """
 
-import sys
-from win32com.axdebug import axdebug
 import tokenize
-from .util import RaiseNotImpl, _wrap
 
-from win32com.server.exception import Exception
 import win32api
 import winerror
+from win32com.axdebug import axdebug
+from win32com.server.exception import Exception
+
 from . import contexts
+from .util import _wrap
 
 _keywords = {}                          # set of Python keywords
 for name in """
@@ -164,8 +164,14 @@ class SourceCodeContainer:
 
     # We also provide and manage DebugDocumentContext objects
     def _MakeDebugCodeContext(self, lineNo, charPos, len):
-        return _wrap(contexts.DebugCodeContext(lineNo, charPos, len,
-                                               self, self.site), axdebug.IID_IDebugCodeContext)
+        return _wrap(
+            contexts.DebugCodeContext(
+                lineNo,
+                charPos,
+                len,
+                self,
+                self.site),
+            axdebug.IID_IDebugCodeContext)
     # Make a context at the given position.  It should take up the entire
     # context.
 

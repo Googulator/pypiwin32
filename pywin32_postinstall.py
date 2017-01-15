@@ -2,15 +2,14 @@
 #
 # copies PyWinTypesxx.dll and PythonCOMxx.dll into the system directory,
 # and creates a pth file
-import os
-import sys
 import glob
+import os
 import shutil
+import sys
+import tempfile
 import time
 import winreg as winreg
 
-# Send output somewhere so it can be found if necessary...
-import tempfile
 tee_f = open(
     os.path.join(
         tempfile.gettempdir(),
@@ -198,7 +197,9 @@ def SetPyKeyVal(key_name, value_name, value):
     finally:
         root_key.Close()
     if verbose:
-        print("-> %s\\%s[%s]=%r" % (root_key_name, key_name, value_name, value))
+        print(
+            "-> %s\\%s[%s]=%r" %
+            (root_key_name, key_name, value_name, value))
 
 
 def RegisterCOMObjects(register=1):
@@ -285,8 +286,10 @@ def get_shortcuts_folder():
         fldr = get_special_folder_path("CSIDL_PROGRAMS")
 
     try:
-        install_group = winreg.QueryValue(get_root_hkey(),
-                                          root_key_name + "\\InstallPath\\InstallGroup")
+        install_group = winreg.QueryValue(
+            get_root_hkey(),
+            root_key_name +
+            "\\InstallPath\\InstallGroup")
     except OSError:
         vi = sys.version_info
         install_group = "Python %d.%d" % (vi[0], vi[1])
@@ -327,7 +330,9 @@ def fixup_dbi():
         if os.path.isfile(this_pyd) and os.path.isfile(py_name):
             try:
                 if os.path.isfile(this_dest):
-                    print("Old dbi '%s' already exists - deleting '%s'" % (this_dest, this_pyd))
+                    print(
+                        "Old dbi '%s' already exists - deleting '%s'" %
+                        (this_dest, this_pyd))
                     os.remove(this_pyd)
                 else:
                     os.rename(this_pyd, this_dest)
@@ -444,7 +449,7 @@ def install():
         SetPyKeyVal("Help", None, None)
         SetPyKeyVal("Help\\Pythonwin Reference", None, chm_file)
     else:
-        print("NOTE: PyWin32.chm can not be located, so has not " \
+        print("NOTE: PyWin32.chm can not be located, so has not "
               "been registered")
 
     # misc other fixups.

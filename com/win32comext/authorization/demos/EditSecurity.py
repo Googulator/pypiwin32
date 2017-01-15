@@ -1,31 +1,34 @@
 import os
 import win32com.server.policy
 import win32security
-import ntsecuritycon
 import win32con
 import pythoncom
 import win32api
 from win32com.authorization import authorization
 
-from ntsecuritycon import FILE_READ_ATTRIBUTES, FILE_READ_DATA, FILE_READ_EA, SYNCHRONIZE,\
+from ntsecuritycon import FILE_READ_DATA, FILE_READ_EA, SYNCHRONIZE, \
     STANDARD_RIGHTS_READ, STANDARD_RIGHTS_WRITE, STANDARD_RIGHTS_EXECUTE, FILE_APPEND_DATA, \
-    FILE_WRITE_ATTRIBUTES, FILE_WRITE_DATA, FILE_WRITE_EA, WRITE_OWNER, WRITE_DAC, READ_CONTROL, \
-    SI_ADVANCED, SI_EDIT_AUDITS, SI_EDIT_PROPERTIES, SI_EDIT_ALL, SI_PAGE_TITLE, SI_RESET, \
-    SI_ACCESS_SPECIFIC, SI_ACCESS_GENERAL, SI_ACCESS_CONTAINER, SI_ACCESS_PROPERTY, \
-    FILE_ALL_ACCESS, FILE_GENERIC_READ, FILE_GENERIC_WRITE, FILE_GENERIC_EXECUTE, \
+    FILE_WRITE_DATA, WRITE_OWNER, WRITE_DAC, READ_CONTROL, \
+    SI_ADVANCED, SI_EDIT_AUDITS, SI_EDIT_ALL, SI_PAGE_TITLE, SI_RESET, \
+    SI_ACCESS_SPECIFIC, SI_ACCESS_GENERAL, SI_ACCESS_CONTAINER, FILE_ALL_ACCESS, FILE_GENERIC_READ, FILE_GENERIC_WRITE, \
+    FILE_GENERIC_EXECUTE, \
     OBJECT_INHERIT_ACE, CONTAINER_INHERIT_ACE, INHERIT_ONLY_ACE, \
-    SI_PAGE_PERM, SI_PAGE_ADVPERM, SI_PAGE_AUDIT, SI_PAGE_OWNER, PSPCB_SI_INITDIALOG, \
-    SI_CONTAINER
+    SI_PAGE_AUDIT, SI_CONTAINER
 from win32security import OBJECT_INHERIT_ACE, CONTAINER_INHERIT_ACE, INHERIT_ONLY_ACE
 # Msg parameter to PropertySheetPageCallback
-from win32com.shell.shellcon import PSPCB_RELEASE, PSPCB_CREATE
 from pythoncom import IID_NULL
 
 
 class SecurityInformation(win32com.server.policy.DesignatedWrapPolicy):
     _com_interfaces_ = [authorization.IID_ISecurityInformation]
-    _public_methods_ = ['GetObjectInformation', 'GetSecurity', 'SetSecurity', 'GetAccessRights',
-                        'GetInheritTypes', 'MapGeneric', 'PropertySheetPageCallback']
+    _public_methods_ = [
+        'GetObjectInformation',
+        'GetSecurity',
+        'SetSecurity',
+        'GetAccessRights',
+        'GetInheritTypes',
+        'MapGeneric',
+        'PropertySheetPageCallback']
 
     def __init__(self, FileName):
         self.FileName = FileName
@@ -68,8 +71,14 @@ class SecurityInformation(win32com.server.policy.DesignatedWrapPolicy):
         group = sd.GetSecurityDescriptorGroup()
         dacl = sd.GetSecurityDescriptorDacl()
         sacl = sd.GetSecurityDescriptorSacl()
-        win32security.SetNamedSecurityInfo(self.FileName, win32security.SE_FILE_OBJECT, requestedinfo,
-                                           owner, group, dacl, sacl)
+        win32security.SetNamedSecurityInfo(
+            self.FileName,
+            win32security.SE_FILE_OBJECT,
+            requestedinfo,
+            owner,
+            group,
+            dacl,
+            sacl)
         # should also handle recursive operations here
 
     def GetAccessRights(self, objecttype, flags):
@@ -93,22 +102,39 @@ class SecurityInformation(win32com.server.policy.DesignatedWrapPolicy):
             file_append_data_desc = 'Append data'
             file_write_data_desc = 'Write data'
 
-        accessrights = [(IID_NULL, FILE_GENERIC_READ, 'Generic read', SI_ACCESS_GENERAL | SI_ACCESS_SPECIFIC | OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
-                        (IID_NULL, FILE_GENERIC_WRITE, 'Generic write', SI_ACCESS_GENERAL |
-                         SI_ACCESS_SPECIFIC | OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
-                        (IID_NULL, win32con.DELETE, 'Delete', SI_ACCESS_SPECIFIC |
-                         OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
-                        (IID_NULL, WRITE_OWNER, 'Change owner', SI_ACCESS_SPECIFIC |
-                         OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
-                        (IID_NULL, READ_CONTROL, 'Read Permissions', SI_ACCESS_SPECIFIC |
-                         OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
-                        (IID_NULL, WRITE_DAC, 'Change permissions', SI_ACCESS_SPECIFIC |
-                         OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
-                        (IID_NULL, FILE_APPEND_DATA, file_append_data_desc,
-                         SI_ACCESS_SPECIFIC | OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
-                        (IID_NULL, FILE_WRITE_DATA, file_write_data_desc,
-                         SI_ACCESS_SPECIFIC | OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE)
-                        ]
+        accessrights = [
+            (IID_NULL,
+             FILE_GENERIC_READ,
+             'Generic read',
+             SI_ACCESS_GENERAL | SI_ACCESS_SPECIFIC | OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
+            (IID_NULL,
+             FILE_GENERIC_WRITE,
+             'Generic write',
+             SI_ACCESS_GENERAL | SI_ACCESS_SPECIFIC | OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
+            (IID_NULL,
+             win32con.DELETE,
+             'Delete',
+             SI_ACCESS_SPECIFIC | OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
+            (IID_NULL,
+             WRITE_OWNER,
+             'Change owner',
+             SI_ACCESS_SPECIFIC | OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
+            (IID_NULL,
+             READ_CONTROL,
+             'Read Permissions',
+             SI_ACCESS_SPECIFIC | OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
+            (IID_NULL,
+             WRITE_DAC,
+             'Change permissions',
+             SI_ACCESS_SPECIFIC | OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
+            (IID_NULL,
+             FILE_APPEND_DATA,
+             file_append_data_desc,
+             SI_ACCESS_SPECIFIC | OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE),
+            (IID_NULL,
+             FILE_WRITE_DATA,
+             file_write_data_desc,
+             SI_ACCESS_SPECIFIC | OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE)]
         return (accessrights, 0)
 
     def MapGeneric(self, guid, aceflags, mask):
@@ -116,7 +142,11 @@ class SecurityInformation(win32com.server.policy.DesignatedWrapPolicy):
             but you can map them any way that suits your application.
         """
         return win32security.MapGenericMask(
-            mask, (FILE_GENERIC_READ, FILE_GENERIC_WRITE, FILE_GENERIC_EXECUTE, FILE_ALL_ACCESS))
+            mask,
+            (FILE_GENERIC_READ,
+             FILE_GENERIC_WRITE,
+             FILE_GENERIC_EXECUTE,
+             FILE_ALL_ACCESS))
 
     def GetInheritTypes(self):
         """Specifies which types of ACE inheritance are supported.

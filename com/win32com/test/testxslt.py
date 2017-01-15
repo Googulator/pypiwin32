@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+
 import win32com.test.util
 
 expected_output = "The jscript test worked.\nThe Python test worked"
@@ -17,7 +18,9 @@ class XSLT(win32com.test.util.TestCase):
             try:
                 got = f.read()
                 if got != expected_output:
-                    print("ERROR: XSLT expected output of %r" % (expected_output,))
+                    print(
+                        "ERROR: XSLT expected output of %r" %
+                        (expected_output,))
                     print("but got %r" % (got,))
             finally:
                 f.close()

@@ -125,11 +125,12 @@ if you use it, you accept the risk of using it, etceteras.
 '''
 # Feb 12, 98 - MH added "rawaddcounter" so caller can get exception details.
 
-import win32pdh
-import win32api
-import time
 import _thread
 import copy
+import time
+
+import win32api
+import win32pdh
 
 
 class BaseQuery:
@@ -171,8 +172,9 @@ class BaseQuery:
         self.active = 0
         self.curpaths = []
 
-    def addcounterbybrowsing(
-            self, flags=win32pdh.PERF_DETAIL_WIZARD, windowtitle="Python Browser"):
+    def addcounterbybrowsing(self,
+                             flags=win32pdh.PERF_DETAIL_WIZARD,
+                             windowtitle="Python Browser"):
         '''
         Adds possibly multiple paths to the paths attribute of the query,
         does this by calling the standard counter browsing dialogue.  Within
@@ -390,8 +392,14 @@ class Query(BaseQuery):
             counter=counter,
             machine=machine)
 
-    def addinstcounter(self, object, counter, machine=None,
-                       objtype='Process', volatile=1, format=win32pdh.PDH_FMT_LONG):
+    def addinstcounter(
+            self,
+            object,
+            counter,
+            machine=None,
+            objtype='Process',
+            volatile=1,
+            format=win32pdh.PDH_FMT_LONG):
         '''
         The purpose of using an instcounter is to track particular
         instances of a counter object (e.g. a single processor, a single

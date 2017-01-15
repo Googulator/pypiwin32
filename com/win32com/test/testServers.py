@@ -1,9 +1,9 @@
+import unittest
+
 import pythoncom
 import win32com.client.dynamic
-import sys
-import winerror
 import win32com.test.util
-import unittest
+import winerror
 
 
 def TestConnections():
@@ -21,8 +21,8 @@ class InterpCase(win32com.test.util.TestCase):
 
     def _testInterp(self, interp):
         self.assertEqual(interp.Eval("1+1"), 2)
-        win32com.test.util.assertRaisesCOM_HRESULT(self, winerror.DISP_E_TYPEMISMATCH,
-                                                   interp.Eval, 2)
+        win32com.test.util.assertRaisesCOM_HRESULT(
+            self, winerror.DISP_E_TYPEMISMATCH, interp.Eval, 2)
 
     def testInproc(self):
         interp = win32com.client.dynamic.Dispatch(

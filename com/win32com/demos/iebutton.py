@@ -25,15 +25,11 @@ Contribtions to this sample to make it a little "friendlier" welcome!
 """
 
 # imports section
-import sys
-import os
-from win32com import universal
-from win32com.client import gencache, DispatchWithEvents, Dispatch
-from win32com.client import constants, getevents
-import win32com.server.register
-import win32com
 import pythoncom
 import win32api
+import win32com
+import win32com.server.register
+from win32com.client import gencache
 
 # This demo uses 'print' - use win32traceutil to see it if we have no
 # console.
@@ -43,9 +39,6 @@ except win32api.error:
     import win32traceutil
 
 from win32com.axcontrol import axcontrol
-
-import array
-import struct
 
 # ensure we know the ms internet controls typelib so we have access to
 # IWebBrowser2 later on
@@ -159,7 +152,7 @@ def register(classobj):
             classobj._reg_clsid_)  # reg value for calling COM object
         # CLSID for button that sends command to COM object
         winreg.SetValueEx(hKey, "CLSID", 0, winreg.REG_SZ,
-                           "{1FBA04EE-3024-11D2-8F1F-0000F87ABD16}")
+                          "{1FBA04EE-3024-11D2-8F1F-0000F87ABD16}")
         winreg.SetValueEx(hKey, "Default Visible", 0, winreg.REG_SZ, "Yes")
         winreg.SetValueEx(
             hKey,
@@ -221,6 +214,7 @@ def DllUnregisterServer():
     unregister(PyWin32InternetExplorerButton)
 
 if __name__ == '__main__':
-    win32com.server.register.UseCommandLine(PyWin32InternetExplorerButton,
-                                            finalize_register=DllRegisterServer,
-                                            finalize_unregister=DllUnregisterServer)
+    win32com.server.register.UseCommandLine(
+        PyWin32InternetExplorerButton,
+        finalize_register=DllRegisterServer,
+        finalize_unregister=DllUnregisterServer)

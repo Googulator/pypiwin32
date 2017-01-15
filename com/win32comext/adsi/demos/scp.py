@@ -34,17 +34,18 @@ which will:
 Executing with --test will create and remove one of everything.
 """
 
-from win32com.adsi.adsicon import *
-from win32com.adsi import adsi
-import win32api
-import win32con
-import winerror
-from win32com.client import Dispatch
-import ntsecuritycon as dscon
-import win32security
 import optparse
 import textwrap
 import traceback
+
+import ntsecuritycon as dscon
+import win32api
+import win32con
+import win32security
+import winerror
+from win32com.adsi import adsi
+from win32com.adsi.adsicon import *
+from win32com.client import Dispatch
 
 verbose = 1
 g_createdSCP = None
@@ -397,8 +398,11 @@ def main():
     parser.add_option("-q", "--quiet", action="store_true",
                       help="Don't print any status messages")
 
-    parser.add_option("-t", "--test", action="store_true",
-                      help="Execute a mini-test suite, providing defaults for most options and args"),
+    parser.add_option(
+        "-t",
+        "--test",
+        action="store_true",
+        help="Execute a mini-test suite, providing defaults for most options and args"),
 
     parser.add_option("", "--show-tracebacks", action="store_true",
                       help="Show the tracebacks for any exceptions")
@@ -484,13 +488,11 @@ def main():
     # Patch up account-name.
     if options.account_name:
         log(2, "Translating account name '%s'", options.account_name)
-        options.account_name_sam = win32security.TranslateName(options.account_name,
-                                                               win32api.NameUnknown,
-                                                               win32api.NameSamCompatible)
+        options.account_name_sam = win32security.TranslateName(
+            options.account_name, win32api.NameUnknown, win32api.NameSamCompatible)
         log(2, "NameSamCompatible is '%s'", options.account_name_sam)
-        options.account_name_dn = win32security.TranslateName(options.account_name,
-                                                              win32api.NameUnknown,
-                                                              win32api.NameFullyQualifiedDN)
+        options.account_name_dn = win32security.TranslateName(
+            options.account_name, win32api.NameUnknown, win32api.NameFullyQualifiedDN)
         log(2, "NameFullyQualifiedDNis '%s'", options.account_name_dn)
 
     # do it.

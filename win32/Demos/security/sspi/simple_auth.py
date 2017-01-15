@@ -3,9 +3,9 @@
 # be on different machines (here they are in the same process, but the same
 # concepts apply)
 import sspi
-import win32security
 import sspicon
 import win32api
+import win32security
 
 
 def lookup_ret_code(err):
@@ -44,7 +44,10 @@ while True:
 # The server can now impersonate the client.  In this demo the 2 users will
 # always be the same.
 sspiserver.ctxt.ImpersonateSecurityContext()
-print('Impersonated user: ', win32api.GetUserNameEx(win32api.NameSamCompatible))
+print(
+    'Impersonated user: ',
+    win32api.GetUserNameEx(
+        win32api.NameSamCompatible))
 sspiserver.ctxt.RevertSecurityContext()
 print('Reverted to self: ', win32api.GetUserName())
 

@@ -13,8 +13,8 @@ functions directly.
 """
 # Based on Roger Upole's sspi demos.
 # $Id$
-import win32security
 import sspicon
+import win32security
 
 error = win32security.error
 
@@ -202,9 +202,8 @@ class ServerAuth(_BaseAuth):
 
         self.pkg_info = win32security.QuerySecurityPackageInfo(pkg_name)
 
-        self.credentials, \
-            self.credentials_expiry = win32security.AcquireCredentialsHandle(spn,
-                                                                             self.pkg_info['Name'], sspicon.SECPKG_CRED_INBOUND, None, None)
+        self.credentials, self.credentials_expiry = win32security.AcquireCredentialsHandle(
+            spn, self.pkg_info['Name'], sspicon.SECPKG_CRED_INBOUND, None, None)
         _BaseAuth.__init__(self)
 
     # Perform *one* step of the server authentication process.
@@ -228,9 +227,8 @@ class ServerAuth(_BaseAuth):
         ctxtin = self.ctxt
         if self.ctxt is None:
             self.ctxt = win32security.PyCtxtHandleType()
-        err, attr, exp = win32security.AcceptSecurityContext(self.credentials, ctxtin,
-                                                             sec_buffer_in, self.scflags,
-                                                             self.datarep, self.ctxt, sec_buffer_out)
+        err, attr, exp = win32security.AcceptSecurityContext(
+            self.credentials, ctxtin, sec_buffer_in, self.scflags, self.datarep, self.ctxt, sec_buffer_out)
 
         # Stash these away incase someone needs to know the state from the
         # final call.

@@ -1,16 +1,20 @@
-from win32com.shell import shell, shellcon
-import pythoncom
-import win32api
 import os
 import sys
+
+import pythoncom
+import win32api
+from win32com.shell import shell, shellcon
 
 temp_dir = win32api.GetTempPath()
 linkname = win32api.GetTempFileName(temp_dir, 'cmd')[0]
 os.remove(linkname)
 linkname += '.lnk'
 print('Link name:', linkname)
-ish = pythoncom.CoCreateInstance(shell.CLSID_ShellLink, None,
-                                 pythoncom.CLSCTX_INPROC_SERVER, shell.IID_IShellLink)
+ish = pythoncom.CoCreateInstance(
+    shell.CLSID_ShellLink,
+    None,
+    pythoncom.CLSCTX_INPROC_SERVER,
+    shell.IID_IShellLink)
 ish.SetPath(os.environ['cOMSPEC'])
 ish.SetWorkingDirectory(os.path.split(sys.executable)[0])
 ish.SetDescription('shortcut made by python')

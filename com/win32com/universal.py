@@ -1,7 +1,6 @@
 # Code that packs and unpacks the Univgw structures.
 
 # See if we have a special directory for the binaries (for developers)
-import types
 import pythoncom
 from win32com.client import gencache
 
@@ -28,8 +27,8 @@ def RegisterInterfaces(typelibGUID, lcid, major, minor, interface_names=None):
                 info = tlb.GetTypeInfo(i)
                 doc = tlb.GetDocumentation(i)
                 attr = info.GetTypeAttr()
-                if attr.typekind == pythoncom.TKIND_INTERFACE or \
-                   (attr.typekind == pythoncom.TKIND_DISPATCH and attr.wTypeFlags & pythoncom.TYPEFLAG_FDUAL):
+                if attr.typekind == pythoncom.TKIND_INTERFACE or (
+                                attr.typekind == pythoncom.TKIND_DISPATCH and attr.wTypeFlags & pythoncom.TYPEFLAG_FDUAL):
                     interface_names.append(doc[0])
         for name in interface_names:
             type_info, type_comp = typecomp_lib.BindType(name, )

@@ -1,12 +1,12 @@
 # Regedit - a Registry Editor for Python
-import win32api
-import win32ui
-import win32con
 import commctrl
-from pywin.mfc import window, docview, dialog
-from . import hierlist
 import regutil
-import string
+import win32api
+import win32con
+import win32ui
+from pywin.mfc import window, docview, dialog
+
+from . import hierlist
 
 
 def SafeApply(fn, args, err_desc=""):
@@ -128,8 +128,11 @@ class RegistryTreeView(docview.TreeView):
         id = win32ui.MessageBox(msg, None, win32con.MB_YESNO)
         if id != win32con.IDYES:
             return
-        if SafeApply(win32api.RegDeleteKey, (item.keyRoot,
-                                             item.keyName), "deleting registry key"):
+        if SafeApply(
+                win32api.RegDeleteKey,
+                (item.keyRoot,
+                 item.keyName),
+                "deleting registry key"):
             # Get the items parent.
             try:
                 hparent = self.GetParentItem(hitem)
@@ -155,8 +158,12 @@ class RegistryTreeView(docview.TreeView):
             return  # cancelled.
         hitem = self.hierList.GetSelectedItem()
         item = self.hierList.ItemFromHandle(hitem)
-        if SafeApply(win32api.RegSetValue, (item.keyRoot,
-                                            item.keyName, win32con.REG_SZ, val)):
+        if SafeApply(
+                win32api.RegSetValue,
+                (item.keyRoot,
+                 item.keyName,
+                 win32con.REG_SZ,
+                 val)):
             # Simply re-select the current item to refresh the right spitter.
             self.PerformItemSelected(item)
 #			self.Select(hitem, commctrl.TVGN_CARET)

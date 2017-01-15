@@ -1,10 +1,11 @@
+import getopt
 import sys
+import traceback
+
 import win32api
 import win32net
 import win32netcon
 import win32security
-import getopt
-import traceback
 
 verbose_level = 0
 
@@ -162,7 +163,9 @@ def LocalGroup(uname=None):
         mem, tot, res = win32net.NetLocalGroupGetMembers(server, group, level)
         print("members are", mem)
         if mem[0]['domainandname'] != uname:
-            print("ERROR: LocalGroup just added %s, but members are %r" % (uname, mem))
+            print(
+                "ERROR: LocalGroup just added %s, but members are %r" %
+                (uname, mem))
         # Convert the list of dicts to a list of strings.
         win32net.NetLocalGroupDelMembers(
             server, group, [m['domainandname'] for m in mem])
@@ -209,7 +212,10 @@ def SetComputerInfo():
 
 def usage(tests):
     import os
-    print("Usage: %s [-s server ] [-v] [Test ...]" % os.path.basename(sys.argv[0]))
+    print(
+        "Usage: %s [-s server ] [-v] [Test ...]" %
+        os.path.basename(
+            sys.argv[0]))
     print("  -v : Verbose - print more information")
     print("  -s : server - execute the tests against the named server")
     print("  -c : include the CreateUser test by default")

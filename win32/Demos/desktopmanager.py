@@ -1,15 +1,17 @@
 # Demonstrates using a taskbar icon to create and navigate between desktops
 
+import _thread
+import io
+import time
+import traceback
+
+import pywintypes
 import win32api
 import win32con
 import win32gui
-import win32service
 import win32process
-import pywintypes
-import traceback
-import _thread
-import time
-import io
+import win32service
+
 
 # "Shell_TrayWnd" is class of system tray window, broadcasts "TaskbarCreated" when initialized
 
@@ -84,9 +86,19 @@ def new_icon(hdesk, desktop_name):
     wc.lpfnWndProc = icon_wndproc
     windowclass = win32gui.RegisterClass(wc)
     style = win32con.WS_OVERLAPPED | win32con.WS_SYSMENU
-    hwnd = win32gui.CreateWindow(windowclass, 'dm_' + desktop_name, win32con.WS_SYSMENU,
-                                 0, 0, win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT,
-                                 0, 0, wc.hInstance, None)
+    hwnd = win32gui.CreateWindow(
+        windowclass,
+        'dm_' +
+        desktop_name,
+        win32con.WS_SYSMENU,
+        0,
+        0,
+        win32con.CW_USEDEFAULT,
+        win32con.CW_USEDEFAULT,
+        0,
+        0,
+        wc.hInstance,
+        None)
     win32gui.UpdateWindow(hwnd)
     flags = win32gui.NIF_ICON | win32gui.NIF_MESSAGE | win32gui.NIF_TIP
     notify_info = (
@@ -177,8 +189,14 @@ def icon_wndproc(hwnd, msg, wp, lp):
         win32gui.AppendMenu(m, win32con.MF_STRING, desktop_cnt + 2, 'Exit')
 
         x, y = win32gui.GetCursorPos()
-        d = win32gui.TrackPopupMenu(m, win32con.TPM_LEFTBUTTON | win32con.TPM_RETURNCMD | win32con.TPM_NONOTIFY,
-                                    x, y, 0, hwnd, None)
+        d = win32gui.TrackPopupMenu(
+            m,
+            win32con.TPM_LEFTBUTTON | win32con.TPM_RETURNCMD | win32con.TPM_NONOTIFY,
+            x,
+            y,
+            0,
+            hwnd,
+            None)
         win32gui.PumpWaitingMessages()
         win32gui.DestroyMenu(m)
         if d == desktop_cnt + 1:  # Create new

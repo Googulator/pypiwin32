@@ -1,8 +1,8 @@
 print("This module depends on the dbapi20 compliance tests created by Stuart Bishop")
 print("(see db-sig mailing list history for info)")
 import platform
-import unittest
 import sys
+import unittest
 
 import dbapi20
 import setuptestframework
@@ -59,8 +59,8 @@ elif node == "xxx":  # try Postgres database
     _password = '12345678'
     _driver = "PostgreSQL Unicode"
     _provider = ''
-    connStr = '%sDriver={%s};Server=%s;Database=%s;uid=%s;pwd=%s;' % \
-        (_provider, _driver, _computername, _databasename, _username, _password)
+    connStr = '%sDriver={%s};Server=%s;Database=%s;uid=%s;pwd=%s;' % (
+        _provider, _driver, _computername, _databasename, _username, _password)
 elif node == "yyy":  # ACCESS data base is known to fail some tests.
     if is64bit.Python():
         driver = "Microsoft.ACE.OLEDB.12.0"

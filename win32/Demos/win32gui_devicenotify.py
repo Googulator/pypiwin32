@@ -3,10 +3,10 @@
 # that.
 import sys
 import time
-import win32gui
+
 import win32con
-import win32api
 import win32file
+import win32gui
 import win32gui_struct
 import winnt
 
@@ -49,8 +49,8 @@ def TestDeviceNotifications(dir_names):
     # Watch for all USB device notifications
     filter = win32gui_struct.PackDEV_BROADCAST_DEVICEINTERFACE(
         GUID_DEVINTERFACE_USB_DEVICE)
-    hdev = win32gui.RegisterDeviceNotification(hwnd, filter,
-                                               win32con.DEVICE_NOTIFY_WINDOW_HANDLE)
+    hdev = win32gui.RegisterDeviceNotification(
+        hwnd, filter, win32con.DEVICE_NOTIFY_WINDOW_HANDLE)
     hdevs.append(hdev)
     # and create handles for all specified directories
     for d in dir_names:
@@ -66,8 +66,8 @@ def TestDeviceNotifications(dir_names):
                                     None)
 
         filter = win32gui_struct.PackDEV_BROADCAST_HANDLE(hdir)
-        hdev = win32gui.RegisterDeviceNotification(hwnd, filter,
-                                                   win32con.DEVICE_NOTIFY_WINDOW_HANDLE)
+        hdev = win32gui.RegisterDeviceNotification(
+            hwnd, filter, win32con.DEVICE_NOTIFY_WINDOW_HANDLE)
         hdevs.append(hdev)
 
     # now start a message pump and wait for messages to be delivered.

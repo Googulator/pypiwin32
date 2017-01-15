@@ -20,17 +20,18 @@ Hacks, to do, etc
   Currently just uses a pickled dictionary, but should used some sort of indexed file.
   Maybe an OLE2 compound file, or a bsddb file?
 """
-import pywintypes
+import glob
+import imp
 import os
 import sys
+
 import pythoncom
+import pywintypes
 import win32com
 import win32com.client
-import glob
-import traceback
+
 from . import CLSIDToClass
-import operator
-import imp
+
 try:
     from imp import reload  # exported by the imp module in py3k.
 except:
@@ -295,8 +296,15 @@ def GetModuleForTypelib(typelibCLSID, lcid, major, minor):
     return mod
 
 
-def MakeModuleForTypelib(typelibCLSID, lcid, major, minor, progressInstance=None,
-                         bGUIProgress=None, bForDemand=bForDemandDefault, bBuildHidden=1):
+def MakeModuleForTypelib(
+        typelibCLSID,
+        lcid,
+        major,
+        minor,
+        progressInstance=None,
+        bGUIProgress=None,
+        bForDemand=bForDemandDefault,
+        bBuildHidden=1):
     """Generate support for a type library.
 
     Given the IID, LCID and version information for a type library, generate
@@ -331,7 +339,10 @@ def MakeModuleForTypelib(typelibCLSID, lcid, major, minor, progressInstance=None
 
 
 def MakeModuleForTypelibInterface(
-        typelib_ob, progressInstance=None, bForDemand=bForDemandDefault, bBuildHidden=1):
+        typelib_ob,
+        progressInstance=None,
+        bForDemand=bForDemandDefault,
+        bBuildHidden=1):
     """Generate support for a type library.
 
     Given a PyITypeLib interface generate and import the necessary support files.  This is useful
@@ -363,7 +374,10 @@ def MakeModuleForTypelibInterface(
 
 
 def EnsureModuleForTypelibInterface(
-        typelib_ob, progressInstance=None, bForDemand=bForDemandDefault, bBuildHidden=1):
+        typelib_ob,
+        progressInstance=None,
+        bForDemand=bForDemandDefault,
+        bBuildHidden=1):
     """Check we have support for a type library, generating if not.
 
     Given a PyITypeLib interface generate and import the necessary
@@ -411,15 +425,24 @@ def ForgetAboutTypelibInterface(typelib_ob):
     except KeyError:
         # Not worth raising an exception - maybe they dont know we only
         # remember for demand generated, etc.
-        print("ForgetAboutTypelibInterface:: Warning - type library with info %s is not being remembered!" % (info,))
+        print(
+            "ForgetAboutTypelibInterface:: Warning - type library with info %s is not being remembered!" %
+            (info,))
     # and drop any version redirects to it
     for key, val in list(versionRedirectMap.items()):
         if val == info:
             del versionRedirectMap[key]
 
 
-def EnsureModule(typelibCLSID, lcid, major, minor, progressInstance=None,
-                 bValidateFile=not is_readonly, bForDemand=bForDemandDefault, bBuildHidden=1):
+def EnsureModule(
+        typelibCLSID,
+        lcid,
+        major,
+        minor,
+        progressInstance=None,
+        bValidateFile=not is_readonly,
+        bForDemand=bForDemandDefault,
+        bBuildHidden=1):
     """Ensure Python support is loaded for a type library, generating if necessary.
 
     Given the IID, LCID and version information for a type library, check and if
@@ -733,7 +756,8 @@ def Rebuild(verbose=1):
         try:
             AddModuleToCache(iid, lcid, major, minor, verbose, 0)
         except:
-            print("Could not add module %s - %s: %s" % (info, sys.exc_info()[0], sys.exc_info()[1]))
+            print("Could not add module %s - %s: %s" %
+                  (info, sys.exc_info()[0], sys.exc_info()[1]))
     if verbose and len(
             infos):  # Dont bother reporting this when directory is empty!
         print("Done.")

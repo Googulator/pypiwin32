@@ -1,13 +1,15 @@
-import axdebug
-from . import gateways
-from .util import _wrap, _wrap_remove, RaiseNotImpl
 import io
-import traceback
-from pprint import pprint
-from win32com.server.exception import COMException
-import winerror
 import string
 import sys
+import traceback
+from pprint import pprint
+
+import axdebug
+import winerror
+
+from . import gateways
+from .util import _wrap, RaiseNotImpl
+
 
 # Given an object, return a nice string
 
@@ -173,9 +175,12 @@ class EnumDebugPropertyInfo(ListEnumeratorGateway):
 
 class DebugProperty:
     _com_interfaces_ = [axdebug.IID_IDebugProperty]
-    _public_methods_ = ['GetPropertyInfo', 'GetExtendedInfo', 'SetValueAsString',
-                        'EnumMembers', 'GetParent'
-                        ]
+    _public_methods_ = [
+        'GetPropertyInfo',
+        'GetExtendedInfo',
+        'SetValueAsString',
+        'EnumMembers',
+        'GetParent']
 
     def __init__(self, name, value, parent=None, hresult=0,
                  dictionary=None, stackFrame=None):
@@ -188,7 +193,13 @@ class DebugProperty:
 
     def GetPropertyInfo(self, dwFieldSpec, nRadix):
         return GetPropertyInfo(
-            self.name, self.value, dwFieldSpec, nRadix, self.hresult, dictionary, stackFrame)
+            self.name,
+            self.value,
+            dwFieldSpec,
+            nRadix,
+            self.hresult,
+            dictionary,
+            stackFrame)
 
     def GetExtendedInfo(self):  # Note - not in the framework.
         RaiseNotImpl("DebugProperty::GetExtendedInfo")

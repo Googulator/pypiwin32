@@ -7,6 +7,7 @@
 # >>> browser.Browse(your_module)
 import sys
 import types
+
 import __main__
 import win32ui
 from pywin.mfc import dialog
@@ -87,7 +88,7 @@ class HLIPythonObject(hierlist.HierListItem):
             pass
         try:
             for member in self.myobject.__members__:
-                if not member in special_names:
+                if member not in special_names:
                     ret.append(MakeHLI(getattr(self.myobject, member), member))
         except (AttributeError, TypeError):
             pass

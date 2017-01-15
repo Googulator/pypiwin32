@@ -42,9 +42,18 @@ class MainWindow:
         classAtom = RegisterClass(wc)
         # Create the Window.
         style = win32con.WS_OVERLAPPED | win32con.WS_SYSMENU
-        self.hwnd = CreateWindow(classAtom, "Taskbar Demo", style,
-                                 0, 0, win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT,
-                                 0, 0, hinst, None)
+        self.hwnd = CreateWindow(
+            classAtom,
+            "Taskbar Demo",
+            style,
+            0,
+            0,
+            win32con.CW_USEDEFAULT,
+            win32con.CW_USEDEFAULT,
+            0,
+            0,
+            hinst,
+            None)
         UpdateWindow(self.hwnd)
         iconPathName = os.path.abspath(os.path.join(sys.prefix, "pyc.ico"))
         # py2.5 includes the .ico files in the DLLs dir for some reason.

@@ -46,28 +46,28 @@
 # a field sep just 'cos we can (and 'cos it can't possibly conflict with the
 # string content)
 
-import sys
 import os
-import _thread
 import pyclbr
+import sys
+
+import commctrl
 import pythoncom
-import win32gui
-import win32gui_struct
 import win32api
 import win32con
+import win32gui
+import win32gui_struct
 import winerror
-import commctrl
-from win32com.shell import shell, shellcon
-from win32com.server.util import wrap, NewEnum
-from win32com.server.exception import COMException
-from win32com.util import IIDToInterfaceName
 from pywin.scintilla import scintillacon
+from win32com.server.exception import COMException
+from win32com.server.util import wrap, NewEnum
+from win32com.shell import shell, shellcon
+from win32com.util import IIDToInterfaceName
 
 # Set this to 1 to cause debug version to be registered and used.  A debug
 # version will spew output to win32traceutil.
 debug = 0
 if debug:
-    import win32traceutil
+    pass
 
 # markh is toying with an implementation that allows auto reload of a module
 # if this attribute exists.
@@ -457,10 +457,18 @@ class FileSystemView:
             win32con.WM_SIZE: self.OnSize,
         }
 
-        self.hwnd = win32gui.CreateWindow(wclass_name, "", style,
-                                          rect[0], rect[1], rect[2] -
-                                          rect[0], rect[3] - rect[1],
-                                          self.hwnd_parent, 0, win32gui.dllhandle, None)
+        self.hwnd = win32gui.CreateWindow(
+            wclass_name,
+            "",
+            style,
+            rect[0],
+            rect[1],
+            rect[2] - rect[0],
+            rect[3] - rect[1],
+            self.hwnd_parent,
+            0,
+            win32gui.dllhandle,
+            None)
         win32gui.SetWindowLong(self.hwnd, win32con.GWL_WNDPROC, message_map)
         print("View 's hwnd is", self.hwnd)
         return self.hwnd
@@ -664,8 +672,8 @@ class FileSystemView:
             hmenu = win32gui.CreateMenu()
             try:
                 # Get the IContextMenu for the items.
-                inout, cm = self.folder.GetUIObjectOf(self.hwnd_parent, sel,
-                                                      shell.IID_IContextMenu, 0)
+                inout, cm = self.folder.GetUIObjectOf(
+                    self.hwnd_parent, sel, shell.IID_IContextMenu, 0)
 
                 # As per 'Q179911', we need to determine if the default operation
                 # should be 'open' or 'explore'
@@ -782,7 +790,12 @@ class ScintillaShellView:
    # IShellView
 
     def CreateViewWindow(self, prev, settings, browser, rect):
-        print("ScintillaShellView.CreateViewWindow", prev, settings, browser, rect)
+        print(
+            "ScintillaShellView.CreateViewWindow",
+            prev,
+            settings,
+            browser,
+            rect)
         # Make sure scintilla.dll is loaded.  If not, find it on sys.path
         # (which it generally is for Pythonwin)
         try:
@@ -886,14 +899,17 @@ class ScintillaShellView:
 def DllRegisterServer():
     import winreg
     key = winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE,
-                            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\"
-                            "Explorer\\Desktop\\Namespace\\" +
-                            ShellFolderRoot._reg_clsid_)
+                           "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\"
+                           "Explorer\\Desktop\\Namespace\\" +
+                           ShellFolderRoot._reg_clsid_)
     winreg.SetValueEx(key, None, 0, winreg.REG_SZ,
-                       ShellFolderRoot._reg_desc_)
+                      ShellFolderRoot._reg_desc_)
     # And special shell keys under our CLSID
-    key = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT,
-                            "CLSID\\" + ShellFolderRoot._reg_clsid_ + "\\ShellFolder")
+    key = winreg.CreateKey(
+        winreg.HKEY_CLASSES_ROOT,
+        "CLSID\\" +
+        ShellFolderRoot._reg_clsid_ +
+        "\\ShellFolder")
     # 'Attributes' is an int stored as a binary! use struct
     attr = shellcon.SFGAO_FOLDER | shellcon.SFGAO_HASSUBFOLDER | \
         shellcon.SFGAO_BROWSABLE
@@ -907,9 +923,9 @@ def DllUnregisterServer():
     import winreg
     try:
         key = winreg.DeleteKey(winreg.HKEY_LOCAL_MACHINE,
-                                "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\"
-                                "Explorer\\Desktop\\Namespace\\" +
-                                ShellFolderRoot._reg_clsid_)
+                               "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\"
+                               "Explorer\\Desktop\\Namespace\\" +
+                               ShellFolderRoot._reg_clsid_)
     except WindowsError as details:
         import errno
         if details.errno != errno.ENOENT:

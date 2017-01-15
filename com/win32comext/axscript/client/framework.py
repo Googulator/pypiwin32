@@ -6,17 +6,15 @@
 
   There are classes defined for the engine itself, and for ScriptItems
 """
-import sys
-from win32com.axscript import axscript
-import win32com.server.util
-
-import win32com.client.connect  # Need simple connection point support
-
-import win32api
-import winerror
-import pythoncom
-import types
 import re
+import sys
+
+import pythoncom
+import win32api
+import win32com.client.connect  # Need simple connection point support
+import win32com.server.util
+import winerror
+from win32com.axscript import axscript
 
 
 def RemoveCR(text):
@@ -318,7 +316,13 @@ class ScriptItem:
             flagDescs.append("EVENT SINK")
         if self.flags is not None and self.flags & axscript.SCRIPTITEM_CODEONLY:
             flagDescs.append("CODE ONLY")
-        print(" " * level, "Name=", self.name, ", flags=", "/".join(flagDescs), self)
+        print(
+            " " * level,
+            "Name=",
+            self.name,
+            ", flags=",
+            "/".join(flagDescs),
+            self)
         for subItem in self.subItems.values():
             subItem._dump_(level + 1)
 
@@ -590,8 +594,16 @@ class COMScript:
         if self.scriptSite is not None:
             self.SetScriptState(axscript.SCRIPTSTATE_INITIALIZED)
 
-    def AddScriptlet(self, defaultName, code, itemName, subItemName,
-                     eventName, delimiter, sourceContextCookie, startLineNumber):
+    def AddScriptlet(
+            self,
+            defaultName,
+            code,
+            itemName,
+            subItemName,
+            eventName,
+            delimiter,
+            sourceContextCookie,
+            startLineNumber):
         #		trace ("AddScriptlet", defaultName, code, itemName, subItemName, eventName, delimiter, sourceContextCookie, startLineNumber)
         self.DoAddScriptlet(
             defaultName,
@@ -603,8 +615,16 @@ class COMScript:
             sourceContextCookie,
             startLineNumber)
 
-    def ParseScriptText(self, code, itemName, context, delimiter,
-                        sourceContextCookie, startLineNumber, flags, bWantResult):
+    def ParseScriptText(
+            self,
+            code,
+            itemName,
+            context,
+            delimiter,
+            sourceContextCookie,
+            startLineNumber,
+            flags,
+            bWantResult):
         #		trace ("ParseScriptText", code[:20],"...", itemName, context, delimiter, sourceContextCookie, startLineNumber, flags, bWantResult)
         if bWantResult or self.scriptState == axscript.SCRIPTSTATE_STARTED \
                 or self.scriptState == axscript.SCRIPTSTATE_CONNECTED \
@@ -621,8 +641,17 @@ class COMScript:
 
     #
     # IActiveScriptParseProcedure
-    def ParseProcedureText(self, code, formalParams, procName, itemName,
-                           unkContext, delimiter, contextCookie, startingLineNumber, flags):
+    def ParseProcedureText(
+            self,
+            code,
+            formalParams,
+            procName,
+            itemName,
+            unkContext,
+            delimiter,
+            contextCookie,
+            startingLineNumber,
+            flags):
         trace(
             "ParseProcedureText",
             code,
@@ -696,7 +725,8 @@ class COMScript:
         if state == axscript.SCRIPTSTATE_INITIALIZED:
             # Re-initialize - shutdown then reset.
             if self.scriptState in [
-                    axscript.SCRIPTSTATE_CONNECTED, axscript.SCRIPTSTATE_STARTED]:
+                axscript.SCRIPTSTATE_CONNECTED,
+                axscript.SCRIPTSTATE_STARTED]:
                 self.Stop()
         elif state == axscript.SCRIPTSTATE_STARTED:
             if self.scriptState == axscript.SCRIPTSTATE_CONNECTED:
@@ -707,7 +737,8 @@ class COMScript:
             self.ChangeScriptState(axscript.SCRIPTSTATE_STARTED)
         elif state == axscript.SCRIPTSTATE_CONNECTED:
             if self.scriptState in [
-                    axscript.SCRIPTSTATE_UNINITIALIZED, axscript.SCRIPTSTATE_INITIALIZED]:
+                axscript.SCRIPTSTATE_UNINITIALIZED,
+                axscript.SCRIPTSTATE_INITIALIZED]:
                 # report transition through started
                 self.ChangeScriptState(axscript.SCRIPTSTATE_STARTED)
                 self.Run()
@@ -736,13 +767,21 @@ class COMScript:
     def Close(self):
         #		trace("Close")
         if self.scriptState in [
-                axscript.SCRIPTSTATE_CONNECTED, axscript.SCRIPTSTATE_DISCONNECTED]:
+            axscript.SCRIPTSTATE_CONNECTED,
+            axscript.SCRIPTSTATE_DISCONNECTED]:
             self.Stop()
-        if self.scriptState in [axscript.SCRIPTSTATE_CONNECTED, axscript.SCRIPTSTATE_DISCONNECTED,
-                                axscript.SCRIPTSTATE_INITIALIZED, axscript.SCRIPTSTATE_STARTED]:
+        if self.scriptState in [
+            axscript.SCRIPTSTATE_CONNECTED,
+            axscript.SCRIPTSTATE_DISCONNECTED,
+            axscript.SCRIPTSTATE_INITIALIZED,
+            axscript.SCRIPTSTATE_STARTED]:
             pass  # engine.close??
-        if self.scriptState in [axscript.SCRIPTSTATE_UNINITIALIZED, axscript.SCRIPTSTATE_CONNECTED,
-                                axscript.SCRIPTSTATE_DISCONNECTED, axscript.SCRIPTSTATE_INITIALIZED, axscript.SCRIPTSTATE_STARTED]:
+        if self.scriptState in [
+            axscript.SCRIPTSTATE_UNINITIALIZED,
+            axscript.SCRIPTSTATE_CONNECTED,
+            axscript.SCRIPTSTATE_DISCONNECTED,
+            axscript.SCRIPTSTATE_INITIALIZED,
+            axscript.SCRIPTSTATE_STARTED]:
             self.ChangeScriptState(axscript.SCRIPTSTATE_CLOSED)
             # Completely reset all named items (including persistent)
             for item in self.subItems.values():
@@ -822,8 +861,12 @@ class COMScript:
 #			# request for options we don't understand
 #			RaiseAssert(scode=winerror.E_FAIL, desc="Unknown safety options")
 
-        if iid in [pythoncom.IID_IPersist, pythoncom.IID_IPersistStream, pythoncom.IID_IPersistStreamInit,
-                   axscript.IID_IActiveScript, axscript.IID_IActiveScriptParse]:
+        if iid in [
+            pythoncom.IID_IPersist,
+            pythoncom.IID_IPersistStream,
+            pythoncom.IID_IPersistStreamInit,
+            axscript.IID_IActiveScript,
+            axscript.IID_IActiveScriptParse]:
             supported = self._GetSupportedInterfaceSafetyOptions()
             self.safetyOptions = supported & optionsMask & enabledOptions
         else:
@@ -833,8 +876,12 @@ class COMScript:
         return 0
 
     def GetInterfaceSafetyOptions(self, iid):
-        if iid in [pythoncom.IID_IPersist, pythoncom.IID_IPersistStream, pythoncom.IID_IPersistStreamInit,
-                   axscript.IID_IActiveScript, axscript.IID_IActiveScriptParse]:
+        if iid in [
+            pythoncom.IID_IPersist,
+            pythoncom.IID_IPersistStream,
+            pythoncom.IID_IPersistStreamInit,
+            axscript.IID_IActiveScript,
+            axscript.IID_IActiveScriptParse]:
             supported = self._GetSupportedInterfaceSafetyOptions()
             return supported, self.safetyOptions
         else:
@@ -884,7 +931,8 @@ class COMScript:
 
     def CheckConnectedOrDisconnected(self):
         if self.scriptState in [
-                axscript.SCRIPTSTATE_CONNECTED, axscript.SCRIPTSTATE_DISCONNECTED]:
+            axscript.SCRIPTSTATE_CONNECTED,
+            axscript.SCRIPTSTATE_DISCONNECTED]:
             return
         RaiseAssert(
             winerror.E_UNEXPECTED,
@@ -1075,14 +1123,15 @@ class COMScript:
             exc_traceback = None
             raise
         # It could be an error by another script.
-        if issubclass(pythoncom.com_error,
-                      exc_type) and exc_value.hresult == axscript.SCRIPT_E_REPORTED:
+        if issubclass(
+                pythoncom.com_error,
+                exc_type) and exc_value.hresult == axscript.SCRIPT_E_REPORTED:
             # Ensure the traceback doesnt cause a cycle.
             exc_traceback = None
             raise Exception(scode=exc_value.hresult)
 
-        exception = error.AXScriptException(self,
-                                            codeBlock, exc_type, exc_value, exc_traceback)
+        exception = error.AXScriptException(
+            self, codeBlock, exc_type, exc_value, exc_traceback)
 
         # Ensure the traceback doesnt cause a cycle.
         exc_traceback = None

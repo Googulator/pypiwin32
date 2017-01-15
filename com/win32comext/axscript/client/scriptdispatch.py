@@ -5,14 +5,14 @@
  this yet, so it is not well tested!
 """
 
-import winerror
 import types
-from win32com.server.exception import COMException
+
+import pythoncom
 import win32com.server.policy
 import win32com.server.util
+import winerror
 from win32com.client import Dispatch
-import pythoncom
-from win32com.axscript import axscript
+from win32com.server.exception import COMException
 
 debugging = 0
 
@@ -103,7 +103,9 @@ class StrictDynamicPolicy(win32com.server.policy.DynamicPolicy):
 
 def _wrap_debug(obj):
     return win32com.server.util.wrap(
-        obj, usePolicy=StrictDynamicPolicy, useDispatcher=win32com.server.policy.DispatcherWin32trace)
+        obj,
+        usePolicy=StrictDynamicPolicy,
+        useDispatcher=win32com.server.policy.DispatcherWin32trace)
 
 
 def _wrap_nodebug(obj):

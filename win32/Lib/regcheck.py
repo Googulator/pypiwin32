@@ -2,8 +2,10 @@
 # removed in a few years (ie, 2009 or so...)
 
 import warnings
-warnings.warn("The regcheck module has been pending deprecation since build 210",
-              category=PendingDeprecationWarning)
+
+warnings.warn(
+    "The regcheck module has been pending deprecation since build 210",
+    category=PendingDeprecationWarning)
 
 import win32con
 import regutil

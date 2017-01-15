@@ -2,16 +2,15 @@
 
 Provides Implements a nearly complete wrapper for a stack frame.
 """
-import sys
-from .util import _wrap, RaiseNotImpl
+import axdebug
+import pythoncom
+
 from . import expressions
 from . import gateways
-import axdebug
-import winerror
-import pythoncom
-from win32com.server.exception import COMException
-
+from .util import _wrap, RaiseNotImpl
 from .util import trace
+
+
 # def trace(*args):
 #       pass
 
@@ -145,9 +144,12 @@ class DebugStackFrameSniffer:
 
 class StackFrameDebugProperty:
     _com_interfaces_ = [axdebug.IID_IDebugProperty]
-    _public_methods_ = ['GetPropertyInfo', 'GetExtendedInfo', 'SetValueAsString',
-                        'EnumMembers', 'GetParent'
-                        ]
+    _public_methods_ = [
+        'GetPropertyInfo',
+        'GetExtendedInfo',
+        'SetValueAsString',
+        'EnumMembers',
+        'GetParent']
 
     def __init__(self, frame):
         self.frame = frame

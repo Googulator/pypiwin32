@@ -8,26 +8,20 @@
 # * Start the service.
 # * Run the "pipeTestServiceClient.py" program as the client pipe side.
 
-import win32serviceutil
-import win32service
+import _thread
+import traceback
+
 import pywintypes
+import servicemanager
 import win32con
+import win32service
+import win32serviceutil
 import winerror
-# Use "import *" to keep this looking as much as a "normal" service
-# as possible.  Real code shouldn't do this.
+from ntsecuritycon import *
+from win32api import *
 from win32event import *
 from win32file import *
 from win32pipe import *
-from win32api import *
-from ntsecuritycon import *
-
-# Old versions of the service framework would not let you import this
-# module at the top-level.  Now you can, and can check 'Debugging()' and
-# 'RunningAsService()' to check your context.
-import servicemanager
-
-import traceback
-import _thread
 
 
 def ApplyIgnoreError(fn, args):
@@ -165,14 +159,17 @@ class TestPipeService(win32serviceutil.ServiceFramework):
         Sleep(500)
         while self.thread_handles:
             self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING, 5000)
-            print("Waiting for %d threads to finish..." % (len(self.thread_handles)))
+            print("Waiting for %d threads to finish..." %
+                  (len(self.thread_handles)))
             WaitForMultipleObjects(self.thread_handles, 1, 3000)
         # Write another event log record.
         servicemanager.LogMsg(
             servicemanager.EVENTLOG_INFORMATION_TYPE,
             servicemanager.PYS_SERVICE_STOPPED,
-            (self._svc_name_, " after processing %d connections" % (num_connections,))
-        )
+            (self._svc_name_,
+             " after processing %d connections" %
+             (num_connections,
+              )))
 
 
 if __name__ == '__main__':

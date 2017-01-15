@@ -1,12 +1,11 @@
 import os
 import sys
 import traceback
-from win32com.axscript import axscript
-from win32com.axscript.server import axsite
-from win32com.axscript.server.error import Exception
+
 import pythoncom
-from win32com.server import util
 import win32ui
+from win32com.axscript.server import axsite
+from win32com.server import util
 
 version = "0.0.1"
 
@@ -21,7 +20,8 @@ class MySite(axsite.AXSite):
         except:
             text = "<unknown>"
         context, line, char = error.GetSourcePosition()
-        print("Exception: %s (line %d)\n%s\n%s^\n%s" % (exc[1], line, text, " " * (char - 1), exc[2]))
+        print("Exception: %s (line %d)\n%s\n%s^\n%s" %
+              (exc[1], line, text, " " * (char - 1), exc[2]))
 
 
 class ObjectModel:

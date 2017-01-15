@@ -6,15 +6,14 @@
 # Eg: pipeTestServiceClient.py -s server_name Hi There
 # Should work.
 
-from win32pipe import *
-from win32file import *
-from win32event import *
-import pywintypes
-import win32api
-import winerror
-import sys
 import os
 import traceback
+
+import win32api
+import winerror
+from win32event import *
+from win32file import *
+from win32pipe import *
 
 verbose = 0
 
@@ -131,13 +130,17 @@ def main():
     except getopt.error as msg:
         print(msg)
         my_name = os.path.split(sys.argv[0])[1]
-        print("Usage: %s [-v] [-s server] [-t thread_count=0] [-m msg_count=500] msg ..." % my_name)
+        print(
+            "Usage: %s [-v] [-s server] [-t thread_count=0] [-m msg_count=500] msg ..." %
+            my_name)
         print("       -v = verbose")
         print("       Specifying a value for -t will stress test using that many threads.")
         return
     testClient(server, msg)
     if thread_count > 0:
-        print("Spawning %d threads each sending %d messages..." % (thread_count, msg_count))
+        print(
+            "Spawning %d threads each sending %d messages..." %
+            (thread_count, msg_count))
         stressTestClient(server, thread_count, msg_count)
 
 if __name__ == '__main__':

@@ -6,12 +6,13 @@ necessary to allow the COM framework to respond to a request for a COM object,
 construct the necessary Python object, and dispatch COM events.
 
 """
+import os
 import sys
+
+import pythoncom
 import win32api
 import win32con
-import pythoncom
 import winerror
-import os
 
 CATID_PythonCOMServer = "{B3EF80D0-68E2-11D0-A689-00C04FD658FF}"
 
@@ -579,8 +580,12 @@ def ReExecuteElevated(flags):
             # CD.
             print(os.path.splitdrive(cwd)[0], file=batf)
             print('cd "%s"' % os.getcwd(), file=batf)
-            print('%s %s > "%s" 2>&1' % (
-                win32api.GetShortPathName(exe_to_run), new_params, outfile), file=batf)
+            print(
+                '%s %s > "%s" 2>&1' %
+                (win32api.GetShortPathName(exe_to_run),
+                 new_params,
+                 outfile),
+                file=batf)
         finally:
             batf.close()
         executable = os.environ.get('COMSPEC', 'cmd.exe')
@@ -647,8 +652,10 @@ def RegisterPyComCategory():
 
 if not pythoncom.frozen:
     try:
-        win32api.RegQueryValue(win32con.HKEY_CLASSES_ROOT,
-                               'Component Categories\\%s' % CATID_PythonCOMServer)
+        win32api.RegQueryValue(
+            win32con.HKEY_CLASSES_ROOT,
+            'Component Categories\\%s' %
+            CATID_PythonCOMServer)
     except win32api.error:
         try:
             RegisterPyComCategory()

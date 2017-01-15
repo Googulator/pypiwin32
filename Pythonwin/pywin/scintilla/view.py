@@ -1,23 +1,21 @@
 # A general purpose MFC CCtrlView view that uses Scintilla.
 
-from . import control
-from . import IDLEenvironment  # IDLE emulation.
-from pywin.mfc import docview
-from pywin.mfc import dialog
-from . import scintillacon
+import os
+import re
+import string
+import struct
+import sys
+
+import __main__  # for attribute lookup
+import afxres
 import win32con
 import win32ui
-import afxres
-import string
-import array
-import sys
-import types
-import __main__  # for attribute lookup
+from pywin.mfc import docview
+
+from . import IDLEenvironment  # IDLE emulation.
 from . import bindings
-from . import keycodes
-import struct
-import re
-import os
+from . import control
+from . import scintillacon
 
 PRINTDLGORD = 1538
 IDC_PRINT_MAG_EDIT = 1010
@@ -316,7 +314,9 @@ class CScintillaView(docview.CtrlView, control.CScintillaColorEditInterface):
             cmdid = self.bindings.get_command_id(event)
             if cmdid is None:
                 # No event of that name - no point displaying it.
-                print('View.AppendMenu(): Unknown event "%s" specified for menu text "%s" - ignored' % (event, text))
+                print(
+                    'View.AppendMenu(): Unknown event "%s" specified for menu text "%s" - ignored' %
+                    (event, text))
                 return
             keyname = configManager.get_key_binding(
                 event, self._GetSubConfigNames())

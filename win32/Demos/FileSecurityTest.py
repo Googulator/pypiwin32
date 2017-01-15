@@ -1,8 +1,9 @@
 # Contributed by Kelly Kranabetter.
 import os
 import sys
-import win32security
+
 import ntsecuritycon
+import win32security
 
 # get security information
 # name=r"c:\autoexec.bat"
@@ -47,8 +48,13 @@ else:
                 print("    ", i)
 
         print("  -Flags", hex(ace[0][1]))
-        for i in ("OBJECT_INHERIT_ACE", "CONTAINER_INHERIT_ACE", "NO_PROPAGATE_INHERIT_ACE",
-                  "INHERIT_ONLY_ACE", "SUCCESSFUL_ACCESS_ACE_FLAG", "FAILED_ACCESS_ACE_FLAG"):
+        for i in (
+                "OBJECT_INHERIT_ACE",
+                "CONTAINER_INHERIT_ACE",
+                "NO_PROPAGATE_INHERIT_ACE",
+                "INHERIT_ONLY_ACE",
+                "SUCCESSFUL_ACCESS_ACE_FLAG",
+                "FAILED_ACCESS_ACE_FLAG"):
             if getattr(ntsecuritycon, i) & ace[0][
                     1] == getattr(ntsecuritycon, i):
                 print("    ", i)

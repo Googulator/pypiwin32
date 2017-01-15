@@ -79,7 +79,7 @@ is_py3k = sys.version_info > (3,)  # get this out of the way early on...
 # We have special handling for _winreg so our setup3.py script can avoid
 # using the 'imports' fixer and therefore start much faster...
 if is_py3k:
-    import winreg as _winreg
+    pass
 else:
     import winreg
 
@@ -161,14 +161,14 @@ def find_platform_sdk_dir():
     #    the "Platform SDK for Windows Server 2003 SP1" this is dead end.
     try:
         key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                              r"Software\Microsoft\MicrosoftSDK\Directories")
+                             r"Software\Microsoft\MicrosoftSDK\Directories")
         sdkdir, ignore = winreg.QueryValueEx(key, "Install Dir")
     except EnvironmentError:
         pass
     else:
         if DEBUG:
             print((r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDK"
-                  "\Directories\Install Dir': '%s'" % sdkdir))
+                   "\Directories\Install Dir': '%s'" % sdkdir))
         if os.path.isfile(os.path.join(sdkdir, landmark)):
             return sdkdir
     # 3. Each installed SDK (not just the platform SDK) seems to have GUID
@@ -177,7 +177,7 @@ def find_platform_sdk_dir():
     #    only one with an "Install Dir" sub-value.
     try:
         key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                              r"Software\Microsoft\MicrosoftSDK\InstalledSDKs")
+                             r"Software\Microsoft\MicrosoftSDK\InstalledSDKs")
         i = 0
         while True:
             guid = winreg.EnumKey(key, i)
@@ -189,8 +189,8 @@ def find_platform_sdk_dir():
             else:
                 if DEBUG:
                     print((r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDK"
-                          "\InstallSDKs\%s\Install Dir': '%s'"
-                          % (guid, sdkdir)))
+                           "\InstallSDKs\%s\Install Dir': '%s'"
+                           % (guid, sdkdir)))
                 if os.path.isfile(os.path.join(sdkdir, landmark)):
                     return sdkdir
             i += 1
@@ -199,14 +199,14 @@ def find_platform_sdk_dir():
     # 4.  Vista's SDK
     try:
         key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                              r"Software\Microsoft\Microsoft SDKs\Windows")
+                             r"Software\Microsoft\Microsoft SDKs\Windows")
         sdkdir, ignore = winreg.QueryValueEx(key, "CurrentInstallFolder")
     except EnvironmentError:
         pass
     else:
         if DEBUG:
             print((r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDKs"
-                  "\Windows\CurrentInstallFolder': '%s'" % sdkdir))
+                   "\Windows\CurrentInstallFolder': '%s'" % sdkdir))
         if os.path.isfile(os.path.join(sdkdir, landmark)):
             return sdkdir
 
@@ -456,8 +456,8 @@ class WinExt(Extension):
         # Sort the sources so that (for example) the .mc file is processed first,
         # building this may create files included by other source files.
         build_order = ".i .mc .rc .cpp".split()
-        decorated = sorted([(build_order.index(os.path.splitext(fname)[-1].lower()), fname)
-                            for fname in result])
+        decorated = sorted([(build_order.index(os.path.splitext(
+            fname)[-1].lower()), fname) for fname in result])
         result = [item[1] for item in decorated]
         return result
 
@@ -1209,7 +1209,7 @@ class my_build_ext(build_ext):
                     plat_dir = "x86"
                 # Find the redist directory.
                 vckey = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, product_key,
-                                        0, access)
+                                       0, access)
                 val, val_typ = winreg.QueryValueEx(vckey, "ProductDir")
                 mfc_dir = os.path.join(val, "redist", plat_dir, mfc_dir)
                 if not os.path.isdir(mfc_dir):
@@ -1496,8 +1496,9 @@ class my_build_ext(build_ext):
                         os.path.basename(base) == "win32gui":
                     # More vile hacks.  winxpmodule is built from win32gui.i -
                     # just different #defines are setup for windows.h.
-                    new_target = os.path.join(os.path.dirname(base),
-                                              "winxpgui_swig%s" % (target_ext,))
+                    new_target = os.path.join(
+                        os.path.dirname(base), "winxpgui_swig%s" %
+                                               (target_ext,))
                     swig_targets[source] = new_target
                     new_sources.append(new_target)
                 else:
@@ -1935,8 +1936,10 @@ dirs = {
 }
 
 # The COM modules.
-pythoncom = WinExt_system32('pythoncom',
-                            sources=("""
+pythoncom = WinExt_system32(
+    'pythoncom',
+    sources=(
+        """
                         %(win32com)s/dllmain.cpp            %(win32com)s/ErrorUtils.cpp
                         %(win32com)s/MiscTypes.cpp          %(win32com)s/oleargs.cpp
                         %(win32com)s/PyComHelpers.cpp       %(win32com)s/PyFactory.cpp
@@ -1978,39 +1981,42 @@ pythoncom = WinExt_system32('pythoncom',
                         %(win32com)s/extensions/PyICancelMethodCalls.cpp    %(win32com)s/extensions/PyIContext.cpp
                         %(win32com)s/extensions/PyIEnumContextProps.cpp     %(win32com)s/extensions/PyIClientSecurity.cpp
                         %(win32com)s/extensions/PyIServerSecurity.cpp
-                        """ % dirs).split(),
-                            depends=(r"""
-                        %(win32com)s/include\propbag.h          %(win32com)s/include\PyComTypeObjects.h
-                        %(win32com)s/include\PyFactory.h        %(win32com)s/include\PyGConnectionPoint.h
-                        %(win32com)s/include\PyGConnectionPointContainer.h
-                        %(win32com)s/include\PyGPersistStorage.h %(win32com)s/include\PyIBindCtx.h
-                        %(win32com)s/include\PyICatInformation.h %(win32com)s/include\PyICatRegister.h
-                        %(win32com)s/include\PyIDataObject.h    %(win32com)s/include\PyIDropSource.h
-                        %(win32com)s/include\PyIDropTarget.h    %(win32com)s/include\PyIEnumConnectionPoints.h
-                        %(win32com)s/include\PyIEnumConnections.h %(win32com)s/include\PyIEnumFORMATETC.h
-                        %(win32com)s/include\PyIEnumGUID.h      %(win32com)s/include\PyIEnumSTATPROPSETSTG.h
-                        %(win32com)s/include\PyIEnumSTATSTG.h   %(win32com)s/include\PyIEnumString.h
-                        %(win32com)s/include\PyIEnumVARIANT.h   %(win32com)s/include\PyIExternalConnection.h
-                        %(win32com)s/include\PyIGlobalInterfaceTable.h %(win32com)s/include\PyILockBytes.h
-                        %(win32com)s/include\PyIMoniker.h       %(win32com)s/include\PyIOleWindow.h
-                        %(win32com)s/include\PyIPersist.h       %(win32com)s/include\PyIPersistFile.h
-                        %(win32com)s/include\PyIPersistStorage.h %(win32com)s/include\PyIPersistStream.h
-                        %(win32com)s/include\PyIPersistStreamInit.h %(win32com)s/include\PyIRunningObjectTable.h
-                        %(win32com)s/include\PyIStorage.h       %(win32com)s/include\PyIStream.h
-                        %(win32com)s/include\PythonCOM.h        %(win32com)s/include\PythonCOMRegister.h
-                        %(win32com)s/include\PythonCOMServer.h  %(win32com)s/include\stdafx.h
-                        %(win32com)s/include\univgw_dataconv.h
-                        %(win32com)s/include/PyICancelMethodCalls.h    %(win32com)s/include/PyIContext.h
-                        %(win32com)s/include/PyIEnumContextProps.h     %(win32com)s/include/PyIClientSecurity.h
-                        %(win32com)s/include/PyIServerSecurity.h
-                        """ % dirs).split(),
-                            libraries="oleaut32 ole32 user32 urlmon",
-                            export_symbol_file='com/win32com/src/PythonCOM.def',
-                            extra_compile_args=['-DBUILD_PYTHONCOM'],
-                            pch_header="stdafx.h",
-                            windows_h_version=0x500,
-                            base_address=dll_base_address,
-                            )
+                        """ %
+        dirs).split(),
+    depends=(
+        r"""
+                    %(win32com)s/include\propbag.h          %(win32com)s/include\PyComTypeObjects.h
+                    %(win32com)s/include\PyFactory.h        %(win32com)s/include\PyGConnectionPoint.h
+                    %(win32com)s/include\PyGConnectionPointContainer.h
+                    %(win32com)s/include\PyGPersistStorage.h %(win32com)s/include\PyIBindCtx.h
+                    %(win32com)s/include\PyICatInformation.h %(win32com)s/include\PyICatRegister.h
+                    %(win32com)s/include\PyIDataObject.h    %(win32com)s/include\PyIDropSource.h
+                    %(win32com)s/include\PyIDropTarget.h    %(win32com)s/include\PyIEnumConnectionPoints.h
+                    %(win32com)s/include\PyIEnumConnections.h %(win32com)s/include\PyIEnumFORMATETC.h
+                    %(win32com)s/include\PyIEnumGUID.h      %(win32com)s/include\PyIEnumSTATPROPSETSTG.h
+                    %(win32com)s/include\PyIEnumSTATSTG.h   %(win32com)s/include\PyIEnumString.h
+                    %(win32com)s/include\PyIEnumVARIANT.h   %(win32com)s/include\PyIExternalConnection.h
+                    %(win32com)s/include\PyIGlobalInterfaceTable.h %(win32com)s/include\PyILockBytes.h
+                    %(win32com)s/include\PyIMoniker.h       %(win32com)s/include\PyIOleWindow.h
+                    %(win32com)s/include\PyIPersist.h       %(win32com)s/include\PyIPersistFile.h
+                    %(win32com)s/include\PyIPersistStorage.h %(win32com)s/include\PyIPersistStream.h
+                    %(win32com)s/include\PyIPersistStreamInit.h %(win32com)s/include\PyIRunningObjectTable.h
+                    %(win32com)s/include\PyIStorage.h       %(win32com)s/include\PyIStream.h
+                    %(win32com)s/include\PythonCOM.h        %(win32com)s/include\PythonCOMRegister.h
+                    %(win32com)s/include\PythonCOMServer.h  %(win32com)s/include\stdafx.h
+                    %(win32com)s/include\univgw_dataconv.h
+                    %(win32com)s/include/PyICancelMethodCalls.h    %(win32com)s/include/PyIContext.h
+                    %(win32com)s/include/PyIEnumContextProps.h     %(win32com)s/include/PyIClientSecurity.h
+                    %(win32com)s/include/PyIServerSecurity.h
+                    """ %
+        dirs).split(),
+    libraries="oleaut32 ole32 user32 urlmon",
+    export_symbol_file='com/win32com/src/PythonCOM.def',
+    extra_compile_args=['-DBUILD_PYTHONCOM'],
+    pch_header="stdafx.h",
+    windows_h_version=0x500,
+    base_address=dll_base_address,
+)
 dll_base_address += 0x80000  # pythoncom is large!
 com_extensions = [pythoncom]
 com_extensions += [

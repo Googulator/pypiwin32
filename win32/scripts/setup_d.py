@@ -3,11 +3,12 @@
 # Assumes the _d files can be found in the same directory as this script
 # or in the cwd.
 
-import win32api
-import winreg
-import sys
-import shutil
 import os
+import shutil
+import sys
+import winreg
+
+import win32api
 
 
 def usage_and_die(rc):
@@ -47,7 +48,8 @@ def _docopy(src, dest):
     orig_src = src
     if not os.path.isfile(src):
         src = os.path.join(os.path.split(sys.argv[0])[0], src)
-        print("Can not find %s or %s to copy" % (os.path.abspath(orig_src), os.path.abspath(src)))
+        print("Can not find %s or %s to copy" %
+              (os.path.abspath(orig_src), os.path.abspath(src)))
         return 0
     try:
         shutil.copy(src, dest)
@@ -72,7 +74,9 @@ def _doregister(mod_name, dll_name):
                 winreg.HKEY_LOCAL_MACHINE, "Software\\Python\\PythonCore\\%s\\Modules\\%s" %
                 (sys.winver, mod_name))
         except winreg.error:
-            print("Could not find the existing '%s' module registered in the registry" % (mod_name,))
+            print(
+                "Could not find the existing '%s' module registered in the registry" %
+                (mod_name,))
             usage_and_die(4)
     # Create the debug key.
     sub_key = winreg.CreateKey(key, "Debug")

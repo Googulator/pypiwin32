@@ -1,7 +1,8 @@
 """A test runner for pywin32"""
-import sys
-import os
 import distutils.sysconfig
+import os
+import sys
+
 import win32api
 
 # locate the dirs based on where this script is - it may be either in the
@@ -45,8 +46,12 @@ else:
         # some tests prefer to be run from their directory.
         cmd = [sys.executable, "-u", scriptname] + cmdline_rest.split()
         print(script)
-        popen = subprocess.Popen(cmd, shell=True, cwd=dirname,
-                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        popen = subprocess.Popen(
+            cmd,
+            shell=True,
+            cwd=dirname,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
         data = popen.communicate()[0]
         sys.stdout.buffer.write(data)
         if popen.returncode:

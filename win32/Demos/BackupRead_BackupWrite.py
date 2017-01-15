@@ -1,17 +1,15 @@
 # demonstrates using BackupRead and BackupWrite to copy all of a file's
 # data streams
 
-import win32file
-import win32api
-import win32con
-import win32security
 import ntsecuritycon
-from win32com import storagecon
 import pythoncom
 import pywintypes
-import struct
-import traceback
+import win32api
+import win32con
+import win32file
+import win32security
 from pywin32_testutil import str2bytes, ob2memory
+from win32com import storagecon
 
 all_sd_info = win32security.DACL_SECURITY_INFORMATION | win32security.DACL_SECURITY_INFORMATION |   \
     win32security.OWNER_SECURITY_INFORMATION | win32security.GROUP_SECURITY_INFORMATION
@@ -75,11 +73,23 @@ win32security.SetFileSecurity(
 
 sa = pywintypes.SECURITY_ATTRIBUTES()
 sa.bInheritHandle = True
-h = win32file.CreateFile(tempfile, win32con.GENERIC_ALL, win32con.FILE_SHARE_READ,
-                         sa, win32con.OPEN_EXISTING, win32file.FILE_FLAG_BACKUP_SEMANTICS, None)
+h = win32file.CreateFile(
+    tempfile,
+    win32con.GENERIC_ALL,
+    win32con.FILE_SHARE_READ,
+    sa,
+    win32con.OPEN_EXISTING,
+    win32file.FILE_FLAG_BACKUP_SEMANTICS,
+    None)
 
-outh = win32file.CreateFile(outfile, win32con.GENERIC_ALL, win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE,
-                            sa, win32con.OPEN_EXISTING, win32file.FILE_FLAG_BACKUP_SEMANTICS, None)
+outh = win32file.CreateFile(
+    outfile,
+    win32con.GENERIC_ALL,
+    win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE,
+    sa,
+    win32con.OPEN_EXISTING,
+    win32file.FILE_FLAG_BACKUP_SEMANTICS,
+    None)
 
 ctxt = 0
 outctxt = 0

@@ -3,8 +3,8 @@
 
 import win32api
 import win32con
-import winerror
 import win32evtlog
+import winerror
 
 error = win32api.error  # The error the evtlog module raises.
 
@@ -36,8 +36,11 @@ def AddSourceToRegistry(appName, msgDLL=None,
         msgDLL = win32evtlog.__file__
 
     # Create a new key for our application
-    hkey = win32api.RegCreateKey(win32con.HKEY_LOCAL_MACHINE,
-                                 "SYSTEM\\CurrentControlSet\\Services\\EventLog\\%s\\%s" % (eventLogType, appName))
+    hkey = win32api.RegCreateKey(
+        win32con.HKEY_LOCAL_MACHINE,
+        "SYSTEM\\CurrentControlSet\\Services\\EventLog\\%s\\%s" %
+        (eventLogType,
+         appName))
 
     # Add the Event-ID message-file name to the subkey.
     win32api.RegSetValueEx(hkey,
@@ -63,15 +66,24 @@ def RemoveSourceFromRegistry(appName, eventLogType="Application"):
 
     # Delete our key
     try:
-        win32api.RegDeleteKey(win32con.HKEY_LOCAL_MACHINE,
-                              "SYSTEM\\CurrentControlSet\\Services\\EventLog\\%s\\%s" % (eventLogType, appName))
+        win32api.RegDeleteKey(
+            win32con.HKEY_LOCAL_MACHINE,
+            "SYSTEM\\CurrentControlSet\\Services\\EventLog\\%s\\%s" %
+            (eventLogType,
+             appName))
     except win32api.error as exc:
         if exc.winerror != winerror.ERROR_FILE_NOT_FOUND:
             raise
 
 
-def ReportEvent(appName, eventID, eventCategory=0,
-                eventType=win32evtlog.EVENTLOG_ERROR_TYPE, strings=None, data=None, sid=None):
+def ReportEvent(
+        appName,
+        eventID,
+        eventCategory=0,
+        eventType=win32evtlog.EVENTLOG_ERROR_TYPE,
+        strings=None,
+        data=None,
+        sid=None):
     """Report an event for a previously added event source.
     """
     # Get a handle to the Application event log
@@ -122,8 +134,12 @@ def FormatMessage(eventLogRecord, logType="Application"):
                 dllHandle = win32api.LoadLibraryEx(
                     dllName, 0, win32con.LOAD_LIBRARY_AS_DATAFILE)
                 try:
-                    data = win32api.FormatMessageW(win32con.FORMAT_MESSAGE_FROM_HMODULE,
-                                                   dllHandle, eventLogRecord.EventID, langid, eventLogRecord.StringInserts)
+                    data = win32api.FormatMessageW(
+                        win32con.FORMAT_MESSAGE_FROM_HMODULE,
+                        dllHandle,
+                        eventLogRecord.EventID,
+                        langid,
+                        eventLogRecord.StringInserts)
                 finally:
                     win32api.FreeLibrary(dllHandle)
             except win32api.error:

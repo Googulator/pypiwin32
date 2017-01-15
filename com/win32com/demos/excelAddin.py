@@ -46,13 +46,12 @@
 # OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 
-from win32com import universal
-from win32com.server.exception import COMException
-from win32com.client import gencache, DispatchWithEvents
-import winerror
-import pythoncom
-from win32com.client import constants, Dispatch
 import sys
+
+import pythoncom
+from win32com import universal
+from win32com.client import constants
+from win32com.client import gencache, DispatchWithEvents
 
 # Support for COM objects we use.
 gencache.EnsureModule(
@@ -128,7 +127,9 @@ class ExcelAddin:
                 wcode, source, text, helpFile, helpId, scode = exc
                 print("The source of the error is", source)
                 print("The error message is", text)
-                print("More info can be found in %s (id=%d)" % (helpFile, helpId))
+                print(
+                    "More info can be found in %s (id=%d)" %
+                    (helpFile, helpId))
 
     def OnDisconnection(self, mode, custom):
         print("OnDisconnection")

@@ -1,14 +1,11 @@
-
-
-from win32com.server.util import wrap
-import pythoncom
-import sys
 import os
-import time
+import tempfile
+
+import pythoncom
 import win32api
 import win32event
-import tempfile
 from win32com.bits import bits
+from win32com.server.util import wrap
 
 TIMEOUT = 200  # ms
 StopEvent = win32event.CreateEvent(None, 0, 0, None)
@@ -44,7 +41,11 @@ class BackgroundJobCallback:
             print('Changing to point to correct file')
             f2 = f.QueryInterface(bits.IID_IBackgroundCopyFile2)
             favicon = 'http://www.python.org/favicon.ico'
-            print('Changing RemoteName from', f2.GetRemoteName(), 'to', favicon)
+            print(
+                'Changing RemoteName from',
+                f2.GetRemoteName(),
+                'to',
+                favicon)
             f2.SetRemoteName(favicon)
             job.Resume()
         else:

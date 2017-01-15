@@ -22,13 +22,14 @@
    work.
 
 """
-import win32con
-import win32api
-import win32ui
 import sys
+
 import pythoncom
-from win32com.client import util
+import win32api
+import win32con
+import win32ui
 from pywin.tools import browser
+from win32com.client import util
 
 
 class HLIRoot(browser.HLIPythonObject):
@@ -37,8 +38,12 @@ class HLIRoot(browser.HLIPythonObject):
         self.name = title
 
     def GetSubList(self):
-        return [HLIHeadingCategory(), HLI_IEnumMoniker(pythoncom.GetRunningObjectTable(
-        ).EnumRunning(), "Running Objects"), HLIHeadingRegisterdTypeLibs()]
+        return [
+            HLIHeadingCategory(),
+            HLI_IEnumMoniker(
+                pythoncom.GetRunningObjectTable().EnumRunning(),
+                "Running Objects"),
+            HLIHeadingRegisterdTypeLibs()]
 
     def __cmp__(self, other):
         return cmp(self.name, other.name)
@@ -187,7 +192,6 @@ class HLIHelpFile(HLICOM):
 class HLIRegisteredTypeLibrary(HLICOM):
 
     def GetSubList(self):
-        import os
         clsidstr, versionStr = self.myobject
         collected = []
         helpPath = ""
@@ -376,11 +380,12 @@ class HLITypeLibFunction(HLICOM):
                  pythoncom.FUNC_STATIC: "Static",
                  pythoncom.FUNC_DISPATCH: "Dispatch",
                  }
-    invokekinds = {pythoncom.INVOKE_FUNC: "Function",
-                   pythoncom.INVOKE_PROPERTYGET: "Property Get",
-                   pythoncom.INVOKE_PROPERTYPUT: "Property Put",
-                   pythoncom.INVOKE_PROPERTYPUTREF: "Property Put by reference",
-                   }
+    invokekinds = {
+        pythoncom.INVOKE_FUNC: "Function",
+        pythoncom.INVOKE_PROPERTYGET: "Property Get",
+        pythoncom.INVOKE_PROPERTYPUT: "Property Put",
+        pythoncom.INVOKE_PROPERTYPUTREF: "Property Put by reference",
+    }
     funcflags = [(pythoncom.FUNCFLAG_FRESTRICTED, "Restricted"),
                  (pythoncom.FUNCFLAG_FSOURCE, "Source"),
                  (pythoncom.FUNCFLAG_FBINDABLE, "Bindable"),
@@ -599,7 +604,6 @@ class HLIHeadingRegisterdTypeLibs(HLICOM):
 
 
 def main():
-    from pywin.tools import hierlist
     root = HLIRoot("COM Browser")
     if "app" in sys.modules:
         # do it in a window

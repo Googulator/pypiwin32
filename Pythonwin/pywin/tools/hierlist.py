@@ -14,13 +14,14 @@
 # to provide maximum flexibility (but with extra work).
 
 import sys
-import win32ui
-import win32con
+
+import commctrl
 import win32api
+import win32con
+import win32ui
+from pywin.mfc import object, dialog
 from win32api import RGB
 
-from pywin.mfc import object, window, docview, dialog
-import commctrl
 
 # helper to get the text of an arbitary item
 
@@ -37,9 +38,14 @@ def GetItemText(item):
 
 
 class HierDialog(dialog.Dialog):
-
-    def __init__(self, title, hierList, bitmapID=win32ui.IDB_HIERFOLDERS,
-                 dlgID=win32ui.IDD_TREE, dll=None, childListBoxID=win32ui.IDC_LIST1):
+    def __init__(
+            self,
+            title,
+            hierList,
+            bitmapID=win32ui.IDB_HIERFOLDERS,
+            dlgID=win32ui.IDD_TREE,
+            dll=None,
+            childListBoxID=win32ui.IDC_LIST1):
         dialog.Dialog.__init__(self, dlgID, dll)  # reuse this dialog.
         self.hierList = hierList
         self.dlgID = dlgID

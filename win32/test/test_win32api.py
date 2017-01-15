@@ -1,16 +1,16 @@
 # General test module for win32api - please add some :)
 
+import datetime
+import os
+import sys
+import tempfile
 import unittest
-from pywin32_testutil import str2bytes
 
 import win32api
 import win32con
 import win32event
 import winerror
-import sys
-import os
-import tempfile
-import datetime
+from pywin32_testutil import str2bytes
 
 
 class CurrentUserTestCase(unittest.TestCase):
@@ -142,8 +142,9 @@ class FileNames(unittest.TestCase):
         fname = os.path.abspath(me).lower()
         short_name = win32api.GetShortPathName(fname).lower()
         long_name = win32api.GetLongPathName(short_name).lower()
-        self.assertTrue(long_name == fname,
-                        "Expected long name ('%s') to be original name ('%s')" % (long_name, fname))
+        self.assertTrue(
+            long_name == fname, "Expected long name ('%s') to be original name ('%s')" %
+            (long_name, fname))
         self.assertEqual(
             long_name,
             win32api.GetLongPathNameW(short_name).lower())
@@ -152,8 +153,9 @@ class FileNames(unittest.TestCase):
             isinstance(
                 long_name, str), "GetLongPathNameW returned type '%s'" %
             (type(long_name),))
-        self.assertTrue(long_name == fname,
-                        "Expected long name ('%s') to be original name ('%s')" % (long_name, fname))
+        self.assertTrue(
+            long_name == fname, "Expected long name ('%s') to be original name ('%s')" %
+            (long_name, fname))
 
     def testShortUnicodeNames(self):
         try:
@@ -165,8 +167,9 @@ class FileNames(unittest.TestCase):
         short_name = win32api.GetShortPathName(str(fname)).lower()
         self.assertTrue(isinstance(short_name, str))
         long_name = win32api.GetLongPathName(short_name).lower()
-        self.assertTrue(long_name == fname,
-                        "Expected long name ('%s') to be original name ('%s')" % (long_name, fname))
+        self.assertTrue(
+            long_name == fname, "Expected long name ('%s') to be original name ('%s')" %
+            (long_name, fname))
         self.assertEqual(
             long_name,
             win32api.GetLongPathNameW(short_name).lower())
@@ -175,8 +178,9 @@ class FileNames(unittest.TestCase):
             isinstance(
                 long_name, str), "GetLongPathNameW returned type '%s'" %
             (type(long_name),))
-        self.assertTrue(long_name == fname,
-                        "Expected long name ('%s') to be original name ('%s')" % (long_name, fname))
+        self.assertTrue(
+            long_name == fname, "Expected long name ('%s') to be original name ('%s')" %
+            (long_name, fname))
 
     def testLongLongPathNames(self):
         # We need filename where the FQN is > 256 - simplest way is to create a

@@ -1,8 +1,8 @@
+import os
+
 import win32api
 import win32wnet
-import sys
 from winnetwk import *
-import os
 
 possible_shares = []
 
@@ -19,7 +19,10 @@ def _doDumpHandle(handle, level=0):
                     print(indent + "Have share with name:", item.lpRemoteName)
                     possible_shares.append(item)
                 elif item.dwDisplayType == RESOURCEDISPLAYTYPE_GENERIC:
-                    print(indent + "Have generic resource with name:", item.lpRemoteName)
+                    print(
+                        indent +
+                        "Have generic resource with name:",
+                        item.lpRemoteName)
                 else:
                     # Try generic!
                     print(indent + "Enumerating " + item.lpRemoteName, end=' ')
@@ -30,7 +33,10 @@ def _doDumpHandle(handle, level=0):
                     # could do k.Close(), but this is a good test!
                     win32wnet.WNetCloseEnum(k)
             except win32wnet.error as details:
-                print(indent + "Couldn't enumerate this resource: " + details.strerror)
+                print(
+                    indent +
+                    "Couldn't enumerate this resource: " +
+                    details.strerror)
 
 
 def TestOpenEnum():
@@ -85,10 +91,14 @@ def TestConnection():
                 os.listdir(
                     localName + "\\")[0])
             try:
-                print("Universal name of '%s' is '%s'" % (fname, win32wnet.WNetGetUniversalName(fname)))
+                print("Universal name of '%s' is '%s'" %
+                      (fname, win32wnet.WNetGetUniversalName(fname)))
             except win32wnet.error as details:
-                print("Couldn't get universal name of '%s': %s" % (fname, details.strerror))
-            print("User name for this connection is", win32wnet.WNetGetUser(localName))
+                print("Couldn't get universal name of '%s': %s" % (
+                    fname, details.strerror))
+            print(
+                "User name for this connection is",
+                win32wnet.WNetGetUser(localName))
         finally:
             win32wnet.WNetCancelConnection2(localName, 0, 0)
         # and do it again, but this time by using the more modern

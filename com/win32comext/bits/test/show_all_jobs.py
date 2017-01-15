@@ -1,6 +1,6 @@
 # Dump lots of info about BITS jobs.
-from win32com.bits import bits
 import pythoncom
+from win32com.bits import bits
 
 states = dict([(val, (name[13:]))
                for name, val in vars(bits).items()
@@ -37,6 +37,7 @@ for job in enum:
         bytes, total, done = f.GetProgress()
         print("  Remote:", f.GetRemoteName())
         print("  Local:", f.GetLocalName())
-        print("  Progress: %d of %d bytes - completed=%s)" % (bytes, total, done))
+        print("  Progress: %d of %d bytes - completed=%s)" %
+              (bytes, total, done))
         print()
     print()

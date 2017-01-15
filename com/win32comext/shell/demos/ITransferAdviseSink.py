@@ -1,11 +1,11 @@
 # ITransferAdviseSink implementation template
 
 import pythoncom
-from win32com.shell import shell, shellcon
 from win32com.server.policy import DesignatedWrapPolicy
+from win32com.shell import shell, shellcon
 
-tsf_flags = list((k, v)
-                 for k, v in list(shellcon.__dict__.items()) if k.startswith('TSF_'))
+tsf_flags = list((k, v) for k, v in list(
+    shellcon.__dict__.items()) if k.startswith('TSF_'))
 
 
 def decode_flags(flags):
@@ -42,9 +42,13 @@ def decode_flags(flags):
 class TransferAdviseSink(DesignatedWrapPolicy):
     _com_interfaces_ = [shell.IID_ITransferAdviseSink]
     _public_methods_ = [
-        "UpdateProgress", "UpdateTransferState", "ConfirmOverwrite",
-        "ConfirmEncryptionLoss", "FileFailure", "SubStreamFailure", "PropertyFailure"
-    ]
+        "UpdateProgress",
+        "UpdateTransferState",
+        "ConfirmOverwrite",
+        "ConfirmEncryptionLoss",
+        "FileFailure",
+        "SubStreamFailure",
+        "PropertyFailure"]
 
     def __init__(self):
         self._wrap_(self)
@@ -65,9 +69,10 @@ class TransferAdviseSink(DesignatedWrapPolicy):
                 State)))
 
     def ConfirmOverwrite(self, Source, DestParent, Name):
-        print(('ConfirmOverwrite: ', Source.GetDisplayName(shellcon.SHGDN_FORPARSING),
-              DestParent.GetDisplayName(shellcon.SHGDN_FORPARSING),
-              Name))
+        print(('ConfirmOverwrite: ',
+               Source.GetDisplayName(shellcon.SHGDN_FORPARSING),
+               DestParent.GetDisplayName(shellcon.SHGDN_FORPARSING),
+               Name))
 
     def ConfirmEncryptionLoss(self, Source):
         print((

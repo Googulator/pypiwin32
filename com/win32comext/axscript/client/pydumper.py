@@ -16,8 +16,6 @@
 from . import pyscript
 from win32com.axscript import axscript
 
-from .pyscript import RaiseAssert, trace, Exception, SCRIPTTEXT_FORCEEXECUTION
-
 PyDump_CLSID = '{ac527e60-c693-11d0-9c25-00aa00125a98}'
 
 
@@ -56,11 +54,15 @@ def Register():
 
     languageName = "PyDump"
     verProgId = "Python.Dumper.1"
-    RegisterServer(clsid=clsid, pythonInstString="win32com.axscript.client.pyscript.PyDumper",
-                   className="Python Debugging/Dumping ActiveX Scripting Engine",
-                   progID=languageName, verProgID=verProgId,
-                   catids=categories,
-                   policy=policy, dispatcher=dispatcher)
+    RegisterServer(
+        clsid=clsid,
+        pythonInstString="win32com.axscript.client.pyscript.PyDumper",
+        className="Python Debugging/Dumping ActiveX Scripting Engine",
+        progID=languageName,
+        verProgID=verProgId,
+        catids=categories,
+        policy=policy,
+        dispatcher=dispatcher)
 
     CreateRegKey(languageName + "\\OLEScript")
     # Basic Registration for wsh.

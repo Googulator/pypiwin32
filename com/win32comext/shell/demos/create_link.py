@@ -30,7 +30,8 @@ class PyShortcut:
 if __name__ == '__main__':
     import sys
     if len(sys.argv) < 2:
-        print("Usage: %s LinkFile [path [, args[, description[, working_dir]]]]\n\nIf LinkFile does not exist, it will be created using the other args")
+        print(
+            "Usage: %s LinkFile [path [, args[, description[, working_dir]]]]\n\nIf LinkFile does not exist, it will be created using the other args")
         sys.exit(1)
     file = sys.argv[1]
     shortcut = PyShortcut()
@@ -48,7 +49,8 @@ if __name__ == '__main__':
         ))
     else:
         if len(sys.argv) < 3:
-            print("Link file does not exist\nYou must supply the path, args, description and working_dir as args")
+            print(
+                "Link file does not exist\nYou must supply the path, args, description and working_dir as args")
             sys.exit(1)
         # create the shortcut using rest of args...
         data = map(

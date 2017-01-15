@@ -102,7 +102,6 @@ def FindAppPath(appName, knownFileName, searchPaths):
     """
     # Look in the first path.
     import regutil
-    import string
     import os
     regPath = regutil.GetRegisteredNamedPath(appName)
     if regPath:
@@ -128,7 +127,6 @@ def FindPythonExe(exeAlias, possibleRealNames, searchPaths):
     """
     import win32api
     import regutil
-    import string
     import os
     import sys
     if possibleRealNames is None:
@@ -161,8 +159,6 @@ def FindPythonExe(exeAlias, possibleRealNames, searchPaths):
 def QuotedFileName(fname):
     """Given a filename, return a quoted version if necessary
     """
-    import regutil
-    import string
     try:
         fname.index(" ")  # Other chars forcing quote?
         return '"%s"' % fname
@@ -179,8 +175,6 @@ def LocateFileName(fileNamesString, searchPaths):
 
        Raises KeyboardInterrupt if the user cancels.
     """
-    import regutil
-    import string
     import os
     fileNames = fileNamesString.split(";")
     for path in searchPaths:
@@ -289,7 +283,6 @@ def FindRegisterPackage(packageName, knownFile,
        may later be uninstalled.  This should not happen with the core)
     """
     import regutil
-    import string
     if not packageName:
         raise error("A package name must be supplied")
     corePaths = regutil.GetRegisteredNamedPath(None).split(";")
@@ -305,9 +298,12 @@ def FindRegisterPackage(packageName, knownFile,
             regutil.RegisterNamedPath(registryAppName, pathAdd)
         return pathLook
     except error as details:
-        print("*** The %s package could not be registered - %s" % (packageName, details))
+        print(
+            "*** The %s package could not be registered - %s" %
+            (packageName, details))
         print("*** Please ensure you have passed the correct paths on the command line.")
-        print("*** - For packages, you should pass a path to the packages parent directory,")
+        print(
+            "*** - For packages, you should pass a path to the packages parent directory,")
         print("*** - and not the package directory itself...")
 
 
@@ -318,7 +314,6 @@ def FindRegisterApp(appName, knownFiles, searchPaths):
 
     """
     import regutil
-    import string
     if isinstance(knownFiles, type('')):
         knownFiles = [knownFiles]
     paths = []
@@ -340,7 +335,6 @@ def FindRegisterPythonExe(exeAlias, searchPaths, actualFileNames=None):
        Assumes the core registry setup correctly.
     """
     import regutil
-    import string
     fname, ok = FindPythonExe(exeAlias, actualFileNames, searchPaths)
     if not ok:
         regutil.RegisterPythonExe(fname, exeAlias)
@@ -393,8 +387,9 @@ def SetupCore(searchPaths):
         win32api.RegCloseKey(hKey)
 
     # Register the win32 core paths.
-    win32paths = os.path.abspath( os.path.split(win32api.__file__)[0]) + ";" + \
-        os.path.abspath(
+    win32paths = os.path.abspath(
+        os.path.split(
+            win32api.__file__)[0]) + ";" + os.path.abspath(
         os.path.split(
             LocateFileName(
                 "win32con.py;win32con.pyc",
@@ -555,9 +550,11 @@ if __name__ == '__main__':
     else:
         searchPaths = []
         import getopt
-        import string
-        opts, args = getopt.getopt(sys.argv[1:], 'p:a:m:c',
-                                   ['shell', 'upackage=', 'uapp=', 'umodule=', 'description', 'examples'])
+
+        opts, args = getopt.getopt(
+            sys.argv[
+            1:], 'p:a:m:c', [
+                'shell', 'upackage=', 'uapp=', 'umodule=', 'description', 'examples'])
         for arg in args:
             searchPaths.append(arg)
         for o, a in opts:
@@ -592,7 +589,9 @@ if __name__ == '__main__':
                     if newPath not in currentPaths:
                         currentPaths.append(newPath)
                 if len(currentPaths) != oldLen:
-                    print("Registering %d new core paths" % (len(currentPaths) - oldLen))
+                    print(
+                        "Registering %d new core paths" %
+                        (len(currentPaths) - oldLen))
                     regutil.RegisterNamedPath(None, ";".join(currentPaths))
                 else:
                     print("All specified paths are already registered.")

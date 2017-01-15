@@ -4,13 +4,14 @@ The FSCTL_TXFS_CREATE_MINIVERSION control code saves any changes to a new
 miniversion (effectively a savepoint within a transaction).
 """
 
-import win32file
-import win32api
-import win32transaction
-import win32con
-import winioctlcon
-import struct
 import os
+import struct
+
+import win32api
+import win32con
+import win32file
+import win32transaction
+import winioctlcon
 from pywin32_testutil import str2bytes  # py3k-friendly helper
 
 """
@@ -33,9 +34,15 @@ f.close()
 
 trans = win32transaction.CreateTransaction(
     Description='Test creating miniversions of a file')
-hfile = win32file.CreateFileW(tempfile, win32con.GENERIC_READ | win32con.GENERIC_WRITE,
-                              win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE,
-                              None, win32con.OPEN_EXISTING, 0, None, Transaction=trans)
+hfile = win32file.CreateFileW(
+    tempfile,
+    win32con.GENERIC_READ | win32con.GENERIC_WRITE,
+    win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE,
+    None,
+    win32con.OPEN_EXISTING,
+    0,
+    None,
+    Transaction=trans)
 
 win32file.WriteFile(hfile, str2bytes('This is first miniversion.\n'))
 buf = win32file.DeviceIoControl(
@@ -58,21 +65,42 @@ struct_ver, struct_len, base_ver, ver_2 = struct.unpack(buf_fmt, buf)
 hfile.Close()
 
 # miniversions can't be opened with write access
-hfile_0 = win32file.CreateFileW(tempfile, win32con.GENERIC_READ,
-                                win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE,
-                                None, win32con.OPEN_EXISTING, 0, None, Transaction=trans, MiniVersion=base_ver)
+hfile_0 = win32file.CreateFileW(
+    tempfile,
+    win32con.GENERIC_READ,
+    win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE,
+    None,
+    win32con.OPEN_EXISTING,
+    0,
+    None,
+    Transaction=trans,
+    MiniVersion=base_ver)
 print('version:', base_ver, win32file.ReadFile(hfile_0, 100))
 hfile_0.Close()
 
-hfile_1 = win32file.CreateFileW(tempfile, win32con.GENERIC_READ,
-                                win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE,
-                                None, win32con.OPEN_EXISTING, 0, None, Transaction=trans, MiniVersion=ver_1)
+hfile_1 = win32file.CreateFileW(
+    tempfile,
+    win32con.GENERIC_READ,
+    win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE,
+    None,
+    win32con.OPEN_EXISTING,
+    0,
+    None,
+    Transaction=trans,
+    MiniVersion=ver_1)
 print('version:', ver_1, win32file.ReadFile(hfile_1, 100))
 hfile_1.Close()
 
-hfile_2 = win32file.CreateFileW(tempfile, win32con.GENERIC_READ,
-                                win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE,
-                                None, win32con.OPEN_EXISTING, 0, None, Transaction=trans, MiniVersion=ver_2)
+hfile_2 = win32file.CreateFileW(
+    tempfile,
+    win32con.GENERIC_READ,
+    win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE,
+    None,
+    win32con.OPEN_EXISTING,
+    0,
+    None,
+    Transaction=trans,
+    MiniVersion=ver_2)
 print('version:', ver_2, win32file.ReadFile(hfile_2, 100))
 hfile_2.Close()
 

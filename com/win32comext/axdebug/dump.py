@@ -1,9 +1,8 @@
-import sys
-import string
 import traceback
+
+import pythoncom
 from win32com.axdebug import axdebug
 from win32com.client.util import Enumerator
-import pythoncom
 
 
 def DumpDebugApplicationNode(node, level=0):
@@ -28,7 +27,8 @@ def DumpDebugApplicationNode(node, level=0):
         numLines, numChars = doctext.GetSize()
 #                       text, attr = doctext.GetText(0, 20, 1)
         text, attr = doctext.GetText(0, numChars, 1)
-        print("%sText is %s, %d bytes long" % (spacer, repr(text[:40] + "..."), len(text)))
+        print("%sText is %s, %d bytes long" %
+              (spacer, repr(text[:40] + "..."), len(text)))
     else:
         print("%s%s" % (spacer, "<No document available>"))
 

@@ -1,9 +1,9 @@
 # CallTips.py - An IDLE extension that provides "Call Tips" - ie, a floating window that
 # displays parameter information as you open parens.
 
+import inspect
 import string
 import sys
-import inspect
 import traceback
 
 
@@ -68,8 +68,14 @@ class CallTips:
             # If we have moved before the start of the calltip,
             # or off the calltip line, then cancel the tip.
             # (Later need to be smarter about multi-line, etc)
-            if self.text.compare("insert", "<=", self.calltip_start) or \
-               self.text.compare("insert", ">", self.calltip_start + " lineend"):
+            if self.text.compare(
+                    "insert",
+                    "<=",
+                    self.calltip_start) or self.text.compare(
+                "insert",
+                ">",
+                        self.calltip_start +
+                        " lineend"):
                 self._remove_calltip_window()
         return ""  # so the event is handled normally.
 
@@ -77,8 +83,12 @@ class CallTips:
         self._remove_calltip_window()
         return ""  # so the event is handled normally.
 
-    def get_object_at_cursor(self,
-                             wordchars="._" + string.ascii_uppercase + string.ascii_lowercase + string.digits):
+    def get_object_at_cursor(
+            self,
+            wordchars="._" +
+                      string.ascii_uppercase +
+                      string.ascii_lowercase +
+                      string.digits):
         # XXX - This needs to be moved to a better place
         # so the "." attribute lookup code can also use it.
         text = self.text
@@ -198,7 +208,8 @@ if __name__ == '__main__':
             expected = t.__doc__ + "\n" + t.__doc__
             if get_arg_text(t) != expected:
                 failed.append(t)
-                print("%s - expected %s, but got %s" % (t, repr(expected), repr(get_arg_text(t))))
+                print("%s - expected %s, but got %s" %
+                      (t, repr(expected), repr(get_arg_text(t))))
         print("%d of %d tests failed" % (len(failed), len(tests)))
 
     tc = TC()

@@ -1,19 +1,17 @@
-import sys
+import logging
 import os
-import win32api
+import sys
 import tempfile
 import unittest
-import gc
+import winreg
+
 import pythoncom
+import pywin32_testutil
+import win32api
+import win32com
 import winerror
 from pythoncom import _GetInterfaceCount, _GetGatewayCount
-import win32com
-import logging
-import winreg
-import io as StringIO
-
-import pywin32_testutil
-from pywin32_testutil import TestLoader, TestResult, TestRunner, LeakTestCase
+from pywin32_testutil import LeakTestCase
 
 
 def CheckClean():
@@ -53,8 +51,12 @@ def RegisterPythonServer(filename, progids=None, verbose=0):
             except WindowsError:
                 # no CLSID or InProcServer32 - not good!
                 break
-            ok_files = [os.path.basename(pythoncom.__file__),
-                        'pythoncomloader%d%d.dll' % (sys.version_info[0], sys.version_info[1])]
+            ok_files = [
+                os.path.basename(
+                    pythoncom.__file__),
+                'pythoncomloader%d%d.dll' %
+                (sys.version_info[0],
+                 sys.version_info[1])]
             if os.path.basename(dll) not in ok_files:
                 why_not = "%r is registered against a different Python version (%s)" % (
                     progid, dll)

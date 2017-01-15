@@ -235,16 +235,17 @@ datetime.datetime(2011, 11, 6, 1, 0, tzinfo=TimeZoneInfo('Pacific Standard Time'
 
 __author__ = 'Jason R. Coombs <jaraco@jaraco.com>'
 
-import winreg
-import struct
 import datetime
-import win32api
-import re
+import logging
 import operator
+import re
+import struct
 import warnings
+import winreg
 from itertools import count
 
-import logging
+import win32api
+
 log = logging.getLogger(__file__)
 
 # A couple of objects for working with objects as if they were native C-type
@@ -359,17 +360,31 @@ class TimeZoneDefinition(DYNAMIC_TIME_ZONE_INFORMATION):
 
         raise TypeError("Invalid arguments for %s" % self.__class__)
 
-    def __init_from_bytes(self, bytes, standard_name='',
-                          daylight_name='', key_name='', daylight_disabled=False):
+    def __init_from_bytes(
+            self,
+            bytes,
+            standard_name='',
+            daylight_name='',
+            key_name='',
+            daylight_disabled=False):
         format = '3l8h8h'
         components = struct.unpack(format, bytes)
         bias, standard_bias, daylight_bias = components[:3]
         standard_start = SYSTEMTIME(*components[3:11])
         daylight_start = SYSTEMTIME(*components[11:19])
-        super(TimeZoneDefinition, self).__init__(bias,
-                                                 standard_name, standard_start, standard_bias,
-                                                 daylight_name, daylight_start, daylight_bias,
-                                                 key_name, daylight_disabled,)
+        super(
+            TimeZoneDefinition,
+            self).__init__(
+            bias,
+            standard_name,
+            standard_start,
+            standard_bias,
+            daylight_name,
+            daylight_start,
+            daylight_bias,
+            key_name,
+            daylight_disabled,
+        )
 
     def __init_from_other(self, other):
         if not isinstance(other, TIME_ZONE_INFORMATION):
@@ -439,8 +454,14 @@ class TimeZoneDefinition(DYNAMIC_TIME_ZONE_INFORMATION):
         week_of_month = cutoff.day
         # so the following is the first day of that week
         day = (week_of_month - 1) * 7 + 1
-        result = datetime.datetime(year, cutoff.month, day,
-                                   cutoff.hour, cutoff.minute, cutoff.second, cutoff.millisecond)
+        result = datetime.datetime(
+            year,
+            cutoff.month,
+            day,
+            cutoff.hour,
+            cutoff.minute,
+            cutoff.second,
+            cutoff.millisecond)
         # now the result is the correct week, but not necessarily the correct
         # day of the week
         days_to_go = (target_weekday - result.weekday()) % 7

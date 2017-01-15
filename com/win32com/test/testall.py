@@ -1,16 +1,14 @@
-import sys
+import getopt
 import os
-import string
 import re
+import sys
+import traceback
+import unittest
+
 import pythoncom
-import win32com.client
 from win32com.test.util import CheckClean, TestCase,  \
     CapturingFunctionTestCase, ShellTestCase, \
     TestLoader, TestRunner, RegisterPythonServer
-import traceback
-import getopt
-
-import unittest
 
 verbosity = 1  # default unittest verbosity.
 
@@ -71,8 +69,13 @@ class PyCOMTest(TestCase):
         # Check that the item is registered, so we get the correct
         # 'skipped' behaviour (and recorded as such) rather than either
         # error or silence due to non-registration.
-        RegisterPythonServer(os.path.join(os.path.dirname(__file__), '..', "servers", "test_pycomtest.py"),
-                             "Python.Test.PyCOMTest")
+        RegisterPythonServer(
+            os.path.join(
+                os.path.dirname(__file__),
+                '..',
+                "servers",
+                "test_pycomtest.py"),
+            "Python.Test.PyCOMTest")
 
         # Execute testPyComTest in its own process so it can play
         # with the Python thread state
@@ -258,8 +261,8 @@ if __name__ == '__main__':
             print("This is a debug build - memory leak tests will also be run.")
             print("These tests may take *many* minutes to run - be patient!")
             print("(running from python.exe will avoid these leak tests)")
-        print("Executing level %d tests - %d test cases will be run" \
-            % (testLevel, suite.countTestCases()))
+        print("Executing level %d tests - %d test cases will be run"
+              % (testLevel, suite.countTestCases()))
         if verbosity == 1 and suite.countTestCases() < 70:
             # A little row of markers so the dots show how close to finished
             print('|' * suite.countTestCases())

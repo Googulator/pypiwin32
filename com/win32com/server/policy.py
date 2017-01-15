@@ -68,19 +68,18 @@ Error Handling
 """
 __author__ = "Greg Stein and Mark Hammond"
 
-import win32api
-import winerror
 import sys
 import types
-import pywintypes
-import win32con
-import pythoncom
 
-# Import a few important constants to speed lookups.
+import pythoncom
+import pywintypes
+import win32api
+import win32con
+import winerror
 from pythoncom import \
     DISPATCH_METHOD, DISPATCH_PROPERTYGET, DISPATCH_PROPERTYPUT, DISPATCH_PROPERTYPUTREF, \
-    DISPID_UNKNOWN, DISPID_VALUE, DISPID_PROPERTYPUT, DISPID_NEWENUM, \
-    DISPID_EVALUATE, DISPID_CONSTRUCTOR, DISPID_DESTRUCTOR, DISPID_COLLECT, DISPID_STARTENUM
+    DISPID_VALUE, DISPID_PROPERTYPUT, DISPID_NEWENUM, \
+    DISPID_EVALUATE, DISPID_STARTENUM
 
 S_OK = 0
 
@@ -488,10 +487,15 @@ class DesignatedWrapPolicy(MappedWrapPolicy):
             # typelibs?
             # Filter out all 'normal' IIDs (ie, IID objects and strings
             # starting with {
-            interfaces = [i for i in getattr(ob, '_com_interfaces_', [])
-                          if not isinstance(i, pywintypes.IIDType) and not i.startswith("{")]
-            universal_data = universal.RegisterInterfaces(tlb_guid, tlb_lcid,
-                                                          tlb_major, tlb_minor, interfaces)
+            interfaces = [
+                i for i in getattr(
+                    ob,
+                    '_com_interfaces_',
+                    []) if not isinstance(
+                    i,
+                    pywintypes.IIDType) and not i.startswith("{")]
+            universal_data = universal.RegisterInterfaces(
+                tlb_guid, tlb_lcid, tlb_major, tlb_minor, interfaces)
         else:
             universal_data = []
         MappedWrapPolicy._wrap_(self, ob)
@@ -622,7 +626,9 @@ class DesignatedWrapPolicy(MappedWrapPolicy):
                     # Particularly nasty is "wrong number of args" type error
                     # This helps you see what 'func' and 'args' actually is
                     if str(v).find("arguments") >= 0:
-                        print("** TypeError %s calling function %r(%r)" % (v, func, args))
+                        print(
+                            "** TypeError %s calling function %r(%r)" %
+                            (v, func, args))
                     raise
 
         if wFlags & DISPATCH_PROPERTYGET:
@@ -646,8 +652,18 @@ class DesignatedWrapPolicy(MappedWrapPolicy):
                     scode=winerror.DISP_E_MEMBERNOTFOUND)  # read-only
             # If we have a method of that name (ie, a property get function), and
             # we have an equiv. property set function, use that instead.
-            if isinstance(getattr(self._obj_, name, None), types.MethodType) and \
-               isinstance(getattr(self._obj_, "Set" + name, None), types.MethodType):
+            if isinstance(
+                    getattr(
+                        self._obj_,
+                        name,
+                        None),
+                    types.MethodType) and isinstance(
+                getattr(
+                    self._obj_,
+                            "Set" +
+                            name,
+                    None),
+                types.MethodType):
                 fn = getattr(self._obj_, "Set" + name)
                 fn(*args)
             else:

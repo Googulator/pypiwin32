@@ -1,9 +1,11 @@
-import win32gui
-import win32con
-import win32api
-import time
-import os
 import glob
+import os
+import time
+
+import win32api
+import win32con
+import win32gui
+
 # some of these tests will fail for systems prior to XP
 
 for pname in(
@@ -38,11 +40,23 @@ for pname in(
 
 # these take a boolean value in pvParam
 # change to opposite, check that it was changed and change back
-for pname in ("SPI_GETFLATMENU", "SPI_GETDROPSHADOW", "SPI_GETKEYBOARDCUES", "SPI_GETMENUFADE",
-              "SPI_GETCOMBOBOXANIMATION", "SPI_GETCURSORSHADOW", "SPI_GETGRADIENTCAPTIONS", "SPI_GETHOTTRACKING",
-              "SPI_GETLISTBOXSMOOTHSCROLLING", "SPI_GETMENUANIMATION", "SPI_GETSELECTIONFADE",
-              "SPI_GETTOOLTIPANIMATION", "SPI_GETTOOLTIPFADE", "SPI_GETUIEFFECTS", "SPI_GETACTIVEWINDOWTRACKING",
-              "SPI_GETACTIVEWNDTRKZORDER"):
+for pname in (
+        "SPI_GETFLATMENU",
+        "SPI_GETDROPSHADOW",
+        "SPI_GETKEYBOARDCUES",
+        "SPI_GETMENUFADE",
+        "SPI_GETCOMBOBOXANIMATION",
+        "SPI_GETCURSORSHADOW",
+        "SPI_GETGRADIENTCAPTIONS",
+        "SPI_GETHOTTRACKING",
+        "SPI_GETLISTBOXSMOOTHSCROLLING",
+        "SPI_GETMENUANIMATION",
+        "SPI_GETSELECTIONFADE",
+        "SPI_GETTOOLTIPANIMATION",
+        "SPI_GETTOOLTIPFADE",
+        "SPI_GETUIEFFECTS",
+        "SPI_GETACTIVEWINDOWTRACKING",
+        "SPI_GETACTIVEWNDTRKZORDER"):
     print(pname)
     cget = getattr(win32con, pname)
     cset = getattr(win32con, pname.replace('_GET', '_SET'))
@@ -59,9 +73,16 @@ for pname in ("SPI_GETFLATMENU", "SPI_GETDROPSHADOW", "SPI_GETKEYBOARDCUES", "SP
 # these take a boolean in uiParam
 # could combine with above section now that SystemParametersInfo only
 # takes a single parameter
-for pname in ("SPI_GETFONTSMOOTHING", "SPI_GETICONTITLEWRAP", "SPI_GETBEEP", "SPI_GETBLOCKSENDINPUTRESETS",
-              "SPI_GETKEYBOARDPREF", "SPI_GETSCREENSAVEACTIVE", "SPI_GETMENUDROPALIGNMENT",
-              "SPI_GETDRAGFULLWINDOWS", "SPI_GETSHOWIMEUI"):
+for pname in (
+        "SPI_GETFONTSMOOTHING",
+        "SPI_GETICONTITLEWRAP",
+        "SPI_GETBEEP",
+        "SPI_GETBLOCKSENDINPUTRESETS",
+        "SPI_GETKEYBOARDPREF",
+        "SPI_GETSCREENSAVEACTIVE",
+        "SPI_GETMENUDROPALIGNMENT",
+        "SPI_GETDRAGFULLWINDOWS",
+        "SPI_GETSHOWIMEUI"):
     print(pname)
     cget = getattr(win32con, pname)
     cset = getattr(win32con, pname.replace('_GET', '_SET'))

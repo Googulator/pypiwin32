@@ -1,4 +1,4 @@
-  # needed only if running Python 2.5
+# needed only if running Python 2.5
 import adodbapi
 try:
     import adodbapi.is64bit as is64bit

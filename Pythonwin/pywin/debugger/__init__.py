@@ -105,7 +105,8 @@ def post_mortem(t=None):
         try:
             t = sys.last_traceback
         except AttributeError:
-            print("No traceback can be found from which to perform post-mortem debugging!")
+            print(
+                "No traceback can be found from which to perform post-mortem debugging!")
             print("No debugging can continue")
             return
     p = _GetCurrentDebugger()

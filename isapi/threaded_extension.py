@@ -2,17 +2,18 @@
 # $Id$
 
 import sys
+import threading
 import time
-from isapi import isapicon, ExtensionError
-import isapi.simple
+import traceback
+
+from pywintypes import OVERLAPPED
+from win32event import INFINITE
 from win32file import GetQueuedCompletionStatus, CreateIoCompletionPort, \
     PostQueuedCompletionStatus, CloseHandle
 from win32security import SetThreadToken
-from win32event import INFINITE
-from pywintypes import OVERLAPPED
 
-import threading
-import traceback
+import isapi.simple
+from isapi import isapicon, ExtensionError
 
 ISAPI_REQUEST = 1
 ISAPI_SHUTDOWN = 2
@@ -154,14 +155,14 @@ class ThreadPoolExtension(isapi.simple.SimpleExtension):
         try:
             try:
                 import cgi
-                ecb.SendResponseHeaders("200 OK", "Content-type: text/html\r\n\r\n",
-                                        False)
+                ecb.SendResponseHeaders(
+                    "200 OK", "Content-type: text/html\r\n\r\n", False)
                 print(file=ecb)
                 print("<H3>Traceback (most recent call last):</H3>", file=ecb)
                 list = traceback.format_tb(exc_tb, limit) + \
                     traceback.format_exception_only(exc_typ, exc_val)
-                print("<PRE>%s<B>%s</B></PRE>" % (
-                    cgi.escape("".join(list[:-1])), cgi.escape(list[-1]),), file=ecb)
+                print("<PRE>%s<B>%s</B></PRE>" %
+                      (cgi.escape("".join(list[:-1])), cgi.escape(list[-1]),), file=ecb)
             except ExtensionError:
                 # The client disconnected without reading the error body -
                 # its probably not a real browser at the other end, ignore it.

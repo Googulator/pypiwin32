@@ -1,12 +1,13 @@
 # The start of a win32gui generic demo.
 # Feel free to contribute more demos back ;-)
 
-import win32gui
-import win32con
-import win32api
-import time
 import math
 import random
+import time
+
+import win32api
+import win32con
+import win32gui
 
 
 def _MyCallback(hwnd, extra):
@@ -19,7 +20,9 @@ def TestEnumWindows():
     windows = []
     classes = {}
     win32gui.EnumWindows(_MyCallback, (windows, classes))
-    print("Enumerated a total of %d windows with %d classes" % (len(windows), len(classes)))
+    print(
+        "Enumerated a total of %d windows with %d classes" %
+        (len(windows), len(classes)))
     if "tooltips_class32" not in classes:
         print("Hrmmmm - I'm very surprised to not find a 'tooltips_class32' class.")
 
@@ -33,7 +36,12 @@ def OnPaint_1(hwnd, msg, wp, lp):
     win32gui.SetWindowLong(hwnd, win32con.GWL_USERDATA, angle + 2)
     r_angle = angle * (math.pi / 180)
     win32gui.SetWorldTransform(dc,
-                               {'M11': math.cos(r_angle), 'M12': math.sin(r_angle), 'M21': math.sin(r_angle) * -1, 'M22': math.cos(r_angle), 'Dx': 250, 'Dy': 250})
+                               {'M11': math.cos(r_angle),
+                                'M12': math.sin(r_angle),
+                                'M21': math.sin(r_angle) * -1,
+                                'M22': math.cos(r_angle),
+                                'Dx': 250,
+                                'Dy': 250})
     win32gui.MoveToEx(dc, 250, 250)
     win32gui.BeginPath(dc)
     win32gui.Pie(dc, 10, 70, 200, 200, 350, 350, 75, 10)
@@ -110,9 +118,19 @@ def TestGradientFill():
     wc.hbrBackground = win32con.COLOR_WINDOW + 1
     wc.lpfnWndProc = wndproc_2
     class_atom = win32gui.RegisterClass(wc)
-    hwnd = win32gui.CreateWindowEx(0, class_atom, 'Kaleidoscope',
-                                   win32con.WS_CAPTION | win32con.WS_VISIBLE | win32con.WS_THICKFRAME | win32con.WS_SYSMENU,
-                                   100, 100, 900, 900, 0, 0, 0, None)
+    hwnd = win32gui.CreateWindowEx(
+        0,
+        class_atom,
+        'Kaleidoscope',
+        win32con.WS_CAPTION | win32con.WS_VISIBLE | win32con.WS_THICKFRAME | win32con.WS_SYSMENU,
+        100,
+        100,
+        900,
+        900,
+        0,
+        0,
+        0,
+        None)
     s = win32gui.GetWindowLong(hwnd, win32con.GWL_EXSTYLE)
     win32gui.SetWindowLong(
         hwnd,

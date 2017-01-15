@@ -1,9 +1,10 @@
-import win32api
-import win32security
-import win32con
-import ntsecuritycon
-import winnt
 import os
+
+import ntsecuritycon
+import win32api
+import win32con
+import win32security
+import winnt
 
 temp_dir = win32api.GetTempPath()
 fname = win32api.GetTempFileName(temp_dir, 'rsk')[0]
@@ -12,10 +13,15 @@ print(fname)
 os.remove(fname)
 
 # enable backup and restore privs
-required_privs = ((win32security.LookupPrivilegeValue('', ntsecuritycon.SE_BACKUP_NAME), win32con.SE_PRIVILEGE_ENABLED),
-                  (win32security.LookupPrivilegeValue(
-                      '', ntsecuritycon.SE_RESTORE_NAME), win32con.SE_PRIVILEGE_ENABLED)
-                  )
+required_privs = (
+    (win32security.LookupPrivilegeValue(
+        '',
+        ntsecuritycon.SE_BACKUP_NAME),
+     win32con.SE_PRIVILEGE_ENABLED),
+    (win32security.LookupPrivilegeValue(
+        '',
+        ntsecuritycon.SE_RESTORE_NAME),
+     win32con.SE_PRIVILEGE_ENABLED))
 ph = win32api.GetCurrentProcess()
 th = win32security.OpenProcessToken(
     ph, win32con.TOKEN_READ | win32con.TOKEN_ADJUST_PRIVILEGES)

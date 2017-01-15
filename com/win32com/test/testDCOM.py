@@ -36,7 +36,9 @@ def test(serverName):
     ob.Exec("import win32api")
     actualName = ob.Eval("win32api.GetComputerName()")
     if string.lower(serverName) != string.lower(actualName):
-        print("Error: The object created on server '%s' reported its name as '%s'" % (serverName, actualName))
+        print(
+            "Error: The object created on server '%s' reported its name as '%s'" %
+            (serverName, actualName))
     else:
         print("Object created and tested OK on server '%s'" % serverName)
 

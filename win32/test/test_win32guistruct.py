@@ -1,9 +1,9 @@
-import unittest
-import win32gui
-import win32gui_struct
-import win32con
 import array
+import unittest
+
 import pythoncom
+import win32con
+import win32gui_struct
 
 
 class TestBase(unittest.TestCase):
@@ -12,7 +12,7 @@ class TestBase(unittest.TestCase):
         checked = dict()
         for n, v in kw.items():
             self.assertEqual(v, d[n],
-                                 "'%s' doesn't match: %r != %r" % (n, v, d[n]))
+                             "'%s' doesn't match: %r != %r" % (n, v, d[n]))
             checked[n] = True
         checked_keys = list(checked.keys())
         passed_keys = list(kw.keys())
@@ -205,8 +205,8 @@ class TestDEV_BROADCAST_HANDLE(TestBase):
         self.assertEqual(got.handle, 123)
 
     def testGUID(self):
-        s = win32gui_struct.PackDEV_BROADCAST_HANDLE(123,
-                                                     guid=pythoncom.IID_IUnknown)
+        s = win32gui_struct.PackDEV_BROADCAST_HANDLE(
+            123, guid=pythoncom.IID_IUnknown)
         c = array.array("b", s)
         got = win32gui_struct.UnpackDEV_BROADCAST(c.buffer_info()[0])
         self.assertEqual(got.handle, 123)
@@ -216,8 +216,8 @@ class TestDEV_BROADCAST_HANDLE(TestBase):
 class TestDEV_BROADCAST_DEVICEINTERFACE(TestBase):
 
     def testPackUnpack(self):
-        s = win32gui_struct.PackDEV_BROADCAST_DEVICEINTERFACE(pythoncom.IID_IUnknown,
-                                                              "hello")
+        s = win32gui_struct.PackDEV_BROADCAST_DEVICEINTERFACE(
+            pythoncom.IID_IUnknown, "hello")
         c = array.array("b", s)
         got = win32gui_struct.UnpackDEV_BROADCAST(c.buffer_info()[0])
         self.assertEqual(got.classguid, pythoncom.IID_IUnknown)

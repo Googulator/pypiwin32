@@ -16,7 +16,6 @@ the way they were, simply use this magic incantation:
     import sys
     sys.stdin = sys.stdin.real_file
 """
-import sys
 
 try:
     get_input_line = raw_input  # py2x
@@ -92,8 +91,10 @@ class Stdin:
         If desired_size < 0, returns the length of the internal buffer. Otherwise,
         returns desired_size.
         """
-        while not done_reading(self.buffer) and (desired_size < 0
-                                                 or len(self.buffer) < desired_size):
+        while not done_reading(
+                self.buffer) and (
+                        desired_size < 0 or len(
+                    self.buffer) < desired_size):
             try:
                 self.__get_line()
             except (EOFError, KeyboardInterrupt):  # deal with cancellation of get_input_line dialog

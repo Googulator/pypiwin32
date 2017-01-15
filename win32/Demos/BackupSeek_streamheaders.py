@@ -1,12 +1,12 @@
 # demonstrates using BackupSeek to enumerate data streams for a file
-import win32file
-import win32api
-import win32con
-from win32com import storagecon
+import struct
+
 import pythoncom
 import pywintypes
-import struct
-import traceback
+import win32api
+import win32con
+import win32file
+from win32com import storagecon
 
 stream_types = {
     win32con.BACKUP_DATA: "Standard data",
@@ -60,8 +60,14 @@ pss = None
 
 sa = pywintypes.SECURITY_ATTRIBUTES()
 sa.bInheritHandle = False
-h = win32file.CreateFile(tempfile, win32con.GENERIC_ALL, win32con.FILE_SHARE_READ,
-                         sa, win32con.OPEN_EXISTING, win32file.FILE_FLAG_BACKUP_SEMANTICS, None)
+h = win32file.CreateFile(
+    tempfile,
+    win32con.GENERIC_ALL,
+    win32con.FILE_SHARE_READ,
+    sa,
+    win32con.OPEN_EXISTING,
+    win32file.FILE_FLAG_BACKUP_SEMANTICS,
+    None)
 
 
 """ stream header:
@@ -78,7 +84,16 @@ win32_stream_id_size = struct.calcsize(win32_stream_id_format)
 def parse_stream_header(h, ctxt, data):
     stream_type, stream_attributes, stream_size, stream_name_size = struct.unpack(
         win32_stream_id_format, data)
-    print('\nType:', stream_type, stream_types[stream_type], 'Attributes:', stream_attributes, 'Size:', stream_size, 'Name len:', stream_name_size)
+    print(
+        '\nType:',
+        stream_type,
+        stream_types[stream_type],
+        'Attributes:',
+        stream_attributes,
+        'Size:',
+        stream_size,
+        'Name len:',
+        stream_name_size)
     if stream_name_size > 0:
         # ??? sdk says this size is in characters, but it appears to be number of bytes ???
         bytes_read, stream_name_buf, ctxt = win32file.BackupRead(

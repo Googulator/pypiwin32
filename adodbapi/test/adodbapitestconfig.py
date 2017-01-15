@@ -12,11 +12,12 @@
 # #  -- the things you need to change are below it.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 import platform
-import sys
 import random
+import sys
 
 import is64bit
 import setuptestframework
+
 if sys.version_info >= (3, 0):
     import tryconnection3 as tryconnection
 else:
@@ -26,7 +27,7 @@ print((sys.version))
 node = platform.node()
 try:
     print(('node=%s: is64bit.os()= %s, is64bit.Python()= %s' %
-          (node, is64bit.os(), is64bit.Python())))
+           (node, is64bit.os(), is64bit.Python())))
 except:
     pass
 
@@ -136,11 +137,12 @@ if doSqlServerTest:
         verbose, connStr, 30, **c)
 
 if doMySqlTest:
-    c = {'host': "25.223.161.222",
-         'database': 'test',
-         'user': 'adotest',
-         'password': '12345678',
-         'driver': "MySQL ODBC 5.3 Unicode Driver"}    # or _driver="MySQL ODBC 3.51 Driver
+    c = {
+        'host': "25.223.161.222",
+        'database': 'test',
+        'user': 'adotest',
+        'password': '12345678',
+        'driver': "MySQL ODBC 5.3 Unicode Driver"}  # or _driver="MySQL ODBC 3.51 Driver
 
     if not onWindows:
         if THE_PROXY_HOST:
@@ -161,8 +163,10 @@ if doPostgresTest:
     _username = 'adotestuser'
     _password = '12345678'
     kws = {'timeout': 4}
-    kws['macro_is64bit'] = ['prov_drv', 'Provider=MSDASQL;Driver={PostgreSQL Unicode(x64)}',
-                            'Driver=PostgreSQL Unicode']
+    kws['macro_is64bit'] = [
+        'prov_drv',
+        'Provider=MSDASQL;Driver={PostgreSQL Unicode(x64)}',
+        'Driver=PostgreSQL Unicode']
     if not onWindows:
         if THE_PROXY_HOST:
             kws['proxy_host'] = THE_PROXY_HOST
@@ -171,8 +175,8 @@ if doPostgresTest:
     # get driver from http://www.postgresql.org/ftp/odbc/versions/
     # test using positional and keyword arguments (bad example for real code)
     print('    ...Testing PostgreSQL login...')
-    doPostgresTest, connStrPostgres, dbPostgresConnect = tryconnection.try_connection(verbose,
-                                                                                      '%(prov_drv)s;Server=%(host)s;Database=%(database)s;uid=%(user)s;pwd=%(password)s;',
-                                                                                      _username, _password, _computername, _databasename, **kws)
+    doPostgresTest, connStrPostgres, dbPostgresConnect = tryconnection.try_connection(
+        verbose, '%(prov_drv)s;Server=%(host)s;Database=%(database)s;uid=%(user)s;pwd=%(password)s;', _username,
+        _password, _computername, _databasename, **kws)
 
 assert doAccessTest or doSqlServerTest or doMySqlTest or doPostgresTest, 'No database engine found for testing'
