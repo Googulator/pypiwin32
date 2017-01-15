@@ -36,4 +36,4 @@ def os():
             return False
 
 if __name__ == "__main__":
-    print("is64bit.Python() =", Python(), "is64bit.os() =", os())
+    print(("is64bit.Python() =", Python(), "is64bit.os() =", os()))

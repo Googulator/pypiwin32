@@ -19,7 +19,7 @@ def MakeTestDictionary():
 
 
 def TestDictAgainst(dict, check):
-    for key, value in check.iteritems():
+    for key, value in check.items():
         if dict(key) != value:
             raise error(
                 "Indexing for '%s' gave the incorrect value - %s/%s" %
@@ -44,7 +44,7 @@ def TestDict(quiet=None):
     Register(quiet)
 
     if not quiet:
-        print "Simple enum test"
+        print("Simple enum test")
     dict = MakeTestDictionary()
     checkDict = {}
     TestDictAgainst(dict, checkDict)
@@ -58,7 +58,7 @@ def TestDict(quiet=None):
     TestDictAgainst(dict, checkDict)
 
     if not quiet:
-        print "Failure tests"
+        print("Failure tests")
     try:
         dict()
         raise error("default method with no args worked when it shouldnt have!")
@@ -90,7 +90,7 @@ def TestDict(quiet=None):
                 (hr, desc))
 
     if not quiet:
-        print "Python.Dictionary tests complete."
+        print("Python.Dictionary tests complete.")
 
 
 class TestCase(win32com.test.util.TestCase):

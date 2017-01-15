@@ -19,9 +19,9 @@ def TestEnumWindows():
     windows = []
     classes = {}
     win32gui.EnumWindows(_MyCallback, (windows, classes))
-    print "Enumerated a total of %d windows with %d classes" % (len(windows), len(classes))
+    print("Enumerated a total of %d windows with %d classes" % (len(windows), len(classes)))
     if "tooltips_class32" not in classes:
-        print "Hrmmmm - I'm very surprised to not find a 'tooltips_class32' class."
+        print("Hrmmmm - I'm very surprised to not find a 'tooltips_class32' class.")
 
 
 def OnPaint_1(hwnd, msg, wp, lp):
@@ -55,7 +55,7 @@ def OnPaint_2(hwnd, msg, wp, lp):
     win32gui.SetGraphicsMode(dc, win32con.GM_ADVANCED)
     l, t, r, b = win32gui.GetClientRect(hwnd)
 
-    for x in xrange(25):
+    for x in range(25):
         vertices = (
             {'x': int(random.random() * r),
              'y': int(random.random() * b),
@@ -95,7 +95,7 @@ def TestSetWorldTransform():
                                  'Spin the Lobster!',
                                  win32con.WS_CAPTION | win32con.WS_VISIBLE,
                                  100, 100, 900, 900, 0, 0, 0, None)
-    for x in xrange(500):
+    for x in range(500):
         win32gui.InvalidateRect(hwnd, None, True)
         win32gui.PumpWaitingMessages()
         time.sleep(0.01)
@@ -119,16 +119,16 @@ def TestGradientFill():
         win32con.GWL_EXSTYLE,
         s | win32con.WS_EX_LAYERED)
     win32gui.SetLayeredWindowAttributes(hwnd, 0, 175, win32con.LWA_ALPHA)
-    for x in xrange(30):
+    for x in range(30):
         win32gui.InvalidateRect(hwnd, None, True)
         win32gui.PumpWaitingMessages()
         time.sleep(0.3)
     win32gui.DestroyWindow(hwnd)
     win32gui.UnregisterClass(class_atom, None)
 
-print "Enumerating all windows..."
+print("Enumerating all windows...")
 TestEnumWindows()
-print "Testing drawing functions ..."
+print("Testing drawing functions ...")
 TestSetWorldTransform()
 TestGradientFill()
-print "All tests done!"
+print("All tests done!")

@@ -1,7 +1,7 @@
 import sys
 import string
 import tokenize
-import PyParse
+from . import PyParse
 from pywin import default_scintilla_encoding
 
 if sys.version_info < (3,):
@@ -95,7 +95,7 @@ class AutoIndent:
         self.text = editwin.text
 
     def config(self, **options):
-        for key, value in options.iteritems():
+        for key, value in options.items():
             if key == 'usetabs':
                 self.usetabs = value
             elif key == 'indentwidth':

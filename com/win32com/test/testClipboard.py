@@ -54,7 +54,7 @@ class TestDataObject:
                 ret_stg.set(pythoncom.TYMED_HGLOBAL, str2bytes(self.strval))
             elif cf == win32con.CF_UNICODETEXT:
                 ret_stg = pythoncom.STGMEDIUM()
-                ret_stg.set(pythoncom.TYMED_HGLOBAL, unicode(self.strval))
+                ret_stg.set(pythoncom.TYMED_HGLOBAL, str(self.strval))
 
         if ret_stg is None:
             raise COMException(hresult=winerror.E_NOTIMPL)
@@ -109,7 +109,7 @@ class ClipboardTester(unittest.TestCase):
         do = TestDataObject("Hello from Python")
         do = WrapCOMObject(do, iid=pythoncom.IID_IDataObject)
         pythoncom.OleSetClipboard(do)
-        self.failUnless(pythoncom.OleIsCurrentClipboard(do))
+        self.assertTrue(pythoncom.OleIsCurrentClipboard(do))
 
     def testComToWin32(self):
         # Set the data via our DataObject
@@ -124,7 +124,7 @@ class ClipboardTester(unittest.TestCase):
         self.assertEqual(got, expected)
         # Now check unicode
         got = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
-        self.assertEqual(got, u"Hello from Python")
+        self.assertEqual(got, "Hello from Python")
         win32clipboard.CloseClipboard()
 
     def testWin32ToCom(self):
@@ -141,7 +141,7 @@ class ClipboardTester(unittest.TestCase):
         # The data we get back has the \0, as our STGMEDIUM has no way of
         # knowing if it meant to be a string, or a binary buffer, so
         # it must return it too.
-        self.failUnlessEqual(got, str2bytes("Hello again!\0"))
+        self.assertEqual(got, str2bytes("Hello again!\0"))
 
     def testDataObjectFlush(self):
         do = TestDataObject("Hello from Python")

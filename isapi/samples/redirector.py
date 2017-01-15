@@ -20,7 +20,7 @@ from isapi import isapicon, threaded_extension
 import sys
 import traceback
 try:
-    from urllib import urlopen
+    from urllib.request import urlopen
 except ImportError:
     # py3k spelling...
     from urllib.request import urlopen
@@ -44,8 +44,8 @@ excludes = ["/iisstart.htm", "/welcome.png"]
 def io_callback(ecb, url, cbIO, errcode):
     # Get the status of our ExecURL
     httpstatus, substatus, win32 = ecb.GetExecURLStatus()
-    print "ExecURL of %r finished with http status %d.%d, win32 status %d (%s)" % (
-        url, httpstatus, substatus, win32, win32api.FormatMessage(win32).strip())
+    print("ExecURL of %r finished with http status %d.%d, win32 status %d (%s)" % (
+        url, httpstatus, substatus, win32, win32api.FormatMessage(win32).strip()))
     # nothing more to do!
     ecb.DoneWithSession()
 
@@ -63,9 +63,9 @@ class Extension(threaded_extension.ThreadPoolExtension):
         url = ecb.GetServerVariable("URL").decode("ascii")
         for exclude in excludes:
             if url.lower().startswith(exclude):
-                print "excluding %s" % url
+                print("excluding %s" % url)
                 if ecb.Version < 0x60000:
-                    print "(but this is IIS5 or earlier - can't do 'excludes')"
+                    print("(but this is IIS5 or earlier - can't do 'excludes')")
                 else:
                     ecb.IOCompletion(io_callback, url)
                     ecb.ExecURL(
@@ -78,7 +78,7 @@ class Extension(threaded_extension.ThreadPoolExtension):
                     return isapicon.HSE_STATUS_PENDING
 
         new_url = proxy + url
-        print "Opening %s" % new_url
+        print("Opening %s" % new_url)
         fp = urlopen(new_url)
         headers = fp.info()
         # subtle py3k breakage: in py3k, str(headers) has normalized \r\n
@@ -94,7 +94,7 @@ class Extension(threaded_extension.ThreadPoolExtension):
         ecb.SendResponseHeaders("200 OK", header_text, False)
         ecb.WriteClient(fp.read())
         ecb.DoneWithSession()
-        print "Returned data from '%s'" % (new_url,)
+        print("Returned data from '%s'" % (new_url,))
         return isapicon.HSE_STATUS_SUCCESS
 
 # The entry points for the ISAPI extension.

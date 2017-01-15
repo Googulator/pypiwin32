@@ -5,7 +5,7 @@ from win32com.shell import shell, shellcon
 from win32com.server.policy import DesignatedWrapPolicy
 
 tsf_flags = list((k, v)
-                 for k, v in shellcon.__dict__.items() if k.startswith('TSF_'))
+                 for k, v in list(shellcon.__dict__.items()) if k.startswith('TSF_'))
 
 
 def decode_flags(flags):
@@ -21,7 +21,7 @@ def decode_flags(flags):
     return flag_txt
 
 TRANSFER_ADVISE_STATES = {}
-for k, v in shellcon.__dict__.items():
+for k, v in list(shellcon.__dict__.items()):
     if k.startswith('TS_'):
         TRANSFER_ADVISE_STATES[v] = k
 
@@ -52,35 +52,35 @@ class TransferAdviseSink(DesignatedWrapPolicy):
     def UpdateProgress(self, SizeCurrent, SizeTotal, FilesCurrent,
                        FilesTotal, FoldersCurrent, FoldersTotal):
         print('UpdateProgress - processed so far:')
-        print('\t %s out of %s bytes' % (SizeCurrent, SizeTotal))
-        print('\t %s out of %s files' % (FilesCurrent, FilesTotal))
-        print('\t %s out of %s folders' % (FoldersCurrent, FoldersTotal))
+        print(('\t %s out of %s bytes' % (SizeCurrent, SizeTotal)))
+        print(('\t %s out of %s files' % (FilesCurrent, FilesTotal)))
+        print(('\t %s out of %s folders' % (FoldersCurrent, FoldersTotal)))
 
     def UpdateTransferState(self, State):
-        print(
+        print((
             'Current state: ',
             TRANSFER_ADVISE_STATES.get(
                 State,
                 '??? Unknown state %s ???' %
-                State))
+                State)))
 
     def ConfirmOverwrite(self, Source, DestParent, Name):
-        print('ConfirmOverwrite: ', Source.GetDisplayName(shellcon.SHGDN_FORPARSING),
+        print(('ConfirmOverwrite: ', Source.GetDisplayName(shellcon.SHGDN_FORPARSING),
               DestParent.GetDisplayName(shellcon.SHGDN_FORPARSING),
-              Name)
+              Name))
 
     def ConfirmEncryptionLoss(self, Source):
-        print(
+        print((
             'ConfirmEncryptionLoss:',
             Source.GetDisplayName(
-                shellcon.SHGDN_FORPARSING))
+                shellcon.SHGDN_FORPARSING)))
 
     def FileFailure(self, Item, ItemName, Error):
-        print(
+        print((
             'FileFailure:',
             Item.GetDisplayName(
                 shellcon.SHGDN_FORPARSING),
-            ItemName)
+            ItemName))
 
     def SubStreamFailure(self, Item, StreamName, Error):
         print('SubStreamFailure:\n')

@@ -4,7 +4,7 @@ import win32con
 import win32ui
 import copy
 import string
-import scintillacon
+from . import scintillacon
 
 # Used to indicate that style should use default color
 from win32con import CLR_INVALID
@@ -54,7 +54,7 @@ class ScintillaFormatPropertyPage(dialog.PropertyPage):
     def OnInitDialog(self):
         try:
             if self.scintillaClass is None:
-                import control
+                from . import control
                 sc = control.CScintillaEdit
             else:
                 sc = self.scintillaClass

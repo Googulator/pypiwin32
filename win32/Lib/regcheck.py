@@ -22,7 +22,7 @@ def CheckRegisteredExe(exename):
                 exename))
 #	except SystemError:
     except (os.error, win32api.error):
-        print "Registration of %s - Not registered correctly" % exename
+        print("Registration of %s - Not registered correctly" % exename)
 
 
 def CheckPathString(pathString):
@@ -34,23 +34,23 @@ def CheckPathString(pathString):
 
 def CheckPythonPaths(verbose):
     if verbose:
-        print "Python Paths:"
+        print("Python Paths:")
     # Check the core path
     if verbose:
-        print "\tCore Path:",
+        print("\tCore Path:", end=' ')
     try:
         appPath = win32api.RegQueryValue(
             regutil.GetRootKey(),
             regutil.BuildDefaultPythonKey() +
             "\\PythonPath")
     except win32api.error as exc:
-        print "** does not exist - ", exc.strerror
+        print("** does not exist - ", exc.strerror)
     problem = CheckPathString(appPath)
     if problem:
-        print problem
+        print(problem)
     else:
         if verbose:
-            print appPath
+            print(appPath)
 
     key = win32api.RegOpenKey(
         regutil.GetRootKey(),
@@ -65,17 +65,17 @@ def CheckPythonPaths(verbose):
                 appName = win32api.RegEnumKey(key, keyNo)
                 appPath = win32api.RegQueryValue(key, appName)
                 if verbose:
-                    print "\t" + appName + ":",
+                    print("\t" + appName + ":", end=' ')
                 if appPath:
                     problem = CheckPathString(appPath)
                     if problem:
-                        print problem
+                        print(problem)
                     else:
                         if verbose:
-                            print appPath
+                            print(appPath)
                 else:
                     if verbose:
-                        print "(empty)"
+                        print("(empty)")
                 keyNo = keyNo + 1
             except win32api.error:
                 break
@@ -85,7 +85,7 @@ def CheckPythonPaths(verbose):
 
 def CheckHelpFiles(verbose):
     if verbose:
-        print "Help Files:"
+        print("Help Files:")
     try:
         key = win32api.RegOpenKey(
             regutil.GetRootKey(),
@@ -106,14 +106,14 @@ def CheckHelpFiles(verbose):
                 helpDesc = win32api.RegEnumKey(key, keyNo)
                 helpFile = win32api.RegQueryValue(key, helpDesc)
                 if verbose:
-                    print "\t" + helpDesc + ":",
+                    print("\t" + helpDesc + ":", end=' ')
                 # query the os section.
                 try:
                     os.stat(helpFile)
                     if verbose:
-                        print helpFile
+                        print(helpFile)
                 except os.error:
-                    print "** Help file %s does not exist" % helpFile
+                    print("** Help file %s does not exist" % helpFile)
                 keyNo = keyNo + 1
             except win32api.error as exc:
                 import winerror
@@ -129,7 +129,7 @@ def CheckRegisteredModules(verbose):
     k = regutil.BuildDefaultPythonKey() + "\\Modules"
     try:
         keyhandle = win32api.RegOpenKey(regutil.GetRootKey(), k)
-        print "WARNING: 'Modules' registry entry is deprectated and evil!"
+        print("WARNING: 'Modules' registry entry is deprectated and evil!")
     except win32api.error as exc:
         import winerror
         if exc.winerror != winerror.ERROR_FILE_NOT_FOUND:
@@ -140,7 +140,7 @@ def CheckRegisteredModules(verbose):
 def CheckRegistry(verbose=0):
     # check the registered modules
     if verbose and 'pythonpath' in os.environ:
-        print "Warning - PythonPath in environment - please check it!"
+        print("Warning - PythonPath in environment - please check it!")
     # Check out all paths on sys.path
 
     CheckPythonPaths(verbose)

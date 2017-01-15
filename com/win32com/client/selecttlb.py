@@ -168,4 +168,4 @@ def SelectTlb(title="Select Library", excludeFlags=0):
 
 # Test code.
 if __name__ == '__main__':
-    print SelectTlb().__dict__
+    print(SelectTlb().__dict__)

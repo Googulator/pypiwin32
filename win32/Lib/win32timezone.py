@@ -231,11 +231,11 @@ Test offsets that occur right at the DST changeover
 datetime.datetime(2011, 11, 6, 1, 0, tzinfo=TimeZoneInfo('Pacific Standard Time'))
 
 """
-from __future__ import generators
+
 
 __author__ = 'Jason R. Coombs <jaraco@jaraco.com>'
 
-import _winreg
+import winreg
 import struct
 import datetime
 import win32api
@@ -307,10 +307,10 @@ class SYSTEMTIME(_SimpleStruct):
 class TIME_ZONE_INFORMATION(_SimpleStruct):
     _fields_ = [
         ('bias', int),
-        ('standard_name', unicode),
+        ('standard_name', str),
         ('standard_start', SYSTEMTIME),
         ('standard_bias', int),
-        ('daylight_name', unicode),
+        ('daylight_name', str),
         ('daylight_start', SYSTEMTIME),
         ('daylight_bias', int),
     ]
@@ -318,7 +318,7 @@ class TIME_ZONE_INFORMATION(_SimpleStruct):
 
 class DYNAMIC_TIME_ZONE_INFORMATION(_SimpleStruct):
     _fields_ = TIME_ZONE_INFORMATION._fields_ + [
-        ('key_name', unicode),
+        ('key_name', str),
         ('dynamic_daylight_time_disabled', bool),
     ]
 
@@ -483,7 +483,7 @@ class TimeZoneInfo(datetime.tzinfo):
     def __init__(self, param=None, fix_standard_time=False):
         if isinstance(param, TimeZoneDefinition):
             self._LoadFromTZI(param)
-        if isinstance(param, basestring):
+        if isinstance(param, str):
             self.timeZoneName = param
             self._LoadInfoFromKey()
         self.fixedStandardTime = fix_standard_time
@@ -496,7 +496,7 @@ class TimeZoneInfo(datetime.tzinfo):
         # Also match the time zone key name itself, to be compatible with
         # English-based hard-coded time zones.
         timeZoneName = zoneNames.get(self.timeZoneName, self.timeZoneName)
-        key = _RegKeyDict.open(_winreg.HKEY_LOCAL_MACHINE, self.tzRegKey)
+        key = _RegKeyDict.open(winreg.HKEY_LOCAL_MACHINE, self.tzRegKey)
         try:
             result = key.subkey(timeZoneName)
         except:
@@ -561,11 +561,11 @@ class TimeZoneInfo(datetime.tzinfo):
             return
         del info['FirstEntry']
         del info['LastEntry']
-        years = map(int, info.keys())
-        values = map(TimeZoneDefinition, info.values())
+        years = list(map(int, list(info.keys())))
+        values = list(map(TimeZoneDefinition, list(info.values())))
         # create a range mapping that searches by descending year and matches
         # if the target year is greater or equal.
-        self.dynamicInfo = RangeMap(zip(years, values),
+        self.dynamicInfo = RangeMap(list(zip(years, values)),
                                     sort_params=dict(reverse=True),
                                     key_match_comparator=operator.ge)
 
@@ -718,7 +718,7 @@ class TimeZoneInfo(datetime.tzinfo):
     def _get_time_zone_key(subkey=None):
         "Return the registry key that stores time zone details"
         key = _RegKeyDict.open(
-            _winreg.HKEY_LOCAL_MACHINE,
+            winreg.HKEY_LOCAL_MACHINE,
             TimeZoneInfo.tzRegKey)
         if subkey:
             key = key.subkey(subkey)
@@ -739,8 +739,8 @@ class TimeZoneInfo(datetime.tzinfo):
         def get_index_value(key_name):
             key = TimeZoneInfo._get_time_zone_key(key_name)
             return key[index_key]
-        values = map(get_index_value, key_names)
-        return zip(values, key_names)
+        values = list(map(get_index_value, key_names))
+        return list(zip(values, key_names))
 
     @staticmethod
     def get_sorted_time_zone_names():
@@ -778,10 +778,10 @@ class _RegKeyDict(dict):
 
     @classmethod
     def open(cls, *args, **kargs):
-        return _RegKeyDict(_winreg.OpenKeyEx(*args, **kargs))
+        return _RegKeyDict(winreg.OpenKeyEx(*args, **kargs))
 
     def subkey(self, name):
-        return _RegKeyDict(_winreg.OpenKeyEx(self.key, name))
+        return _RegKeyDict(winreg.OpenKeyEx(self.key, name))
 
     def __load_values(self):
         pairs = [(n, v) for (n, v, t) in self._enumerate_reg_values(self.key)]
@@ -792,11 +792,11 @@ class _RegKeyDict(dict):
 
     @staticmethod
     def _enumerate_reg_values(key):
-        return _RegKeyDict._enumerate_reg(key, _winreg.EnumValue)
+        return _RegKeyDict._enumerate_reg(key, winreg.EnumValue)
 
     @staticmethod
     def _enumerate_reg_keys(key):
-        return _RegKeyDict._enumerate_reg(key, _winreg.EnumKey)
+        return _RegKeyDict._enumerate_reg(key, winreg.EnumKey)
 
     @staticmethod
     def _enumerate_reg(key, func):
@@ -975,7 +975,7 @@ class RangeMap(dict):
         self.match = key_match_comparator
 
     def __getitem__(self, item):
-        sorted_keys = sorted(self.keys(), **self.sort_params)
+        sorted_keys = sorted(list(self.keys()), **self.sort_params)
         if isinstance(item, RangeMap.Item):
             result = self.__getitem__(sorted_keys[item])
         else:
@@ -1004,7 +1004,7 @@ class RangeMap(dict):
         raise KeyError(item)
 
     def bounds(self):
-        sorted_keys = sorted(self.keys(), **self.sort_params)
+        sorted_keys = sorted(list(self.keys()), **self.sort_params)
         return (
             sorted_keys[RangeMap.first_item],
             sorted_keys[RangeMap.last_item],

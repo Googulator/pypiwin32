@@ -47,7 +47,7 @@
 """
 
 import re
-import makegwparse
+from . import makegwparse
 
 
 def make_framework_support(

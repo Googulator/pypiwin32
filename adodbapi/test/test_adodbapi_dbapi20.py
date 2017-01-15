@@ -26,8 +26,8 @@ db = adodbapi
 if '--verbose' in sys.argv:
     db.adodbapi.verbose = 3
 
-print(adodbapi.version)
-print("Tested with dbapi20 %s" % dbapi20.__version__)
+print((adodbapi.version))
+print(("Tested with dbapi20 %s" % dbapi20.__version__))
 
 try:
     # seems to work on all versions of Python
@@ -73,8 +73,8 @@ else:  # try a remote connection to an SQL server
     import adodbapi.remote
     db = adodbapi.remote
 
-print('Using Connection String like=%s' % connStr)
-print('Keywords=%s' % repr(conn_kws))
+print(('Using Connection String like=%s' % connStr))
+print(('Keywords=%s' % repr(conn_kws)))
 
 
 class test_adodbapi(dbapi20.DatabaseAPI20Test):

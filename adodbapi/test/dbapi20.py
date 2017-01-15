@@ -27,7 +27,7 @@ else:  # python 2.x
     from exceptions import Exception as _BaseException
 
     def _failUnless(self, expr, msg=None):
-        self.failUnless(expr, msg)  # deprecated since Python 2.6
+        self.assertTrue(expr, msg)  # deprecated since Python 2.6
 
 # set this to "True" to follow API 2.0 to the letter
 TEST_FOR_NON_IDEMPOTENT_CLOSE = True
@@ -221,8 +221,8 @@ class DatabaseAPI20Test(unittest.TestCase):
             self.assertTrue(issubclass(self.driver.Warning, Exception))
             self.assertTrue(issubclass(self.driver.Error, Exception))
         else:
-            self.failUnless(issubclass(self.driver.Warning, Exception))
-            self.failUnless(issubclass(self.driver.Error, Exception))
+            self.assertTrue(issubclass(self.driver.Warning, Exception))
+            self.assertTrue(issubclass(self.driver.Error, Exception))
 
         _failUnless(self,
                     issubclass(self.driver.InterfaceError, self.driver.Error)

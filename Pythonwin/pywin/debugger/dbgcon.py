@@ -29,5 +29,5 @@ def LoadDebuggerOptions():
 
 
 def SaveDebuggerOptions(opts):
-    for key, val in opts.iteritems():
+    for key, val in opts.items():
         win32ui.WriteProfileVal("Debugger Options", key, val)

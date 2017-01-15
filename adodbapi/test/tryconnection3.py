@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 # This module may be retired as soon as Python 2.5 support is dropped.
 #
 # It exists only to allow trapping exceptions using the "except [exception list] as e" format

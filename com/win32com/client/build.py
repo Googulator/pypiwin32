@@ -655,7 +655,7 @@ def BuildCallList(fdesc, names, defNamedOptArg, defNamedNotOptArg,
         numArgs = numArgs - 1
     else:
         firstOptArg = numArgs - numOptArgs
-    for arg in xrange(numArgs):
+    for arg in range(numArgs):
         try:
             argName = names[arg + 1]
             namedArg = argName is not None
@@ -702,4 +702,4 @@ def BuildCallList(fdesc, names, defNamedOptArg, defNamedNotOptArg,
 
 
 if __name__ == '__main__':
-    print "Use 'makepy.py' to generate Python code - this module is just a helper"
+    print("Use 'makepy.py' to generate Python code - this module is just a helper")

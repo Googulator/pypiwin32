@@ -35,7 +35,7 @@ import decimal
 import os
 
 import process_connect_string
-import ado_consts as adc
+from . import ado_consts as adc
 import apibase as api
 
 try:
@@ -82,13 +82,13 @@ except ImportError:  # Python 2.5
     Mapping = dict   # this will handle the most common case
 
 # --- define objects to smooth out Python3000 <-> Python 2.x differences
-unicodeType = unicode  # this line will be altered by 2to3.py to '= str'
-longType = long  # this line will be altered by 2to3.py to '= int'
+unicodeType = str  # this line will be altered by 2to3.py to '= str'
+longType = int  # this line will be altered by 2to3.py to '= int'
 if sys.version_info >= (3, 0):  # python 3.x
     StringTypes = str
     maxint = sys.maxsize
 else:  # python 2.x
-    StringTypes = (str, unicode)  # will be messed up by 2to3 but never used
+    StringTypes = (str, str)  # will be messed up by 2to3 but never used
     maxint = sys.maxsize
 
 # -----------------  The .connect method -----------------
@@ -279,7 +279,7 @@ class Connection(object):
 
     def connect(self, kwargs, connection_maker=make_COM_connecter):
         if verbose > 9:
-            print('kwargs=', repr(kwargs))
+            print(('kwargs=', repr(kwargs)))
         try:
             self.connection_string = kwargs[
                 'connection_string'] % kwargs  # insert keyword arguments
@@ -289,7 +289,7 @@ class Connection(object):
         self.timeout = kwargs.get('timeout', 30)
         self.kwargs = kwargs
         if verbose:
-            print '%s attempting: "%s"' % (version, self.connection_string)
+            print('%s attempting: "%s"' % (version, self.connection_string))
         self.connector = connection_maker()
         self.connector.ConnectionTimeout = self.timeout
         self.connector.ConnectionString = self.connection_string
@@ -323,7 +323,7 @@ class Connection(object):
             self.paramstyle = kwargs['paramstyle']
         self.messages = []
         if verbose:
-            print 'adodbapi New connection at %X' % id(self)
+            print('adodbapi New connection at %X' % id(self))
 
     def _raiseConnectionError(self, errorclass, errorvalue):
         eh = self.errorhandler
@@ -344,7 +344,7 @@ class Connection(object):
                     pass
         self.connector.Close()
         if verbose:
-            print 'adodbapi Closed connection at %X' % id(self)
+            print('adodbapi Closed connection at %X' % id(self))
 
     def close(self):
         """Close the connection now (rather than whenever __del__ is called).
@@ -353,8 +353,8 @@ class Connection(object):
         an Error (or subclass) exception will be raised if any operation is attempted with the connection.
         The same applies to all cursor objects trying to use the connection.
         """
-        for crsr in self.cursors.values(
-        )[:]:  # copy the list, then close each one
+        for crsr in list(self.cursors.values(
+        ))[:]:  # copy the list, then close each one
             crsr.close(dont_tell_me=True)
         self.messages = []
         try:
@@ -380,7 +380,7 @@ class Connection(object):
         try:
             self.transaction_level = self.connector.CommitTrans()
             if verbose > 1:
-                print 'commit done on connection at %X' % id(self)
+                print('commit done on connection at %X' % id(self))
             if not (self._autocommit or (
                     self.connector.Attributes & adc.adXactAbortRetaining)):
                 # If attributes has adXactCommitRetaining it performs retaining commits that is,
@@ -411,7 +411,7 @@ class Connection(object):
             try:
                 self.transaction_level = self.connector.RollbackTrans()
                 if verbose > 1:
-                    print 'rollback done on connection at %X' % id(self)
+                    print('rollback done on connection at %X' % id(self))
                 if not self._autocommit and not(
                         self.connector.Attributes & adc.adXactAbortRetaining):
                     # If attributes has adXactAbortRetaining it performs retaining aborts that is,
@@ -464,7 +464,7 @@ class Connection(object):
 
     def _i_am_here(self, crsr):
         "message from a new cursor proclaiming its existence"
-        i = self.cursor_counter.next()
+        i = next(self.cursor_counter)
         self.cursors[i] = crsr
         crsr.id = i
 
@@ -478,15 +478,15 @@ class Connection(object):
     def printADOerrors(self):
         j = self.connector.Errors.Count
         if j:
-            print 'ADO Errors:(%i)' % j
+            print('ADO Errors:(%i)' % j)
         for e in self.connector.Errors:
-            print 'Description: %s' % e.Description
-            print 'Error: %s %s ' % (e.Number, adc.adoErrors.get(e.Number, "unknown"))
+            print('Description: %s' % e.Description)
+            print('Error: %s %s ' % (e.Number, adc.adoErrors.get(e.Number, "unknown")))
             if e.Number == adc.ado_error_TIMEOUT:
-                print 'Timeout Error: Try using adodbpi.connect(constr,timeout=Nseconds)'
-            print 'Source: %s' % e.Source
-            print 'NativeError: %s' % e.NativeError
-            print 'SQL State: %s' % e.SQLState
+                print('Timeout Error: Try using adodbpi.connect(constr,timeout=Nseconds)')
+            print('Source: %s' % e.Source)
+            print('NativeError: %s' % e.NativeError)
+            print('SQL State: %s' % e.SQLState)
 
     def _suggest_error_class(self):
         """Introspect the current ADO Errors and determine an appropriate error class.
@@ -578,7 +578,7 @@ class Cursor(object):
         self.arraysize = 1
         connection._i_am_here(self)
         if verbose:
-            print '%s New cursor at %X on conn %X' % (version, id(self), id(self.connection))
+            print('%s New cursor at %X on conn %X' % (version, id(self), id(self.connection)))
 
     def __iter__(self):                   # [2.1 Zamarev]
         return iter(self.fetchone, None)  # [2.1 Zamarev]
@@ -588,7 +588,7 @@ class Cursor(object):
         self._description = None
         self._ado_prepared = 'setup'
 
-    def next(self):
+    def __next__(self):
         r = self.fetchone()
         if r:
             return r
@@ -701,7 +701,7 @@ class Cursor(object):
             self.rs = None  # let go of the recordset so ADO will let it be disposed #v2.1 Rose
         self.connection = None  # this will make all future method calls on me throw an exception
         if verbose:
-            print 'adodbapi Closed cursor at %X' % id(self)
+            print('adodbapi Closed cursor at %X' % id(self))
 
     def __del__(self):
         try:
@@ -733,7 +733,7 @@ class Cursor(object):
         recordset = None
         count = -1  # default value
         if verbose:
-            print 'Executing command="%s"' % self.command
+            print('Executing command="%s"' % self.command)
         try:
             # ----- the actual SQL is executed here ---
             if api.onIronPython:
@@ -774,12 +774,12 @@ class Cursor(object):
         retLst = []  # store procedures may return altered parameters, including an added "return value" item
         for p in tuple(self.cmd.Parameters):
             if verbose > 2:
-                print 'Returned=Name: %s, Dir.: %s, Type: %s, Size: %s, Value: "%s",' \
+                print('Returned=Name: %s, Dir.: %s, Type: %s, Size: %s, Value: "%s",' \
                       " Precision: %s, NumericScale: %s" % \
                     (p.Name, adc.directions[p.Direction],
                      adc.adTypeNames.get(p.Type, str(
                          p.Type) + ' (unknown type)'),
-                     p.Size, p.Value, p.Precision, p.NumericScale)
+                     p.Size, p.Value, p.Precision, p.NumericScale))
             pyObject = api.convert_to_python(
                 p.Value, api.variantConversions[p.Type])
             if p.Direction == adc.adParamReturnValue:
@@ -807,7 +807,7 @@ class Cursor(object):
         self._new_command(procname, command_type=adc.adCmdStoredProc)
         self._buildADOparameterList(parameters, sproc=True)
         if verbose > 2:
-            print 'Calling Stored Proc with Params=', format_parameters(self.cmd.Parameters, True)
+            print('Calling Stored Proc with Params=', format_parameters(self.cmd.Parameters, True))
         self._execute_command()
         return self.get_returned_parameters()
 
@@ -830,12 +830,12 @@ class Cursor(object):
             try:  # attempt to use ADO's parameter list
                 self.cmd.Parameters.Refresh()
                 if verbose > 2:
-                    print 'ADO detected Params=', format_parameters(self.cmd.Parameters, True)
-                    print 'Program Parameters=', repr(parameters)
+                    print('ADO detected Params=', format_parameters(self.cmd.Parameters, True))
+                    print('Program Parameters=', repr(parameters))
                 parameters_known = True
             except api.Error:
                 if verbose:
-                    print 'ADO Parameter Refresh failed'
+                    print('ADO Parameter Refresh failed')
                 pass
             else:
                 if len(parameters) != self.cmd.Parameters.Count - 1:
@@ -851,7 +851,7 @@ class Cursor(object):
                             _configure_parameter(
                                 p, parameters[pm_name], p.Type, parameters_known)
                         except (Exception) as e:
-                            _message = u'Error Converting Parameter %s: %s, %s <- %s\n' % \
+                            _message = 'Error Converting Parameter %s: %s, %s <- %s\n' % \
                                 (p.Name, adc.ado_type_name(p.Type),
                                  p.Value, repr(parameters[pm_name]))
                             self._raiseCursorError(
@@ -866,7 +866,7 @@ class Cursor(object):
                             _configure_parameter(
                                 p, value, p.Type, parameters_known)
                         except (Exception) as e:
-                            _message = u'Error Converting Parameter %s: %s, %s <- %s\n' % \
+                            _message = 'Error Converting Parameter %s: %s, %s <- %s\n' % \
                                 (p.Name, adc.ado_type_name(
                                     p.Type), p.Value, repr(value))
                             self._raiseCursorError(
@@ -884,7 +884,7 @@ class Cursor(object):
                         try:
                             self.cmd.Parameters.Append(p)
                         except (Exception) as e:
-                            _message = u'Error Building Parameter %s: %s, %s <- %s\n' % \
+                            _message = 'Error Building Parameter %s: %s, %s <- %s\n' % \
                                 (p.Name, adc.ado_type_name(
                                     p.Type), p.Value, repr(elem))
                             self._raiseCursorError(
@@ -905,7 +905,7 @@ class Cursor(object):
                         try:
                             self.cmd.Parameters.Append(p)
                         except (Exception) as e:
-                            _message = u'Error Building Parameter %s: %s, %s <- %s\n' % \
+                            _message = 'Error Building Parameter %s: %s, %s <- %s\n' % \
                                 (p.Name, adc.ado_type_name(
                                     p.Type), p.Value, repr(elem))
                             self._raiseCursorError(
@@ -953,7 +953,7 @@ class Cursor(object):
         self._new_command(operation)
         self._buildADOparameterList(parameters)
         if verbose > 3:
-            print 'Params=', format_parameters(self.cmd.Parameters, True)
+            print('Params=', format_parameters(self.cmd.Parameters, True))
         self._execute_command()
 
     def executemany(self, operation, seq_of_parameters):

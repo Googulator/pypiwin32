@@ -104,7 +104,7 @@ def makemdb(testfolder, mdb_name):
             except:
                 pass
         if dbe:
-            print('    ...Creating ACCESS db at ' + _accessdatasource)
+            print(('    ...Creating ACCESS db at ' + _accessdatasource))
             if win32:
                 workspace = dbe.Workspaces(0)
                 newdb = workspace.CreateDatabase(_accessdatasource,
@@ -115,7 +115,7 @@ def makemdb(testfolder, mdb_name):
                     _accessdatasource, ';LANGID=0x0409;CP=1252;COUNTRY=0')
             newdb.Close()
         else:
-            print('    ...copying test ACCESS db to ' + _accessdatasource)
+            print(('    ...copying test ACCESS db to ' + _accessdatasource))
             mdbName = os.path.normpath(os.getcwd() + '/../examples/test.mdb')
             import shutil
             shutil.copy(mdbName, _accessdatasource)

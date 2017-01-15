@@ -1,5 +1,5 @@
 """ Unit tests version 2.6.0.6 for adodbapi"""
-from __future__ import with_statement
+
 # when Python 2.5 is retired, change that to: from __future__ import
 # print_function
 """
@@ -58,7 +58,7 @@ if sys.version_info >= (3, 0):
 
     def str2bytes(sval):
         return sval.encode("latin1")
-    unicode = str
+    str = str
     long = int
 else:
     import tryconnection2 as tryconnection
@@ -168,7 +168,7 @@ class CommonDBTests(unittest.TestCase):
             return
         try:
             duplicatingConverter = lambda aStringField: aStringField * 2
-            assert duplicatingConverter(u'gabba') == u'gabbagabba'
+            assert duplicatingConverter('gabba') == 'gabbagabba'
 
             self.helpForceDropOnTblTemp()
             conn = self.getConnection()
@@ -199,20 +199,20 @@ class CommonDBTests(unittest.TestCase):
 
                 rows = crsr.fetchall()
                 row = rows[0]
-                self.assertEquals(row[0], 'gabbagabba')
+                self.assertEqual(row[0], 'gabbagabba')
                 row = rows[1]
-                self.assertEquals(row[0], 'heyhey')
-                self.assertEquals(row[1], 'yoyo')
+                self.assertEqual(row[0], 'heyhey')
+                self.assertEqual(row[1], 'yoyo')
 
                 upcaseConverter = lambda aStringField: aStringField.upper()
-                assert upcaseConverter(u'upThis') == u'UPTHIS'
+                assert upcaseConverter('upThis') == 'UPTHIS'
 
                 # now use a single column converter
                 rows.converters[1] = upcaseConverter  # convert second column
                 # first will be unchanged
-                self.assertEquals(row[0], 'heyhey')
+                self.assertEqual(row[0], 'heyhey')
                 # second will convert to upper case
-                self.assertEquals(row[1], 'YO')
+                self.assertEqual(row[1], 'YO')
 
         finally:
             try:
@@ -248,9 +248,9 @@ class CommonDBTests(unittest.TestCase):
                 self.helpTestDataType("numeric(18,2)", 'NUMBER', '3.45')
                 # now a completly weird user defined convertion
                 adodbapi.variantConversions[
-                    ado_consts.adNumeric] = lambda x: u'!!This function returns a funny unicode string %s!!' % x
+                    ado_consts.adNumeric] = lambda x: '!!This function returns a funny unicode string %s!!' % x
                 self.helpTestDataType("numeric(18,2)", 'NUMBER', '3.45',
-                                      allowedReturnValues=[u'!!This function returns a funny unicode string 3.45!!'])
+                                      allowedReturnValues=['!!This function returns a funny unicode string 3.45!!'])
             finally:
                 # now reset the converter to its original function
                 # Restore the original convertion function
@@ -278,7 +278,7 @@ class CommonDBTests(unittest.TestCase):
 
         crsr.execute("SELECT fldId,fldData FROM xx_%s" % config.tmp)
         rs = crsr.fetchone()
-        self.assertEquals(rs[1], None)  # Null should be mapped to None
+        self.assertEqual(rs[1], None)  # Null should be mapped to None
         assert rs[0] == 1
 
         # Test description related
@@ -311,7 +311,7 @@ class CommonDBTests(unittest.TestCase):
         inputs = [pyData]
         if pyDataInputAlternatives:
             inputs.extend(pyDataInputAlternatives)
-        if str is unicode:
+        if str is str:
             inputs = set(inputs)  # removes redundant string==unicode tests
         fldId = 1
         for inParam in inputs:
@@ -347,7 +347,7 @@ class CommonDBTests(unittest.TestCase):
                                                                           0])
                 iso2 = adodbapi.dateconverter.DateObjectToIsoFormatString(
                     pyData)
-                self.assertEquals(iso1, iso2)
+                self.assertEqual(iso1, iso2)
             elif compareAlmostEqual:
                 s = float(pyData)
                 v = float(rs[0])
@@ -360,7 +360,7 @@ class CommonDBTests(unittest.TestCase):
                     self.assertTrue(rs[0] in allowedReturnValues,
                                     'Value "%s" not in %s' % (repr(rs[0]), allowedReturnValues))
                 else:
-                    self.assertEquals(rs[0], pyData,
+                    self.assertEqual(rs[0], pyData,
                                       'Values are not equal recvd="%s", expected="%s"' % (rs[0], pyData))
 
     def testDataTypeFloat(self):
@@ -373,15 +373,15 @@ class CommonDBTests(unittest.TestCase):
 
     def testDataTypeDecmal(self):
         self.helpTestDataType("decimal(18,2)", 'NUMBER', 3.45,
-                              allowedReturnValues=[u'3.45', u'3,45', decimal.Decimal('3.45')])
+                              allowedReturnValues=['3.45', '3,45', decimal.Decimal('3.45')])
         self.helpTestDataType("numeric(18,2)", 'NUMBER', 3.45,
-                              allowedReturnValues=[u'3.45', u'3,45', decimal.Decimal('3.45')])
+                              allowedReturnValues=['3.45', '3,45', decimal.Decimal('3.45')])
         self.helpTestDataType("decimal(20,2)", 'NUMBER', 444444444444444444,
-                              allowedReturnValues=[u'444444444444444444.00', u'444444444444444444,00',
+                              allowedReturnValues=['444444444444444444.00', '444444444444444444,00',
                                                    decimal.Decimal('444444444444444444')])
         if self.getEngine() == 'MSSQL':
             self.helpTestDataType("uniqueidentifier", 'UUID', '{71A4F49E-39F3-42B1-A41E-48FF154996E6}',
-                                  allowedReturnValues=[u'{71A4F49E-39F3-42B1-A41E-48FF154996E6}'])
+                                  allowedReturnValues=['{71A4F49E-39F3-42B1-A41E-48FF154996E6}'])
 
     def testDataTypeMoney(self):  # v2.1 Cole -- use decimal for money
         if self.getEngine() == 'MySQL':
@@ -411,7 +411,7 @@ class CommonDBTests(unittest.TestCase):
             self.helpTestDataType("bit", 'NUMBER', 1)
         if self.getEngine() in ['MSSQL', 'PostgreSQL']:
             self.helpTestDataType("bigint", 'NUMBER', 3000000000,
-                                  allowedReturnValues=[3000000000, long(3000000000)])
+                                  allowedReturnValues=[3000000000, int(3000000000)])
         self.helpTestDataType("int", 'NUMBER', 2147483647)
 
     def testDataTypeChar(self):
@@ -419,11 +419,11 @@ class CommonDBTests(unittest.TestCase):
             self.helpTestDataType(
                 sqlDataType,
                 'STRING',
-                u'spam  ',
+                'spam  ',
                 allowedReturnValues=[
-                    u'spam',
                     'spam',
-                    u'spam  ',
+                    'spam',
+                    'spam  ',
                     'spam  '])
 
     def testDataTypeVarChar(self):
@@ -439,7 +439,7 @@ class CommonDBTests(unittest.TestCase):
                 "ntext"]  # ,"varchar(max)"]
 
         for sqlDataType in stringKinds:
-            self.helpTestDataType(sqlDataType, 'STRING', u'spam', ['spam'])
+            self.helpTestDataType(sqlDataType, 'STRING', 'spam', ['spam'])
 
     def testDataTypeDate(self):
         if self.getEngine() == 'PostgreSQL':
@@ -551,11 +551,11 @@ class CommonDBTests(unittest.TestCase):
             "INSERT INTO xx_%s (fldData) VALUES (?)" %
             config.tmp, seq_of_values)
         if crsr.rowcount == -1:
-            print(
+            print((
                 self.getEngine() +
-                " Provider does not support rowcount (on .executemany())")
+                " Provider does not support rowcount (on .executemany())"))
         else:
-            self.assertEquals(crsr.rowcount, 2)
+            self.assertEqual(crsr.rowcount, 2)
         crsr.execute("SELECT fldData FROM xx_%s" % config.tmp)
         rs = crsr.fetchall()
         assert len(rs) == 11
@@ -569,7 +569,7 @@ class CommonDBTests(unittest.TestCase):
             #print("provider does not support rowcount on select")
             pass
         else:
-            self.assertEquals(crsr.rowcount, 9)
+            self.assertEqual(crsr.rowcount, 9)
         self.helpRollbackTblTemp()
 
     def testRowCountNoRecordset(self):
@@ -577,11 +577,11 @@ class CommonDBTests(unittest.TestCase):
         self.helpCreateAndPopulateTableTemp(crsr)
         crsr.execute("DELETE FROM xx_%s WHERE fldData >= 5" % config.tmp)
         if crsr.rowcount == -1:
-            print(
+            print((
                 self.getEngine() +
-                " Provider does not support rowcount (on DELETE)")
+                " Provider does not support rowcount (on DELETE)"))
         else:
-            self.assertEquals(crsr.rowcount, 4)
+            self.assertEqual(crsr.rowcount, 4)
         self.helpRollbackTblTemp()
 
     def testFetchMany(self):
@@ -697,7 +697,7 @@ class CommonDBTests(unittest.TestCase):
                 """ % config.tmp
         crsr.execute(tabdef)
 
-        inputs = [u'one', u'two', u'three']
+        inputs = ['one', 'two', 'three']
         fldId = 2
         for inParam in inputs:
             fldId += 1
@@ -719,7 +719,7 @@ class CommonDBTests(unittest.TestCase):
             self.assertEqual(
                 rec[0], inParam, 'returned value:"%s" != test value:"%s"' %
                 (rec[0], inParam))
-            self.assertEqual(rec[1], u"thi%s :may cause? trouble")
+            self.assertEqual(rec[1], "thi%s :may cause? trouble")
 
         # now try an operation with a "%s" as part of a literal
         sel = "insert into xx_" + config.tmp + \
@@ -752,7 +752,7 @@ class CommonDBTests(unittest.TestCase):
                 """ % config.tmp
         crsr.execute(tabdef)
 
-        inputs = [u'four', u'five', u'six']
+        inputs = ['four', 'five', 'six']
         fldId = 10
         for inParam in inputs:
             fldId += 1
@@ -795,7 +795,7 @@ class CommonDBTests(unittest.TestCase):
                 """ % config.tmp
         crsr.execute(tabdef)
 
-        inputs = [u'four', u'five', u'six']
+        inputs = ['four', 'five', 'six']
         fldId = 10
         for inParam in inputs:
             fldId += 1
@@ -838,7 +838,7 @@ class CommonDBTests(unittest.TestCase):
                 fldConst varchar(30))
                 """ % config.tmp
         crsr.execute(tabdef)
-        inputs = [u'one', u'two', u'three']
+        inputs = ['one', 'two', 'three']
         fldId = 2
         for inParam in inputs:
             fldId += 1
@@ -1082,12 +1082,12 @@ class TestADOwithSQLServer(CommonDBTests):
 
         retvalues = crsr.callproc('sp_DeleteMe_OnlyForTesting')
         row = crsr.fetchone()
-        self.assertEquals(row[0], 0)
+        self.assertEqual(row[0], 0)
         assert crsr.nextset() == True, 'Operation should succeed'
         assert not crsr.fetchall(), 'Should be an empty second set'
         assert crsr.nextset() == True, 'third set should be present'
         rowdesc = crsr.fetchall()
-        self.assertEquals(rowdesc[0][0], 8)
+        self.assertEqual(rowdesc[0][0], 8)
         assert crsr.nextset() is None, 'No more return sets, should return None'
 
         self.helpRollbackTblTemp()
@@ -1339,21 +1339,21 @@ class TimeConverterInterfaceTest(unittest.TestCase):
         d = self.tc.Timestamp(1994, 11, 15, 12, 0, 0)
         comDate = self.tc.COMDate(d)
         correct = 34653.5
-        self.assertEquals(comDate, correct)
+        self.assertEqual(comDate, correct)
 
         d = self.tc.Timestamp(2003, 5, 6, 14, 15, 17)
         comDate = self.tc.COMDate(d)
         correct = 37747.593946759262
-        self.assertEquals(comDate, correct)
+        self.assertEqual(comDate, correct)
 
     def testIsoFormat(self):
         d = self.tc.Timestamp(1994, 11, 15, 12, 3, 10)
         iso = self.tc.DateObjectToIsoFormatString(d)
-        self.assertEquals(str(iso[:19]), '1994-11-15 12:03:10')
+        self.assertEqual(str(iso[:19]), '1994-11-15 12:03:10')
 
         dt = self.tc.Date(2003, 5, 2)
         iso = self.tc.DateObjectToIsoFormatString(dt)
-        self.assertEquals(str(iso[:10]), '2003-05-02')
+        self.assertEqual(str(iso[:10]), '2003-05-02')
 
 if config.doMxDateTimeTest:
     import mx.DateTime
@@ -1424,7 +1424,7 @@ class TestPythonTimeConverter(TimeConverterInterfaceTest):
         assert t1 < time.mktime(obj) < t2, obj
 
     def testTime(self):
-        self.assertEquals(
+        self.assertEqual(
             self.tc.Time(
                 18, 15, 2), time.gmtime(
                 18 * 60 * 60 + 15 * 60 + 2))
@@ -1469,7 +1469,7 @@ class TestPythonDateTimeConverter(TimeConverterInterfaceTest):
         assert t1 < obj < t2, obj
 
     def testTime(self):
-        self.assertEquals(self.tc.Time(18, 15, 2).isoformat()[:8], '18:15:02')
+        self.assertEqual(self.tc.Time(18, 15, 2).isoformat()[:8], '18:15:02')
 
     def testTimestamp(self):
         t1 = datetime.datetime(2002, 6, 28, 18, 14, 1)
@@ -1507,7 +1507,7 @@ if __name__ == '__main__':
     with cleanup_manager():
         defaultDateConverter = adodbapi.dateconverter
         print(__doc__)
-        print("Default Date Converter is %s" % (defaultDateConverter,))
+        print(("Default Date Converter is %s" % (defaultDateConverter,)))
         dateconverter = defaultDateConverter
         tag = 'datetime'
         unittest.TextTestRunner().run(suite)
@@ -1519,5 +1519,5 @@ if __name__ == '__main__':
                 if test:
                     adodbapi.adodbapi.dateconverter = dateconverter()
                     print("Changed dateconverter to ")
-                    print(adodbapi.adodbapi.dateconverter)
+                    print((adodbapi.adodbapi.dateconverter))
                     unittest.TextTestRunner().run(suite)

@@ -29,5 +29,5 @@ class PerfMonQuery:
                 desc=desc, scode=winerror.DISP_E_TYPEMISMATCH)
 
 if __name__ == '__main__':
-    print "Registering COM server..."
+    print("Registering COM server...")
     register.UseCommandLine(PerfMonQuery)

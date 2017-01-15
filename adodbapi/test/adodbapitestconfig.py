@@ -22,11 +22,11 @@ if sys.version_info >= (3, 0):
 else:
     import tryconnection2 as tryconnection
 
-print(sys.version)
+print((sys.version))
 node = platform.node()
 try:
-    print('node=%s: is64bit.os()= %s, is64bit.Python()= %s' %
-          (node, is64bit.os(), is64bit.Python()))
+    print(('node=%s: is64bit.os()= %s, is64bit.Python()= %s' %
+          (node, is64bit.os(), is64bit.Python())))
 except:
     pass
 
@@ -58,7 +58,7 @@ cleanup = setuptestframework.getcleanupfunction()
 import adodbapi
 
 try:
-    print(adodbapi.version)  # show version
+    print((adodbapi.version))  # show version
 except:
     print('"adodbapi.version" not present or not working.')
 print(__doc__)

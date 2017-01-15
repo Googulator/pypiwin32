@@ -212,30 +212,30 @@ class FileParser:
         if self.verbose:
             ret = ' '.join([str(arg) for arg in args])
             try:
-                print ret
+                print(ret)
             except IOError:
                 pass
 
 
 def _usage():
     import os
-    print "Usage: %s filename [verbose [dumpbody]]" % (os.path.basename(sys.argv[0]),)
-    print
-    print "Where:-"
-    print "filename = name of the file to extract text & properties from"
-    print "verbose = 1=debug output, 0=no debug output (default=0)"
-    print "dumpbody = 1=print text content, 0=don't print content (default=1)"
-    print
-    print "e.g. to dump a word file called spam.doc go:- filterDemo.py spam.doc"
-    print
-    print "by default .htm, .txt, .doc, .dot, .xls, .xlt, .ppt are supported"
-    print "you can filter .pdf's by downloading adobes ifilter component. "
-    print "(currently found at http://download.adobe.com/pub/adobe/acrobat/win/all/ifilter50.exe)."
-    print "ifilters for other filetypes are also available."
-    print
-    print "This extension is only supported on win2000 & winXP - because thats the only"
-    print "place the ifilter stuff is supported. For more info on the API check out "
-    print "MSDN under ifilters"
+    print("Usage: %s filename [verbose [dumpbody]]" % (os.path.basename(sys.argv[0]),))
+    print()
+    print("Where:-")
+    print("filename = name of the file to extract text & properties from")
+    print("verbose = 1=debug output, 0=no debug output (default=0)")
+    print("dumpbody = 1=print text content, 0=don't print content (default=1)")
+    print()
+    print("e.g. to dump a word file called spam.doc go:- filterDemo.py spam.doc")
+    print()
+    print("by default .htm, .txt, .doc, .dot, .xls, .xlt, .ppt are supported")
+    print("you can filter .pdf's by downloading adobes ifilter component. ")
+    print("(currently found at http://download.adobe.com/pub/adobe/acrobat/win/all/ifilter50.exe).")
+    print("ifilters for other filetypes are also available.")
+    print()
+    print("This extension is only supported on win2000 & winXP - because thats the only")
+    print("place the ifilter stuff is supported. For more info on the API check out ")
+    print("MSDN under ifilters")
 
 
 if __name__ == "__main__":
@@ -260,22 +260,22 @@ if __name__ == "__main__":
     propMap = p.Parse(fName)
 
     if bDumpBody:
-        print "Body"
+        print("Body")
         ch = ' '.join(propMap.get('body', []))
         try:
-            print ch
+            print(ch)
         except UnicodeError:
-            print ch.encode('iso8859-1', 'ignore')
+            print(ch.encode('iso8859-1', 'ignore'))
 
-    print "Properties"
-    for propName, propValue in propMap.iteritems():
-        print propName, ":",
+    print("Properties")
+    for propName, propValue in propMap.items():
+        print(propName, ":", end=' ')
         if propName == 'body':
-            print "<%s length: %d>" % (propName, reduce(operator.add, [len(p) for p in propValue]),)
+            print("<%s length: %d>" % (propName, reduce(operator.add, [len(p) for p in propValue]),))
         elif isinstance(propValue, type([])):
-            print
+            print()
             for pv in propValue:
-                print pv
+                print(pv)
         else:
-            print propValue
-        print
+            print(propValue)
+        print()

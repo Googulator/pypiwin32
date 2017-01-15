@@ -29,7 +29,7 @@ from pywin.framework import app, window
 import win32ui
 import win32api
 import win32con
-import Queue
+import queue
 
 debug = lambda msg: None
 
@@ -144,7 +144,7 @@ class WindowOutputViewImpl:
     # Returns TRUE if the current line is an error message line, and will
     # jump to it.  FALSE if no error (and no action taken)
     def HandleSpecialLine(self):
-        import scriptutils
+        from . import scriptutils
         line = self.GetLine()
         if line[:11] == "com_error: ":
             # An OLE Exception - pull apart the exception
@@ -154,7 +154,7 @@ class WindowOutputViewImpl:
                 import win32con
                 det = eval(line[line.find(":") + 1:].strip())
                 win32ui.SetStatusText("Opening help file on OLE error...")
-                import help
+                from . import help
                 help.OpenHelpFile(det[2][3], win32con.HELP_CONTEXT, det[2][4])
                 return 1
             except win32api.error as details:
@@ -256,7 +256,7 @@ class WindowOutputViewRTF(docview.RichEditView, WindowOutputViewImpl):
             item = self.template.killBuffer[0]
             self.template.killBuffer.remove(item)
             if bytes < len(item):
-                print "Warning - output buffer not big enough!"
+                print("Warning - output buffer not big enough!")
             return item
         except IndexError:
             return None
@@ -377,7 +377,7 @@ class WindowOutput(docview.DocTemplate):
             self.iniSizeSection = None
             self.defSize = defSize
         self.currentView = None
-        self.outputQueue = Queue.Queue(-1)
+        self.outputQueue = queue.Queue(-1)
         self.mainThreadId = win32api.GetCurrentThreadId()
         self.idleHandlerSet = 0
         self.SetIdleHandler()
@@ -464,8 +464,8 @@ class WindowOutput(docview.DocTemplate):
             self.interruptCount = self.interruptCount + 1
             if self.interruptCount > 1:
                 # Drop the queue quickly as the user is already annoyed :-)
-                self.outputQueue = Queue.Queue(-1)
-                print "Interrupted."
+                self.outputQueue = queue.Queue(-1)
+                print("Interrupted.")
                 bEmpty = 1
             else:
                 raise  # re-raise the error so the users exception filters up.
@@ -504,7 +504,7 @@ class WindowOutput(docview.DocTemplate):
             try:
                 item = self.outputQueue.get_nowait()
                 items.append(item)
-            except Queue.Empty:
+            except queue.Empty:
                 rc = 1
                 break
             if max is not None:

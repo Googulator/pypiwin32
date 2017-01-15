@@ -1,4 +1,4 @@
-from __future__ import generators
+
 
 # Some raw iter tests.  Some "high-level" iterator tests can be found in
 # testvb.py and testOutlook.py
@@ -14,7 +14,7 @@ import pythoncom
 
 def yield_iter(iter):
     while True:
-        yield iter.next()
+        yield next(iter)
 
 
 class _BaseTestCase(win32com.test.util.TestCase):
@@ -24,14 +24,14 @@ class _BaseTestCase(win32com.test.util.TestCase):
         got = []
         for v in iter:
             got.append(v)
-        self.assertEquals(got, self.expected_data)
+        self.assertEqual(got, self.expected_data)
 
     def test_yield(self):
         ob, i = self.iter_factory()
         got = []
         for v in yield_iter(iter(i)):
             got.append(v)
-        self.assertEquals(got, self.expected_data)
+        self.assertEqual(got, self.expected_data)
 
     def _do_test_nonenum(self, object):
         try:
@@ -69,7 +69,7 @@ class _BaseTestCase(win32com.test.util.TestCase):
         # So either the 'iter(); will raise a type error, or an attempt to
         # fetch it
         try:
-            iter(ob).next()
+            next(iter(ob))
             self.fail("Expected a TypeError fetching this iterator")
         except TypeError:
             pass
@@ -135,7 +135,7 @@ class WrappedPythonCOMServerTestCase(_BaseTestCase):
 def suite():
     # We dont want our base class run
     suite = unittest.TestSuite()
-    for item in globals().itervalues():
+    for item in globals().values():
         if isinstance(item, type(unittest.TestCase)) and \
            issubclass(item, unittest.TestCase) and \
            item != _BaseTestCase:

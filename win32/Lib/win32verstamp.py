@@ -52,7 +52,7 @@ def VS_FIXEDFILEINFO(maj, min, sub, build, debug=0, is_dll=1):
 
 def nullterm(s):
     # get raw bytes for a NULL terminated unicode string.
-    return (unicode(s) + u'\0').encode('unicode-internal')
+    return (str(s) + '\0').encode('unicode-internal')
 
 
 def pad32(s, extra=2):
@@ -80,7 +80,7 @@ def StringTable(key, data):
     key = nullterm(key)
     result = struct.pack('hh', 0, 1)  # wValueLength, wType
     result = result + key
-    for k, v in data.iteritems():
+    for k, v in data.items():
         result = result + String(k, v)
         result = pad32(result)
     return addlen(result)
@@ -105,7 +105,7 @@ def VarFileInfo(data):
     result = struct.pack('hh', 0, 1)  # wValueLength, wType
     result = result + nullterm('VarFileInfo')
     result = pad32(result)
-    for k, v in data.iteritems():
+    for k, v in data.items():
         result = result + Var(k, v)
     return addlen(result)
 
@@ -127,7 +127,7 @@ def stamp(pathname, options):
         f = open(pathname, "a+b")
         f.close()
     except IOError as why:
-        print "WARNING: File %s could not be opened - %s" % (pathname, why)
+        print("WARNING: File %s could not be opened - %s" % (pathname, why))
 
     ver = options.version
     try:
@@ -167,7 +167,7 @@ def stamp(pathname, options):
     if is_debug is None:
         is_debug = os.path.splitext(pathname)[0].lower().endswith("_d")
     # convert None to blank strings
-    for k, v in sdata.items():
+    for k, v in list(sdata.items()):
         if v is None:
             sdata[k] = ""
     vs = VS_VERSION_INFO(
@@ -185,7 +185,7 @@ def stamp(pathname, options):
     EndUpdateResource(h, 0)
 
     if options.verbose:
-        print "Stamped:", pathname
+        print("Stamped:", pathname)
 
 if __name__ == '__main__':
     parser = optparse.OptionParser("%prog [options] filespec ...",

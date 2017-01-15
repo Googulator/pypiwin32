@@ -10,6 +10,6 @@ for session in sessions:
         sessionid = session['SessionId']
         username = win32ts.WTSQuerySessionInformation(
             win32ts.WTS_CURRENT_SERVER_HANDLE, sessionid, win32ts.WTSUserName)
-        print 'Logging off disconnected user:', username
+        print('Logging off disconnected user:', username)
         win32ts.WTSLogoffSession(
             win32ts.WTS_CURRENT_SERVER_HANDLE, sessionid, True)

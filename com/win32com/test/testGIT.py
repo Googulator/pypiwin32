@@ -21,7 +21,7 @@ this is a pain in the but!
 
 """
 
-import thread
+import _thread
 import traceback
 import win32com.client
 import win32event
@@ -67,7 +67,7 @@ def DoTestInterpInThread(cookie):
 
         TestInterp(interp)
         interp.Exec("import win32api")
-        print "The test thread id is %d, Python.Interpreter's thread ID is %d" % (myThread, interp.Eval("win32api.GetCurrentThreadId()"))
+        print("The test thread id is %d, Python.Interpreter's thread ID is %d" % (myThread, interp.Eval("win32api.GetCurrentThreadId()")))
         interp = None
         pythoncom.CoUninitialize()
     except:
@@ -84,13 +84,13 @@ def BeginThreadsSimpleMarshal(numThreads, cookie):
     ret = []
     for i in range(numThreads):
         hEvent = win32event.CreateEvent(None, 0, 0, None)
-        thread.start_new(TestInterpInThread, (hEvent, cookie))
+        _thread.start_new(TestInterpInThread, (hEvent, cookie))
         ret.append(hEvent)
     return ret
 
 
 def test(fn):
-    print "The main thread is %d" % (win32api.GetCurrentThreadId())
+    print("The main thread is %d" % (win32api.GetCurrentThreadId()))
     GIT = CreateGIT()
     interp = win32com.client.Dispatch("Python.Interpreter")
     cookie = GIT.RegisterInterfaceInGlobal(
@@ -111,7 +111,7 @@ def test(fn):
                 # This is critical - whole apartment model demo will hang.
                 pythoncom.PumpWaitingMessages()
             else:  # Timeout
-                print "Waiting for thread to stop with interfaces=%d, gateways=%d" % (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount())
+                print("Waiting for thread to stop with interfaces=%d, gateways=%d" % (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount()))
         except KeyboardInterrupt:
             break
     GIT.RevokeInterfaceFromGlobal(cookie)
@@ -125,6 +125,6 @@ if __name__ == '__main__':
     # the process
     pythoncom.CoUninitialize()
     if pythoncom._GetInterfaceCount() != 0 or pythoncom._GetGatewayCount() != 0:
-        print "Done with interfaces=%d, gateways=%d" % (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount())
+        print("Done with interfaces=%d, gateways=%d" % (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount()))
     else:
-        print "Done."
+        print("Done.")

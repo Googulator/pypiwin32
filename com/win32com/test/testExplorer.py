@@ -41,7 +41,7 @@ def TestExplorerEvents():
         raise RuntimeError("The IE event did not appear to fire!")
     ie.Quit()
     ie = None
-    print "IE Event tests worked."
+    print("IE Event tests worked.")
 
 
 def TestObjectFromWindow():

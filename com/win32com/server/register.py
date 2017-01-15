@@ -19,7 +19,7 @@ CATID_PythonCOMServer = "{B3EF80D0-68E2-11D0-A689-00C04FD658FF}"
 def _set_subkeys(keyName, valueDict, base=win32con.HKEY_CLASSES_ROOT):
     hkey = win32api.RegCreateKey(base, keyName)
     try:
-        for key, value in valueDict.iteritems():
+        for key, value in valueDict.items():
             win32api.RegSetValueEx(hkey, key, None, win32con.REG_SZ, value)
     finally:
         win32api.RegCloseKey(hkey)
@@ -301,7 +301,7 @@ def RegisterServer(clsid,
 
     # set up any other reg values they might have
     if other:
-        for key, value in other.iteritems():
+        for key, value in other.items():
             _set_string(keyNameRoot + '\\' + key, value)
 
     if progID:
@@ -458,14 +458,14 @@ def RegisterClasses(*classes, **flags):
                        threadingModel, policySpec, catids, options,
                        addPyComCat, dispatcherSpec, clsctx, addnPath)
         if not quiet:
-            print 'Registered:', progID or spec, debuggingDesc
+            print('Registered:', progID or spec, debuggingDesc)
         # Register the typelibrary
         if tlb_filename:
             tlb_filename = os.path.abspath(tlb_filename)
             typelib = pythoncom.LoadTypeLib(tlb_filename)
             pythoncom.RegisterTypeLib(typelib, tlb_filename)
             if not quiet:
-                print 'Registered type library:', tlb_filename
+                print('Registered type library:', tlb_filename)
     extra = flags.get('finalize_register')
     if extra:
         extra()
@@ -482,20 +482,20 @@ def UnregisterClasses(*classes, **flags):
 
         UnregisterServer(clsid, progID, verProgID, customKeys)
         if not quiet:
-            print 'Unregistered:', progID or str(clsid)
+            print('Unregistered:', progID or str(clsid))
         if unregister_typelib:
             tlb_guid = _get(cls, "_typelib_guid_")
             if tlb_guid is None:
                 # I guess I could load the typelib, but they need the GUID
                 # anyway.
-                print "Have typelib filename, but no GUID - can't unregister"
+                print("Have typelib filename, but no GUID - can't unregister")
             else:
                 major, minor = _get(cls, "_typelib_version_", (1, 0))
                 lcid = _get(cls, "_typelib_lcid_", 0)
                 try:
                     pythoncom.UnRegisterTypeLib(tlb_guid, major, minor, lcid)
                     if not quiet:
-                        print 'Unregistered type library'
+                        print('Unregistered type library')
                 except pythoncom.com_error:
                     pass
 
@@ -533,7 +533,7 @@ def ReExecuteElevated(flags):
     import tempfile
 
     if not flags['quiet']:
-        print "Requesting elevation and retrying..."
+        print("Requesting elevation and retrying...")
     new_params = " ".join(['"' + a + '"' for a in sys.argv])
     # If we aren't already in unattended mode, we want our sub-process to
     # be.
@@ -570,17 +570,17 @@ def ReExecuteElevated(flags):
         batf = open(batfile, "w")
         try:
             cwd = os.getcwd()
-            print >> batf, "@echo off"
+            print("@echo off", file=batf)
             # nothing is 'inherited' by the elevated process, including the
             # environment.  I wonder if we need to set more?
-            print >> batf, "set PYTHONPATH=%s" % os.environ.get(
-                'PYTHONPATH', '')
+            print("set PYTHONPATH=%s" % os.environ.get(
+                'PYTHONPATH', ''), file=batf)
             # may be on a different drive - select that before attempting to
             # CD.
-            print >> batf, os.path.splitdrive(cwd)[0]
-            print >> batf, 'cd "%s"' % os.getcwd()
-            print >> batf, '%s %s > "%s" 2>&1' % (
-                win32api.GetShortPathName(exe_to_run), new_params, outfile)
+            print(os.path.splitdrive(cwd)[0], file=batf)
+            print('cd "%s"' % os.getcwd(), file=batf)
+            print('%s %s > "%s" 2>&1' % (
+                win32api.GetShortPathName(exe_to_run), new_params, outfile), file=batf)
         finally:
             batf.close()
         executable = os.environ.get('COMSPEC', 'cmd.exe')
@@ -601,16 +601,16 @@ def ReExecuteElevated(flags):
 
         if exit_code:
             # Even if quiet you get to see this message.
-            print "Error: registration failed (exit code %s)." % exit_code
+            print("Error: registration failed (exit code %s)." % exit_code)
         # if we are quiet then the output if likely to already be nearly
         # empty, so always print it.
-        print output,
+        print(output, end=' ')
     finally:
         for f in (outfile, batfile):
             try:
                 os.unlink(f)
             except os.error as exc:
-                print "Failed to remove tempfile '%s': %s" % (f, exc)
+                print("Failed to remove tempfile '%s': %s" % (f, exc))
 
 
 def UseCommandLine(*classes, **flags):

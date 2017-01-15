@@ -70,13 +70,13 @@ def TestEnum(quiet=None):
     if quiet is None:
         quiet = not "-v" in sys.argv
     if not quiet:
-        print "Simple enum test"
+        print("Simple enum test")
     o = MakeTestEnum()
     check = [1, 'Two', 3]
     TestEnumAgainst(o, check)
 
     if not quiet:
-        print "sub-collection test"
+        print("sub-collection test")
     sub = o[3]
     TestEnumAgainst(sub, ['Sub1', 2, 'Sub3'])
 
@@ -84,19 +84,19 @@ def TestEnum(quiet=None):
     o.Remove(o.Count() - 1)
 
     if not quiet:
-        print "Remove item test"
+        print("Remove item test")
     del check[1]
     o.Remove(1)
     TestEnumAgainst(o, check)
 
     if not quiet:
-        print "Add item test"
+        print("Add item test")
     o.Add('New Item')
     check.append('New Item')
     TestEnumAgainst(o, check)
 
     if not quiet:
-        print "Insert item test"
+        print("Insert item test")
     o.Insert(2, -1)
     check.insert(2, -1)
     TestEnumAgainst(o, check)
@@ -138,7 +138,7 @@ def TestEnum(quiet=None):
 
     # Test an empty collection
     if not quiet:
-        print "Empty collection test"
+        print("Empty collection test")
     o = MakeEmptyEnum()
     for item in o:
         raise error("Empty list performed an iteration")

@@ -129,11 +129,11 @@ def TestSmartHelper():
 
     pydebugger.AttachApp(app)
     cookie = pdm.AddApplication(app)
-    raw_input("Waiting...")
+    input("Waiting...")
     ttest.test()
 
     pdm.RemoveApplication(cookie)
-    print "Done"
+    print("Done")
 
 
 def testdumb():
@@ -150,8 +150,8 @@ def testdumb():
 
     parentNode = None
     all_real_nodes = {}
-    raw_input("Waiting...")
-    print "Done"
+    input("Waiting...")
+    print("Done")
 
 
 def TestSmartProvider():
@@ -162,10 +162,10 @@ def TestSmartProvider():
 #	d.StartDebugger()
 #	d.Attach()
     d.Break()
-    raw_input("Waiting...")
+    input("Waiting...")
     ttest.test()
     d.Close()
-    print "Done"
+    print("Done")
 
 
 def test():
@@ -184,4 +184,4 @@ if __name__ == '__main__':
     import win32com.axdebug.util
 
     win32com.axdebug.util._dump_wrapped()
-    print " %d/%d com objects still alive" % (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount())
+    print(" %d/%d com objects still alive" % (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount()))

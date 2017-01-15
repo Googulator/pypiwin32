@@ -1,4 +1,4 @@
-from __future__ import with_statement  # needed only if running Python 2.5
+  # needed only if running Python 2.5
 import adodbapi
 try:
     import adodbapi.is64bit as is64bit
@@ -32,4 +32,4 @@ with conn:  # will auto commit if no errors
         crsr.execute(sql, data)  # write the first row of data
         crsr.execute(sql, (6, 7, 8, 9, 10))  # another row of data
 conn.close()
-print('Created spreadsheet=%s worksheet=%s' % (filename, 'SheetOne'))
+print(('Created spreadsheet=%s worksheet=%s' % (filename, 'SheetOne')))

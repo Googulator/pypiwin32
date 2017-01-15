@@ -18,7 +18,7 @@ def DumpDebugApplicationNode(node, level=0):
             info = node.GetName(attr)
         except pythoncom.com_error:
             info = "<N/A>"
-        print "%s%s: %s" % (spacer, desc, info)
+        print("%s%s: %s" % (spacer, desc, info))
     try:
         doc = node.GetDocument()
     except pythoncom.com_error:
@@ -28,9 +28,9 @@ def DumpDebugApplicationNode(node, level=0):
         numLines, numChars = doctext.GetSize()
 #                       text, attr = doctext.GetText(0, 20, 1)
         text, attr = doctext.GetText(0, numChars, 1)
-        print "%sText is %s, %d bytes long" % (spacer, repr(text[:40] + "..."), len(text))
+        print("%sText is %s, %d bytes long" % (spacer, repr(text[:40] + "..."), len(text)))
     else:
-        print "%s%s" % (spacer, "<No document available>")
+        print("%s%s" % (spacer, "<No document available>"))
 
     for child in Enumerator(node.EnumChildren()):
         DumpDebugApplicationNode(child, level + 1)
@@ -44,7 +44,7 @@ def dumpall():
         axdebug.IID_IMachineDebugManager)
     e = Enumerator(dm.EnumApplications())
     for app in e:
-        print "Application: %s" % app.GetName()
+        print("Application: %s" % app.GetName())
         # of type
         # PyIDebugApplicationNode->PyIDebugDocumentProvider->PyIDebugDocumentInfo
         node = app.GetRootNode()

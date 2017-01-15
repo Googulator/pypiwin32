@@ -9,7 +9,7 @@ FACILITY_CONTROL = 0xa
 
 
 def MAKE_SCODE(sev, fac, code):
-    return int((long(-sev) << 31) | ((fac) << 16) | ((code)))
+    return int((int(-sev) << 31) | ((fac) << 16) | ((code)))
 
 
 def STD_CTL_SCODE(n):

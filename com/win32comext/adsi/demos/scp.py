@@ -10,7 +10,7 @@ is also a little command-line-interface to try these functions out.
 
 For example:
 
-scp.py --account-name=domain\user --service-class=PythonScpTest \\
+scp.py --account-name=domain\\user --service-class=PythonScpTest \\
        --keyword=foo --keyword=bar --binding-string=bind_info \\
        ScpCreate SpnCreate SpnRegister
 
@@ -23,7 +23,7 @@ would:
 
 to undo those changes, you could execute:
 
-scp.py --account-name=domain\user --service-class=PythonScpTest \\
+scp.py --account-name=domain\\user --service-class=PythonScpTest \\
        SpnCreate SpnUnregister ScpDelete
 
 which will:
@@ -213,7 +213,7 @@ def SpnRegister(
     spns,             # List of SPNs to register
     operation,         # Add, replace, or delete SPNs
 ):
-    assert type(spns) not in [str, unicode] and hasattr(spns, "__iter__"), \
+    assert type(spns) not in [str, str] and hasattr(spns, "__iter__"), \
         "spns must be a sequence of strings (got %r)" % spns
     # Bind to a domain controller.
     # Get the domain for the current user.
@@ -261,7 +261,7 @@ def UserChangePassword(username_dn, new_password):
 
 def log(level, msg, *args):
     if verbose >= level:
-        print msg % args
+        print(msg % args)
 
 
 class _NoDefault:
@@ -506,7 +506,7 @@ def main():
                 log(1, "%s: %s", arg, result)
             except:
                 if options.show_tracebacks:
-                    print "--show-tracebacks specified - dumping exception"
+                    print("--show-tracebacks specified - dumping exception")
                     traceback.print_exc()
                 raise
         except adsi.error as xxx_todo_changeme:
@@ -528,4 +528,4 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print "*** Interrupted"
+        print("*** Interrupted")

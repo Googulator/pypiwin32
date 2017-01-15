@@ -22,9 +22,9 @@ See the SSPI documentation for more details.
 
 import sys
 import struct
-import SocketServer
+import socketserver
 import win32api
-import httplib
+import http.client
 import traceback
 
 import win32security
@@ -64,10 +64,10 @@ def _get_msg(s):
     return s.recv(cb)
 
 
-class SSPISocketServer(SocketServer.TCPServer):
+class SSPISocketServer(socketserver.TCPServer):
 
     def __init__(self, *args, **kw):
-        SocketServer.TCPServer.__init__(self, *args, **kw)
+        socketserver.TCPServer.__init__(self, *args, **kw)
         self.sa = sspi.ServerAuth(options.package)
 
     def verify_request(self, sock, ca):
@@ -80,7 +80,7 @@ class SSPISocketServer(SocketServer.TCPServer):
             try:
                 err, sec_buffer = self.sa.authorize(data)
             except sspi.error as details:
-                print "FAILED to authorize client:", details
+                print("FAILED to authorize client:", details)
                 return False
 
             if err == 0:
@@ -90,10 +90,10 @@ class SSPISocketServer(SocketServer.TCPServer):
 
     def process_request(self, request, client_address):
         # An example using the connection once it is established.
-        print "The server is running as user", GetUserName()
+        print("The server is running as user", GetUserName())
         self.sa.ctxt.ImpersonateSecurityContext()
         try:
-            print "Having conversation with client as user", GetUserName()
+            print("Having conversation with client as user", GetUserName())
             while True:
                 # we need to grab 2 bits of data - the encrypted data, and the
                 # 'key'
@@ -102,21 +102,21 @@ class SSPISocketServer(SocketServer.TCPServer):
                 if data is None or key is None:
                     break
                 data = self.sa.decrypt(data, key)
-                print "Client sent:", repr(data)
+                print("Client sent:", repr(data))
         finally:
             self.sa.ctxt.RevertSecurityContext()
         self.close_request(request)
-        print "The server is back to user", GetUserName()
+        print("The server is back to user", GetUserName())
 
 
 def serve():
     s = SSPISocketServer(("localhost", options.port), None)
-    print "Running test server..."
+    print("Running test server...")
     s.serve_forever()
 
 
 def sspi_client():
-    c = httplib.HTTPConnection("localhost", options.port)
+    c = http.client.HTTPConnection("localhost", options.port)
     c.connect()
     # Do the auth dance.
     ca = sspi.ClientAuth(options.package, targetspn=options.target_spn)
@@ -127,14 +127,14 @@ def sspi_client():
         if err == 0:
             break
         data = _get_msg(c.sock)
-    print "Auth dance complete - sending a few encryted messages"
+    print("Auth dance complete - sending a few encryted messages")
     # Assume out data is sensitive - encrypt the message.
     for data in "Hello from the client".split():
         blob, key = ca.encrypt(data)
         _send_msg(c.sock, blob)
         _send_msg(c.sock, key)
     c.sock.close()
-    print "Client completed."
+    print("Client completed.")
 
 if __name__ == '__main__':
     parser = optparse.OptionParser("%prog [options] client|server",
@@ -184,4 +184,4 @@ if __name__ == '__main__':
             traceback.print_exc()
     finally:
         if options.wait:
-            raw_input("Press enter to continue")
+            input("Press enter to continue")

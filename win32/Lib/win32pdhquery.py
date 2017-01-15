@@ -128,7 +128,7 @@ if you use it, you accept the risk of using it, etceteras.
 import win32pdh
 import win32api
 import time
-import thread
+import _thread
 import copy
 
 
@@ -269,7 +269,7 @@ class BaseQuery:
         self.active = 0
         # Now call the delete functions on all of the objects
         try:
-            map(win32pdh.RemoveCounter, counters)
+            list(map(win32pdh.RemoveCounter, counters))
         except:
             pass
         try:
@@ -482,7 +482,7 @@ class Query(BaseQuery):
         tempresults = []
         try:
             self.open()
-            for ind in xrange(totalperiod / period):
+            for ind in range(totalperiod / period):
                 tempresults.append(self.collectdata())
                 time.sleep(period)
             self.curresults = tempresults
@@ -512,7 +512,7 @@ class Query(BaseQuery):
                 query.curpaths
         '''
         self.collectdatawhile_active = 1
-        thread.start_new_thread(self.collectdatawhile_slave, (period,))
+        _thread.start_new_thread(self.collectdatawhile_slave, (period,))
 
     def collectdatawhile_stop(self):
         '''

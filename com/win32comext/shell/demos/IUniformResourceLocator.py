@@ -26,7 +26,7 @@ class InternetShortcut:
 
 temp_dir = win32api.GetTempPath()
 linkname = win32api.GetTempFileName(temp_dir, 'ish')[0]
-print 'Link:', linkname
+print('Link:', linkname)
 os.remove(linkname)
 linkname += '.url'
 
@@ -37,16 +37,16 @@ ish.save(linkname)
 # IUniformResourceLocator also give access to IPropertySetStorage
 pss = ish.QueryInterface(pythoncom.IID_IPropertySetStorage)
 ps = pss.Open(shell.FMTID_InternetSite)
-property_ids = [(k, v) for k, v in shellcon.__dict__.iteritems()
+property_ids = [(k, v) for k, v in shellcon.__dict__.items()
                 if k.startswith('PID_INTSITE_')]
 for pname, pval in property_ids:
-    print pname, ps.ReadMultiple((pval,))[0]
+    print(pname, ps.ReadMultiple((pval,))[0])
 
 ps = pss.Open(shell.FMTID_Intshcut)
-property_ids = [(k, v) for k, v in shellcon.__dict__.iteritems()
+property_ids = [(k, v) for k, v in shellcon.__dict__.items()
                 if k.startswith('PID_IS_')]
 for pname, pval in property_ids:
-    print pname, ps.ReadMultiple((pval,))[0]
+    print(pname, ps.ReadMultiple((pval,))[0])
 
 new_sh = InternetShortcut()
 new_sh.load(linkname)

@@ -88,7 +88,7 @@ S_OK = 0
 IDispatchType = pythoncom.TypeIIDs[pythoncom.IID_IDispatch]
 IUnknownType = pythoncom.TypeIIDs[pythoncom.IID_IUnknown]
 
-from exception import COMException
+from .exception import COMException
 error = __name__ + " error"
 
 regSpec = 'CLSID\\%s\\PythonCOM'
@@ -501,11 +501,11 @@ class DesignatedWrapPolicy(MappedWrapPolicy):
                 "Object does not support DesignatedWrapPolicy, as it does not have either _public_methods_ or _typelib_guid_ attributes.")
 
         # Copy existing _dispid_to_func_ entries to _name_to_dispid_
-        for dispid, name in self._dispid_to_func_.iteritems():
+        for dispid, name in self._dispid_to_func_.items():
             self._name_to_dispid_[name.lower()] = dispid
-        for dispid, name in self._dispid_to_get_.iteritems():
+        for dispid, name in self._dispid_to_get_.items():
             self._name_to_dispid_[name.lower()] = dispid
-        for dispid, name in self._dispid_to_put_.iteritems():
+        for dispid, name in self._dispid_to_put_.items():
             self._name_to_dispid_[name.lower()] = dispid
 
         # Patch up the universal stuff.
@@ -622,7 +622,7 @@ class DesignatedWrapPolicy(MappedWrapPolicy):
                     # Particularly nasty is "wrong number of args" type error
                     # This helps you see what 'func' and 'args' actually is
                     if str(v).find("arguments") >= 0:
-                        print "** TypeError %s calling function %r(%r)" % (v, func, args)
+                        print("** TypeError %s calling function %r(%r)" % (v, func, args))
                     raise
 
         if wFlags & DISPATCH_PROPERTYGET:
@@ -801,6 +801,6 @@ def _import_module(mname):
 # These have been moved to a new source file, but some code may
 # still reference them here.  These will end up being removed.
 try:
-    from dispatcher import DispatcherTrace, DispatcherWin32trace
+    from .dispatcher import DispatcherTrace, DispatcherWin32trace
 except ImportError:  # Quite likely a frozen executable that doesnt need dispatchers
     pass

@@ -24,6 +24,6 @@ policy_handle = win32security.GetPolicyHandle(
 sidlist = win32security.LsaEnumerateAccountsWithUserRight(
     policy_handle, ntsecuritycon.SE_RESTORE_NAME)
 for sid in sidlist:
-    print win32security.LookupAccountSid('', sid)
+    print(win32security.LookupAccountSid('', sid))
 
 win32security.LsaClose(policy_handle)

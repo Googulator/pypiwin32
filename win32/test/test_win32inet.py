@@ -19,7 +19,7 @@ class CookieTests(unittest.TestCase):
             InternetGetCookie("http://site-with-no-cookie.python.org", None)
             self.fail("expected win32 exception")
         except error as exc:
-            self.failUnlessEqual(exc.winerror, winerror.ERROR_NO_MORE_ITEMS)
+            self.assertEqual(exc.winerror, winerror.ERROR_NO_MORE_ITEMS)
 
 
 class UrlTests(unittest.TestCase):
@@ -68,7 +68,7 @@ class TestNetwork(unittest.TestCase):
                 hftp = FtpCommand(
                     hcon, True, FTP_TRANSFER_TYPE_ASCII, 'NLST', 0)
             except error:
-                print "Error info is", InternetGetLastResponseInfo()
+                print("Error info is", InternetGetLastResponseInfo())
             InternetReadFile(hftp, 2048)
             hftp.Close()
         finally:

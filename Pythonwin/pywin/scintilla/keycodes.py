@@ -132,7 +132,7 @@ def make_key_name(vk, flags):
             # Not in our virtual key map - ask Windows what character this
             # key corresponds to.
             scancode = win32api.MapVirtualKey(vk, MAPVK_VK_TO_CHAR)
-            parts.append(unichr(scancode))
+            parts.append(chr(scancode))
     sep = "+"
     if sep in parts:
         sep = "-"
@@ -141,7 +141,7 @@ def make_key_name(vk, flags):
 
 def _psc(char):
     sc, mods = get_vk(char)
-    print "Char %s -> %d -> %s" % (repr(char), sc, key_code_to_name.get(sc))
+    print("Char %s -> %d -> %s" % (repr(char), sc, key_code_to_name.get(sc)))
 
 
 def test1():
@@ -153,7 +153,7 @@ def test1():
 
 def _pkn(n):
     vk, flags = parse_key_name(n)
-    print "%s -> %s,%s -> %s" % (n, vk, flags, make_key_name(vk, flags))
+    print("%s -> %s,%s -> %s" % (n, vk, flags, make_key_name(vk, flags)))
 
 
 def test2():

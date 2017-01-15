@@ -77,7 +77,7 @@ class TestStuff(unittest.TestCase):
             try:
                 self.cur.execute("""drop table %s""" % self.tablename)
             except (odbc.error, odbc.progError) as why:
-                print "Failed to delete test table %s" % self.tablename, why
+                print("Failed to delete test table %s" % self.tablename, why)
 
             self.cur.close()
             self.cur = None
@@ -99,7 +99,7 @@ class TestStuff(unittest.TestCase):
             where username = ?" % self.tablename, [username.lower()]), 0)
 
     def test_insert_select_unicode(
-            self, userid=u'Frank', username=u"Frank Millman"):
+            self, userid='Frank', username="Frank Millman"):
         self.assertEqual(self.cur.execute("insert into %s (userid, username)\
             values (?,?)" % self.tablename, [userid, username]), 1)
         self.assertEqual(self.cur.execute("select * from %s \
@@ -108,8 +108,8 @@ class TestStuff(unittest.TestCase):
             where username = ?" % self.tablename, [username.lower()]), 0)
 
     def test_insert_select_unicode_ext(self):
-        userid = u"t-\xe0\xf2"
-        username = u"test-\xe0\xf2 name"
+        userid = "t-\xe0\xf2"
+        username = "test-\xe0\xf2 name"
         self.test_insert_select_unicode(userid, username)
 
     def _test_val(self, fieldName, value):
@@ -124,9 +124,9 @@ class TestStuff(unittest.TestCase):
             self.cur.execute("select %s from %s where userid = ?" % (fieldName, self.tablename),
                              ["Frank"])
             rows = self.cur.fetchmany()
-            self.failUnlessEqual(1, len(rows))
+            self.assertEqual(1, len(rows))
             row = rows[0]
-            self.failUnlessEqual(row[0], value)
+            self.assertEqual(row[0], value)
 
     def testBit(self):
         self._test_val('bitfield', 1)
@@ -164,7 +164,7 @@ class TestStuff(unittest.TestCase):
         """Test a unicode character that would be mangled if bound as plain character.
             For example, previously the below was returned as ascii 'a'
         """
-        self._test_val('username', u'\u0101')
+        self._test_val('username', '\u0101')
 
     def testDates(self):
         import datetime
@@ -196,7 +196,7 @@ class TestStuff(unittest.TestCase):
 
     def test_set_zero_length_unicode(self):
         self.assertEqual(self.cur.execute("insert into %s (userid,username) "
-                                          "values (?,?)" % self.tablename, [u'Frank', u'']), 1)
+                                          "values (?,?)" % self.tablename, ['Frank', '']), 1)
         self.assertEqual(
             self.cur.execute(
                 "select * from %s" %

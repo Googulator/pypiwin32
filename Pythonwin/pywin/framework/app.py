@@ -15,7 +15,7 @@ from pywin.mfc.thread import WinApp
 import traceback
 import regutil
 
-import scriptutils
+from . import scriptutils
 
 # NOTE: App and AppBuild should NOT be used - instead, you should contruct your
 # APP class manually whenever you like (just ensure you leave these 2 params None!)
@@ -29,12 +29,12 @@ App = None  # default - if used, must end up a CApp derived class.
 
 
 def AddIdleHandler(handler):
-    print "app.AddIdleHandler is deprecated - please use win32ui.GetApp().AddIdleHandler() instead."
+    print("app.AddIdleHandler is deprecated - please use win32ui.GetApp().AddIdleHandler() instead.")
     return win32ui.GetApp().AddIdleHandler(handler)
 
 
 def DeleteIdleHandler(handler):
-    print "app.DeleteIdleHandler is deprecated - please use win32ui.GetApp().DeleteIdleHandler() instead."
+    print("app.DeleteIdleHandler is deprecated - please use win32ui.GetApp().DeleteIdleHandler() instead.")
     return win32ui.GetApp().DeleteIdleHandler(handler)
 
 # Helper for writing a Window position by name, and later loading it.
@@ -194,9 +194,9 @@ class CApp(WinApp):
                 try:
                     thisRet = handler(handler, count)
                 except:
-                    print "Idle handler %s failed" % (repr(handler))
+                    print("Idle handler %s failed" % (repr(handler)))
                     traceback.print_exc()
-                    print "Idle handler removed from list"
+                    print("Idle handler removed from list")
                     try:
                         self.DeleteIdleHandler(handler)
                     except ValueError:  # Item not in list.
@@ -234,7 +234,7 @@ class CApp(WinApp):
             if helpFile is None:
                 win32ui.MessageBox("The help file is not registered!")
             else:
-                import help
+                from . import help
                 help.OpenHelpFile(helpFile, helpCmd)
         except:
             t, v, tb = sys.exc_info()
@@ -426,7 +426,7 @@ def Win32RawInput(prompt=None):
 
 def Win32Input(prompt=None):
     "Provide input() for gui apps"
-    return eval(raw_input(prompt))
+    return eval(input(prompt))
 
 
 def HookInput():
@@ -451,7 +451,7 @@ def CreateDefaultGUI(appClass=None):
     """Creates a default GUI environment
     """
     if appClass is None:
-        import intpyapp  # Bring in the default app - could be param'd later.
+        from . import intpyapp  # Bring in the default app - could be param'd later.
         appClass = intpyapp.InteractivePythonApp
     # Create and init the app.
     appClass().InitInstance()

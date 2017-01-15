@@ -10,7 +10,7 @@ import os
 import sys
 
 template_folder = os.path.split(sys.executable)[0]
-print 'Template folder:', template_folder
+print('Template folder:', template_folder)
 template_pidl = shell.SHILCreateFromPath(template_folder, 0)[0]
 template_pb = shell.SHGetViewStatePropertyBag(
     template_pidl,
@@ -31,7 +31,7 @@ def update_colinfo(not_used, dir_name, fnames):
     for fname in fnames:
         full_fname = os.path.join(dir_name, fname)
         if os.path.isdir(full_fname):
-            print full_fname
+            print(full_fname)
             pidl = shell.SHILCreateFromPath(full_fname, 0)[0]
             pb = shell.SHGetViewStatePropertyBag(
                 pidl, "Shell", shellcon.SHGVSPB_FOLDERNODEFAULTS, pythoncom.IID_IPropertyBag)

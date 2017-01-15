@@ -9,7 +9,7 @@
 from isapi import isapicon, threaded_extension, ExtensionError
 from isapi.simple import SimpleFilter
 import traceback
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import winerror
 
 # If we have no console (eg, am running from inside IIS), redirect output
@@ -29,7 +29,7 @@ class Extension(threaded_extension.ThreadPoolExtension):
     "Python ISAPI Tester"
 
     def Dispatch(self, ecb):
-        print 'Tester dispatching "%s"' % (ecb.GetServerVariable("URL"),)
+        print('Tester dispatching "%s"' % (ecb.GetServerVariable("URL"),))
         url = ecb.GetServerVariable("URL")
         test_name = url.split("/")[-1]
         meth = getattr(self, test_name, None)
@@ -41,11 +41,11 @@ class Extension(threaded_extension.ThreadPoolExtension):
             return
         ecb.SendResponseHeaders("200 OK", "Content-type: text/html\r\n\r\n",
                                 False)
-        print >> ecb, "<HTML><BODY>Finished running test <i>", test_name, "</i>"
-        print >> ecb, "<pre>"
-        print >> ecb, result
-        print >> ecb, "</pre>"
-        print >> ecb, "</BODY></HTML>"
+        print("<HTML><BODY>Finished running test <i>", test_name, "</i>", file=ecb)
+        print("<pre>", file=ecb)
+        print(result, file=ecb)
+        print("</pre>", file=ecb)
+        print("</BODY></HTML>", file=ecb)
         ecb.DoneWithSession()
 
     def test1(self, ecb):
@@ -84,9 +84,9 @@ class Extension(threaded_extension.ThreadPoolExtension):
             return "This is IIS version %g - unicode only works in IIS6 and later" % ver
 
         us = ecb.GetServerVariable("UNICODE_SERVER_NAME")
-        if not isinstance(us, unicode):
+        if not isinstance(us, str):
             raise RuntimeError("unexpected type!")
-        if us != unicode(ecb.GetServerVariable("SERVER_NAME")):
+        if us != str(ecb.GetServerVariable("SERVER_NAME")):
             raise RuntimeError(
                 "Unicode and non-unicode values were not the same")
         return "worked!"

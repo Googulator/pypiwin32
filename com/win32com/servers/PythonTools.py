@@ -1,5 +1,6 @@
 import sys
 import time
+import imp
 
 
 class Tools:
@@ -11,7 +12,7 @@ class Tools:
                 from imp import reload
             except ImportError:
                 pass  # builtin in py2k
-            reload(sys.modules[module])
+            imp.reload(sys.modules[module])
             return "reload succeeded."
         return "no reload performed."
 
@@ -33,14 +34,14 @@ if __name__ == '__main__':
     progid = "Python.Tools"
     verprogid = "Python.Tools.1"
     if "--unregister" in sys.argv:
-        print "Unregistering..."
+        print("Unregistering...")
         UnregisterServer(clsid, progid, verprogid)
-        print "Unregistered OK"
+        print("Unregistered OK")
     else:
-        print "Registering COM server..."
+        print("Registering COM server...")
         RegisterServer(clsid,
                        "win32com.servers.PythonTools.Tools",
                        "Python Tools",
                        progid,
                        verprogid)
-        print "Class registered."
+        print("Class registered.")

@@ -10,14 +10,14 @@ if sys.version_info < (
         3, 0):  # in Python 2, define all symbols, just like the bad old way
     from apibase import *
     VariantConversionMap = MultiMap  # old name. Should use apibase.MultiMap
-    from ado_consts import *
+    from .ado_consts import *
     _makeByteBuffer = buffer
 else:
     # but if the user is running Python 3, then keep the dictionary clean
     from .apibase import NUMBER, STRING, BINARY, DATETIME, ROWID
     _makeByteBuffer = bytes
 
-from adodbapi import connect, Connection, __version__, dateconverter
+from .adodbapi import connect, Connection, __version__, dateconverter
 
 
 def Binary(aString):

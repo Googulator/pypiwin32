@@ -18,7 +18,7 @@ class PippoTester(unittest.TestCase):
         try:
             gtrc = sys.gettotalrefcount
         except AttributeError:
-            print "Please run this with python_d for leak tests"
+            print("Please run this with python_d for leak tests")
             gtrc = lambda: 0
         # note creating self.object() should have consumed our "one time" leaks
         self.object.Method1()
@@ -33,14 +33,14 @@ class PippoTester(unittest.TestCase):
 
     def testResults(self):
         rc, out1 = self.object.Method2(123, 111)
-        self.failUnlessEqual(rc, 123)
-        self.failUnlessEqual(out1, 222)
+        self.assertEqual(rc, 123)
+        self.assertEqual(out1, 222)
 
     def testLeaksGencache(self):
         try:
             gtrc = sys.gettotalrefcount
         except AttributeError:
-            print "Please run this with python_d for leak tests"
+            print("Please run this with python_d for leak tests")
             gtrc = lambda: 0
         # note creating self.object() should have consumed our "one time" leaks
         object = EnsureDispatch("Python.Test.Pippo")

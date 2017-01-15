@@ -8,8 +8,8 @@
 
 import sys
 
-import dynamic
-import gencache
+from . import dynamic
+from . import gencache
 import pythoncom
 import pywintypes
 
@@ -32,7 +32,7 @@ def __WrapDispatch(dispatch, userName=None, resultCLSID=None, typeinfo=None,
         except (pythoncom.com_error, AttributeError):
             pass
     if resultCLSID is not None:
-        import gencache
+        from . import gencache
         # Attempt to load generated module support
         # This may load the module, and make it available
         klass = gencache.GetClassForCLSID(resultCLSID)
@@ -449,7 +449,7 @@ def Record(name, object):
     """
     # XXX - to do - probably should allow "object" to already be a module
     # object.
-    import gencache
+    from . import gencache
     object = gencache.EnsureDispatch(object)
     module = sys.modules[object.__class__.__module__]
     # to allow us to work correctly with "demand generated" code,

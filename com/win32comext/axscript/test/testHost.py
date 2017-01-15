@@ -25,7 +25,7 @@ class MySite(axsite.AXSite):
         context, line, char = error.GetSourcePosition()
         if not verbose:
             return
-        print " >Exception:", exc[1]
+        print(" >Exception:", exc[1])
         try:
             st = error.GetSourceLineText()
         except pythoncom.com_error:
@@ -34,7 +34,7 @@ class MySite(axsite.AXSite):
             st = ""
         text = st + "\n" + (" " * (char - 1)) + "^" + "\n" + exc[2]
         for line in text.splitlines():
-            print "  >" + line
+            print("  >" + line)
 
 
 class MyCollection(util.Collection):
@@ -58,14 +58,14 @@ class Test:
         self.last = "".join([str(s) for s in args])
         if self.verbose:
             for arg in args:
-                print arg,
-            print
+                print(arg, end=' ')
+            print()
 
     def fail(self, *args):
-        print "**** fail() called ***"
+        print("**** fail() called ***")
         for arg in args:
-            print arg,
-        print
+            print(arg, end=' ')
+        print()
         self.fail_called = 1
 #    self._connect_server_.Broadcast(last)
 
@@ -117,7 +117,7 @@ sub testcollection
    end if
 end sub
 """
-PyScript = u"""\
+PyScript = """\
 # A unicode \xa9omment.
 prop = "Property Value"
 def hello(arg1):
@@ -136,7 +136,7 @@ def testcollection():
 # XXX - needs py3k work!  Throwing a bytes string with an extended char
 # doesn't make much sense, but py2x allows it.  What it gets upset with
 # is a real unicode arg - which is the only thing py3k allows!
-PyScript_Exc = u"""\
+PyScript_Exc = """\
 def hello(arg1):
   raise RuntimeError("exc with extended \xa9har")
 """
@@ -180,14 +180,14 @@ class EngineTester(win32com.test.util.TestCase):
             engine.AddCode(code)
             engine.Start()
             _CheckEngineState(site, engineName, axscript.SCRIPTSTATE_STARTED)
-            self.failUnless(
+            self.assertTrue(
                 not echoer.fail_called,
                 "Fail should not have been called")
             # Now call into the scripts IDispatch
             ob = Dispatch(engine.GetScriptDispatch())
             try:
                 ob.hello("Goober")
-                self.failUnless(expected_exc is None,
+                self.assertTrue(expected_exc is None,
                                 "Expected %r, but no exception seen" % (expected_exc,))
             except pythoncom.com_error:
                 if expected_exc is None:
@@ -203,7 +203,7 @@ class EngineTester(win32com.test.util.TestCase):
 
             self.assertEqual(str(ob.prop), "Property Value")
             ob.testcollection()
-            self.failUnless(
+            self.assertTrue(
                 not echoer.fail_called,
                 "Fail should not have been called")
 
@@ -255,7 +255,7 @@ class EngineTester(win32com.test.util.TestCase):
                           self._TestEngine, "VBScript", ErrScript)
 
     def testPythonExceptions(self):
-        expected = u"RuntimeError: exc with extended \xa9har"
+        expected = "RuntimeError: exc with extended \xa9har"
         self._TestEngine("Python", PyScript_Exc, expected)
 
 if __name__ == '__main__':

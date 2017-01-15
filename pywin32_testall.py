@@ -18,7 +18,7 @@ if hasattr(os, 'popen3'):
         try:
             executable = win32api.GetShortPathName(sys.executable)
             cmd = '%s "%s" %s' % (sys.executable, scriptname, cmdline_rest)
-            print script
+            print(script)
             stdin, stdout, stderr = os.popen3(cmd)
             stdin.close()
             while True:
@@ -27,11 +27,11 @@ if hasattr(os, 'popen3'):
                     break
                 sys.stdout.write(char)
             for line in stdout.readlines():
-                print line
+                print(line)
             stdout.close()
             result = stderr.close()
             if result is not None:
-                print "****** %s failed: %s" % (script, result)
+                print("****** %s failed: %s" % (script, result))
         finally:
             os.chdir(cwd)
 else:
@@ -44,13 +44,13 @@ else:
         dirname, scriptname = os.path.split(script)
         # some tests prefer to be run from their directory.
         cmd = [sys.executable, "-u", scriptname] + cmdline_rest.split()
-        print script
+        print(script)
         popen = subprocess.Popen(cmd, shell=True, cwd=dirname,
                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         data = popen.communicate()[0]
         sys.stdout.buffer.write(data)
         if popen.returncode:
-            print "****** %s failed: %s" % (script, popen.returncode)
+            print("****** %s failed: %s" % (script, popen.returncode))
 
 
 def find_and_run(possible_locations, script, cmdline_rest=""):
@@ -91,4 +91,4 @@ if __name__ == '__main__':
     # find_and_run(maybes, 'test_adodbapi_dbapi20.py')
 
     if sys.version_info > (3,):
-        print "** The tests have some issues on py3k - not all failures are a problem..."
+        print("** The tests have some issues on py3k - not all failures are a problem...")

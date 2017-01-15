@@ -30,7 +30,7 @@ SCRIPTTEXT_ISEXPRESSION = 0x00000020
 SCRIPTTEXT_ISPERSISTENT = 0x00000040
 
 from win32com.server.exception import Exception, IsCOMServerException
-import error  # ax.client.error
+from . import error  # ax.client.error
 
 state_map = {
     axscript.SCRIPTSTATE_UNINITIALIZED: "SCRIPTSTATE_UNINITIALIZED",
@@ -90,7 +90,7 @@ def MakeValidSysOuts():
         def noOp(a, b):
             # it would be nice to get to the bottom of this, so a warning to
             # the debug console can't hurt.
-            print "WARNING: Ignoring keyboard interrupt from ActiveScripting engine"
+            print("WARNING: Ignoring keyboard interrupt from ActiveScripting engine")
         # If someone else has already redirected, then assume they know what
         # they are doing!
         if signal.getsignal(signal.SIGINT) == signal.default_int_handler:
@@ -105,15 +105,15 @@ def trace(*args):
     """A function used instead of "print" for debugging output.
     """
     for arg in args:
-        print arg,
-    print
+        print(arg, end=' ')
+    print()
 
 
 def RaiseAssert(scode, desc):
     """A debugging function that raises an exception considered an "Assertion".
     """
-    print "**************** ASSERTION FAILED *******************"
-    print desc
+    print("**************** ASSERTION FAILED *******************")
+    print(desc)
     raise Exception(desc, scode)
 
 
@@ -195,7 +195,7 @@ class EventSink:
         self.myScriptItem = None
         self.myInvokeMethod = None
         self.coDispatch = None
-        for event in self.events.itervalues():
+        for event in self.events.values():
             event.Reset()
         self.events = {}
         self.Disconnect()
@@ -225,7 +225,7 @@ class EventSink:
             RaiseAssert(winerror.E_UNEXPECTED,
                         "The typeKind of the object is unexpected")
         cImplType = attr[8]
-        for i in xrange(cImplType):
+        for i in range(cImplType):
             # Look for the [source, default] interface on the coclass
             # that isn't marked as restricted.
             flags = typeinfo.GetImplTypeFlags(i)
@@ -252,7 +252,7 @@ class EventSink:
             except pythoncom.com_error:
                 numTypeInfos = 0
         # Create an event handler for the item.
-        for item in xrange(numTypeInfos):
+        for item in range(numTypeInfos):
             if isMulti:
                 typeinfo, flags = mainTypeInfo.GetInfoOfIndex(
                     item, axscript.MULTICLASSINFO_GETTYPEINFO)
@@ -264,7 +264,7 @@ class EventSink:
                 attr = sourceType.GetTypeAttr()
                 self.iid = attr[0]
                 cFuncs = attr[6]
-                for i in xrange(cFuncs):
+                for i in range(cFuncs):
                     funcdesc = sourceType.GetFuncDesc(i)
                     event = Event()
                     event.Build(sourceType, funcdesc)
@@ -318,8 +318,8 @@ class ScriptItem:
             flagDescs.append("EVENT SINK")
         if self.flags is not None and self.flags & axscript.SCRIPTITEM_CODEONLY:
             flagDescs.append("CODE ONLY")
-        print " " * level, "Name=", self.name, ", flags=", "/".join(flagDescs), self
-        for subItem in self.subItems.itervalues():
+        print(" " * level, "Name=", self.name, ", flags=", "/".join(flagDescs), self)
+        for subItem in self.subItems.values():
             subItem._dump_(level + 1)
 
     def Reset(self):
@@ -327,7 +327,7 @@ class ScriptItem:
         if self.eventSink:
             self.eventSink.Reset()
         self.isRegistered = 0
-        for subItem in self.subItems.itervalues():
+        for subItem in self.subItems.values():
             subItem.Reset()
 
     def Close(self):
@@ -337,7 +337,7 @@ class ScriptItem:
         if self.eventSink:
             self.eventSink.Close()
             self.eventSink = None
-        for subItem in self.subItems.itervalues():
+        for subItem in self.subItems.values():
             subItem.Close()
         self.subItems = []
         self.createdConnections = 0
@@ -358,7 +358,7 @@ class ScriptItem:
 #			print "**** Made dispatch"
         self.isRegistered = 1
         # Register the sub-items.
-        for item in self.subItems.itervalues():
+        for item in self.subItems.values():
             if not item.isRegistered:
                 item.Register()
 
@@ -424,14 +424,14 @@ class ScriptItem:
         # Connect to the already created connection points.
         if self.eventSink:
             self.eventSink.Connect()
-        for subItem in self.subItems.itervalues():
+        for subItem in self.subItems.values():
             subItem.Connect()
 
     def Disconnect(self):
         # Disconnect from the connection points.
         if self.eventSink:
             self.eventSink.Disconnect()
-        for subItem in self.subItems.itervalues():
+        for subItem in self.subItems.values():
             subItem.Disconnect()
 
     def BuildEvents(self):
@@ -454,7 +454,7 @@ class ScriptItem:
             numTypeInfos = multiTypeInfo.GetMultiTypeInfoCount()
         except pythoncom.com_error:
             return
-        for item in xrange(numTypeInfos):
+        for item in range(numTypeInfos):
             typeinfo, flags = multiTypeInfo.GetInfoOfIndex(
                 item, axscript.MULTICLASSINFO_GETTYPEINFO)
             defaultType = self.GetDefaultSourceTypeInfo(typeinfo)
@@ -518,7 +518,7 @@ class ScriptItem:
             RaiseAssert(winerror.E_UNEXPECTED,
                         "The typeKind of the object is unexpected")
         cImplType = attr[8]
-        for i in xrange(cImplType):
+        for i in range(cImplType):
             # Look for the [source, default] interface on the coclass
             # that isn't marked as restricted.
             flags = typeinfo.GetImplTypeFlags(i)
@@ -655,7 +655,7 @@ class COMScript:
         import traceback
         try:
             import win32com.axdebug.axdebug  # see if the core exists.
-            import debug
+            from . import debug
             self.debugManager = debug.DebugManager(self)
         except pythoncom.com_error:
             # COM errors will occur if the debugger interface has never been
@@ -745,7 +745,7 @@ class COMScript:
                                 axscript.SCRIPTSTATE_DISCONNECTED, axscript.SCRIPTSTATE_INITIALIZED, axscript.SCRIPTSTATE_STARTED]:
             self.ChangeScriptState(axscript.SCRIPTSTATE_CLOSED)
             # Completely reset all named items (including persistent)
-            for item in self.subItems.itervalues():
+            for item in self.subItems.values():
                 item.Close()
             self.subItems = {}
             self.baseThreadId = -1
@@ -852,14 +852,14 @@ class COMScript:
         return self.DoProcessScriptItemEvent(item, event, lcid, wFlags, args)
 
     def _DumpNamedItems_(self):
-        for item in self.subItems.itervalues():
+        for item in self.subItems.values():
             item._dump_(0)
 
     def ResetNamedItems(self):
         # Due to the way we work, we re-create persistent ones.
         existing = self.subItems
         self.subItems = {}
-        for name, item in existing.iteritems():
+        for name, item in existing.items():
             item.Close()
             if item.flags & axscript.SCRIPTITEM_ISPERSISTENT:
                 self.AddNamedItem(item.name, item.flags)
@@ -869,13 +869,13 @@ class COMScript:
 
     def ProcessNewNamedItemsConnections(self):
         # Process all sub-items.
-        for item in self.subItems.itervalues():
+        for item in self.subItems.values():
             if not item.createdConnections:  # Fast-track!
                 item.CreateConnections()
 
     def RegisterNewNamedItems(self):
         # Register all sub-items.
-        for item in self.subItems.itervalues():
+        for item in self.subItems.values():
             if not item.isRegistered:  # Fast-track!
                 self.RegisterNamedItem(item)
 
@@ -923,13 +923,13 @@ class COMScript:
 
     def ConnectEventHandlers(self):
         #		trace ("Connecting to event handlers")
-        for item in self.subItems.itervalues():
+        for item in self.subItems.values():
             item.Connect()
         self.ChangeScriptState(axscript.SCRIPTSTATE_CONNECTED)
 
     def DisconnectEventHandlers(self):
         #		trace ("Disconnecting from event handlers")
-        for item in self.subItems.itervalues():
+        for item in self.subItems.values():
             item.Disconnect()
 
     def Reset(self):
@@ -1015,9 +1015,9 @@ class COMScript:
             if self.debugManager.adb.appDebugger:
                 return self.debugManager.adb.run(codeObject, globals, locals)
             else:
-                exec codeObject in globals, locals
+                exec(codeObject, globals, locals)
         else:
-            exec codeObject in globals, locals
+            exec(codeObject, globals, locals)
 
     def ExecInScriptedSection(self, codeBlock, globals, locals=None):
         if locals is None:
@@ -1134,15 +1134,15 @@ class COMScript:
             self.debugManager.AddScriptBlock(codeBlock)
 
 if __name__ == '__main__':
-    print "This is a framework class - please use pyscript.py etc"
+    print("This is a framework class - please use pyscript.py etc")
 
 
 def dumptypeinfo(typeinfo):
     return
     attr = typeinfo.GetTypeAttr()
     # Loop over all methods
-    print "Methods"
-    for j in xrange(attr[6]):
+    print("Methods")
+    for j in range(attr[6]):
         fdesc = list(typeinfo.GetFuncDesc(j))
         id = fdesc[0]
         try:
@@ -1151,11 +1151,11 @@ def dumptypeinfo(typeinfo):
             names = None
         doc = typeinfo.GetDocumentation(id)
 
-        print " ", names, "has attr", fdesc
+        print(" ", names, "has attr", fdesc)
 
     # Loop over all variables (ie, properties)
-    print "Variables"
-    for j in xrange(attr[7]):
+    print("Variables")
+    for j in range(attr[7]):
         fdesc = list(typeinfo.GetVarDesc(j))
         names = typeinfo.GetNames(id)
-        print " ", names, "has attr", fdesc
+        print(" ", names, "has attr", fdesc)

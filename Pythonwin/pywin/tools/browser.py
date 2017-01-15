@@ -11,7 +11,7 @@ import __main__
 import win32ui
 from pywin.mfc import dialog
 
-import hierlist
+from . import hierlist
 
 special_names = ['__doc__', '__name__', '__self__']
 
@@ -75,7 +75,7 @@ class HLIPythonObject(hierlist.HierListItem):
     def GetSubList(self):
         ret = []
         try:
-            for (key, ob) in self.myobject.__dict__.iteritems():
+            for (key, ob) in self.myobject.__dict__.items():
                 if key not in special_names:
                     ret.append(MakeHLI(ob, key))
         except (AttributeError, TypeError):
@@ -105,7 +105,7 @@ class HLIPythonObject(hierlist.HierListItem):
         if hasattr(self.myobject, '__doc__'):
             return 1
         try:
-            for key in self.myobject.__dict__.iterkeys():
+            for key in self.myobject.__dict__.keys():
                 if key not in special_names:
                     return 1
         except (AttributeError, TypeError):
@@ -262,8 +262,8 @@ class HLIFunction(HLIPythonObject):
             globs = self.myobject.__globals__
         except AttributeError:
             # must be py2.5 or earlier...
-            code = self.myobject.func_code
-            globs = self.myobject.func_globals
+            code = self.myobject.__code__
+            globs = self.myobject.__globals__
         ret.append(MakeHLI(code, "Code"))
         ret.append(MakeHLI(globs, "Globals"))
         self.InsertDocString(ret)
@@ -341,9 +341,9 @@ TypeMap = {type: HLIClass,
            types.FrameType: HLIFrame,
            types.TracebackType: HLITraceback,
            str: HLIString,
-           unicode: HLIString,
+           str: HLIString,
            int: HLIPythonObject,
-           long: HLIPythonObject,
+           int: HLIPythonObject,
            bool: HLIPythonObject,
            float: HLIPythonObject,
            }

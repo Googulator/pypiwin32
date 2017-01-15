@@ -30,30 +30,30 @@ class ShellExtension:
         # IDNO Prevents the operation on this folder but continues with any other operations that have been approved (for example, a batch copy operation).
         # IDCANCEL Prevents the current operation and cancels any pending
         # operations.
-        print "CopyCallBack", hwnd, func, flags, srcName, srcAttr, destName, destAttr
+        print("CopyCallBack", hwnd, func, flags, srcName, srcAttr, destName, destAttr)
         return win32gui.MessageBox(hwnd, "Allow operation?", "CopyHook",
                                    win32con.MB_YESNO)
 
 
 def DllRegisterServer():
-    import _winreg
-    key = _winreg.CreateKey(_winreg.HKEY_CLASSES_ROOT,
+    import winreg
+    key = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT,
                             "directory\\shellex\\CopyHookHandlers\\" +
                             ShellExtension._reg_desc_)
-    _winreg.SetValueEx(key, None, 0, _winreg.REG_SZ,
+    winreg.SetValueEx(key, None, 0, winreg.REG_SZ,
                        ShellExtension._reg_clsid_)
-    key = _winreg.CreateKey(_winreg.HKEY_CLASSES_ROOT,
+    key = winreg.CreateKey(winreg.HKEY_CLASSES_ROOT,
                             "*\\shellex\\CopyHookHandlers\\" +
                             ShellExtension._reg_desc_)
-    _winreg.SetValueEx(key, None, 0, _winreg.REG_SZ,
+    winreg.SetValueEx(key, None, 0, winreg.REG_SZ,
                        ShellExtension._reg_clsid_)
-    print ShellExtension._reg_desc_, "registration complete."
+    print(ShellExtension._reg_desc_, "registration complete.")
 
 
 def DllUnregisterServer():
-    import _winreg
+    import winreg
     try:
-        key = _winreg.DeleteKey(_winreg.HKEY_CLASSES_ROOT,
+        key = winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT,
                                 "directory\\shellex\\CopyHookHandlers\\" +
                                 ShellExtension._reg_desc_)
     except WindowsError as details:
@@ -61,14 +61,14 @@ def DllUnregisterServer():
         if details.errno != errno.ENOENT:
             raise
     try:
-        key = _winreg.DeleteKey(_winreg.HKEY_CLASSES_ROOT,
+        key = winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT,
                                 "*\\shellex\\CopyHookHandlers\\" +
                                 ShellExtension._reg_desc_)
     except WindowsError as details:
         import errno
         if details.errno != errno.ENOENT:
             raise
-    print ShellExtension._reg_desc_, "unregistration complete."
+    print(ShellExtension._reg_desc_, "unregistration complete.")
 
 if __name__ == '__main__':
     from win32com.server import register

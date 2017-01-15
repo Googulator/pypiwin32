@@ -188,7 +188,7 @@ class ExcelRTDServer(object):
         # which looks like:
         #   ( (topic_num1, topic_num2, ..., topic_numN), \
         #     (topic_val1, topic_val2, ..., topic_valN) )
-        for idx, topicdata in enumerate(self.topics.iteritems()):
+        for idx, topicdata in enumerate(self.topics.items()):
             topicNum, topic = topicdata
             results[0][idx] = topicNum
             results[1][idx] = topic.GetValue()
@@ -346,7 +346,7 @@ class TimeServer(ExcelRTDServer):
             # Check if any of our topics have new info to pass on
             if len(self.topics):
                 refresh = False
-                for topic in self.topics.itervalues():
+                for topic in self.topics.values():
                     topic.Update(self)
                     if topic.HasChanged():
                         refresh = True

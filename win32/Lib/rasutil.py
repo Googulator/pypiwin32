@@ -33,7 +33,7 @@ stateStrings = {
 
 
 def TestCallback(hras, msg, state, error, exterror):
-    print "Callback called with ", hras, msg, stateStrings[state], error, exterror
+    print("Callback called with ", hras, msg, stateStrings[state], error, exterror)
 
 
 def test(rasName="_ Divert Off"):

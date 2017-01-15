@@ -108,11 +108,11 @@ def ShowInfo(spec):
                 desc = "<Could not load typelib %s>" % (tlbSpec.dll)
             else:
                 desc = tlb.GetDocumentation(-1)[0]
-        print desc
-        print " %s, lcid=%s, major=%s, minor=%s" % (tlbSpec.clsid, tlbSpec.lcid, tlbSpec.major, tlbSpec.minor)
-        print " >>> # Use these commands in Python code to auto generate .py support"
-        print " >>> from win32com.client import gencache"
-        print " >>> gencache.EnsureModule('%s', %s, %s, %s)" % (tlbSpec.clsid, tlbSpec.lcid, tlbSpec.major, tlbSpec.minor)
+        print(desc)
+        print(" %s, lcid=%s, major=%s, minor=%s" % (tlbSpec.clsid, tlbSpec.lcid, tlbSpec.major, tlbSpec.minor))
+        print(" >>> # Use these commands in Python code to auto generate .py support")
+        print(" >>> from win32com.client import gencache")
+        print(" >>> gencache.EnsureModule('%s', %s, %s, %s)" % (tlbSpec.clsid, tlbSpec.lcid, tlbSpec.major, tlbSpec.minor))
 
 
 class SimpleProgress(genpy.GeneratorProgress):
@@ -206,7 +206,7 @@ def GetTypeLibsForSpec(arg):
                 except pythoncom.com_error:
                     pass
             if len(tlbs) == 0:
-                print "Could not locate a type library matching '%s'" % (arg)
+                print("Could not locate a type library matching '%s'" % (arg))
             for spec in tlbs:
                 # Version numbers not always reliable if enumerated from registry.
                 # (as some libs use hex, other's dont.  Both examples from MS, of course.)

@@ -9,7 +9,7 @@ iad = pythoncom.CoCreateInstance(
     shell.IID_IActiveDesktop)
 opts = iad.GetDesktopItemOptions()
 if not (opts['ActiveDesktop'] and opts['EnableComponents']):
-    print 'Warning: Enabling Active Desktop'
+    print('Warning: Enabling Active Desktop')
     opts['ActiveDesktop'] = True
     opts['EnableComponents'] = True
     iad.SetDesktopItemOptions(opts)
@@ -24,9 +24,9 @@ if not (opts['ActiveDesktop'] and opts['EnableComponents']):
         shell.IID_IActiveDesktop)
 
 cnt = iad.GetDesktopItemCount()
-print 'Count:', cnt
+print('Count:', cnt)
 for i in range(cnt):
-    print iad.GetDesktopItem(i)
+    print(iad.GetDesktopItem(i))
 
 component = {
     'ID': cnt + 1,
@@ -34,7 +34,7 @@ component = {
     'CurItemState': shellcon.IS_NORMAL,
     'SubscribedURL': website,
     'Source': website,
-    'FriendlyName': u'Pywin32 on SF',
+    'FriendlyName': 'Pywin32 on SF',
     'Checked': True,  # this controls whether item is currently displayed
     'NoScroll': False,
     'Dirty': False,

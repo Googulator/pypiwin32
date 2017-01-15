@@ -9,7 +9,7 @@ import win32api
 
 
 def lookup_ret_code(err):
-    for k, v in sspicon.__dict__.items():
+    for k, v in list(sspicon.__dict__.items()):
         if k[0:6] in ('SEC_I_', 'SEC_E_') and v == err:
             return k
 
@@ -44,9 +44,9 @@ while True:
 # The server can now impersonate the client.  In this demo the 2 users will
 # always be the same.
 sspiserver.ctxt.ImpersonateSecurityContext()
-print 'Impersonated user: ', win32api.GetUserNameEx(win32api.NameSamCompatible)
+print('Impersonated user: ', win32api.GetUserNameEx(win32api.NameSamCompatible))
 sspiserver.ctxt.RevertSecurityContext()
-print 'Reverted to self: ', win32api.GetUserName()
+print('Reverted to self: ', win32api.GetUserName())
 
 pkg_size_info = sspiclient.ctxt.QueryContextAttributes(
     sspicon.SECPKG_ATTR_SIZES)
@@ -71,6 +71,6 @@ encbuf.append(
         sspicon.SECBUFFER_TOKEN))
 encbuf[0].Buffer = msg
 sspiclient.ctxt.EncryptMessage(0, encbuf, 1)
-print 'Encrypted data:', repr(encbuf[0].Buffer)
+print('Encrypted data:', repr(encbuf[0].Buffer))
 sspiserver.ctxt.DecryptMessage(encbuf, 1)
-print 'Unencrypted data:', encbuf[0].Buffer
+print('Unencrypted data:', encbuf[0].Buffer)

@@ -44,7 +44,7 @@ class PythonSemanticClass:
 
 def DispExTest(ob):
     if not __debug__:
-        print "WARNING: Tests dressed up as assertions are being skipped!"
+        print("WARNING: Tests dressed up as assertions are being skipped!")
     assert ob.GetDispID("Add", 0) == 10, "Policy did not honour the dispid"
 # Not impl
 #       assert ob.GetMemberName(10, 0)=="add", "Policy did not give me the correct function for the dispid"

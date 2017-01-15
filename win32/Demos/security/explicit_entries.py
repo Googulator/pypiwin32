@@ -10,7 +10,7 @@ fname = os.path.join(win32api.GetTempPath(), "win32security_test.txt")
 f = open(fname, "w")
 f.write("Hello from Python\n")
 f.close()
-print "Testing on file", fname
+print("Testing on file", fname)
 
 new_privs = ((win32security.LookupPrivilegeValue('', ntsecuritycon.SE_SECURITY_NAME), win32con.SE_PRIVILEGE_ENABLED),
              (win32security.LookupPrivilegeValue(

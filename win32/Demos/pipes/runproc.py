@@ -97,10 +97,10 @@ class Process:
         self.stdin.close()
 
         self.stdout = os.fdopen(msvcrt.open_osfhandle(self.hStdout_r, 0), "rb")
-        print "Read on stdout: ", repr(self.stdout.read())
+        print("Read on stdout: ", repr(self.stdout.read()))
 
         self.stderr = os.fdopen(msvcrt.open_osfhandle(self.hStderr_r, 0), "rb")
-        print "Read on stderr: ", repr(self.stderr.read())
+        print("Read on stderr: ", repr(self.stderr.read()))
 
 
 if __name__ == '__main__':

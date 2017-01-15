@@ -1,7 +1,7 @@
 import axdebug
-import gateways
-from util import _wrap, _wrap_remove, RaiseNotImpl
-import cStringIO
+from . import gateways
+from .util import _wrap, _wrap_remove, RaiseNotImpl
+import io
 import traceback
 from pprint import pprint
 from win32com.server.exception import COMException
@@ -13,7 +13,7 @@ import sys
 
 
 def MakeNiceString(ob):
-    stream = cStringIO.StringIO()
+    stream = io.StringIO()
     pprint(ob, stream)
     return string.strip(stream.getvalue())
 
@@ -56,21 +56,21 @@ class Expression(gateways.DebugExpression):
                     self.result = eval(
                         self.code, self.frame.f_globals, self.frame.f_locals)
                 except SyntaxError:
-                    exec self.code in self.frame.f_globals, self.frame.f_locals
+                    exec(self.code, self.frame.f_globals, self.frame.f_locals)
                     self.result = ""
                 self.hresult = 0
             except:
                 l = traceback.format_exception_only(
                     sys.exc_info()[0], sys.exc_info()[1])
                 # l is a list of strings with trailing "\n"
-                self.result = string.join(map(lambda s: s[:-1], l), "\n")
+                self.result = string.join([s[:-1] for s in l], "\n")
                 self.hresult = winerror.E_FAIL
         finally:
             self.isComplete = 1
             callback.onComplete()
 
     def Abort(self):
-        print "** ABORT **"
+        print("** ABORT **")
 
     def QueryIsComplete(self):
         return self.isComplete
@@ -94,10 +94,10 @@ def MakeEnumDebugProperty(object, dwFieldSpec, nRadix, iid, stackFrame=None):
     name_vals = []
     if hasattr(object, "items") and hasattr(
             object, "keys"):  # If it is a dict.
-        name_vals = object.iteritems()
+        name_vals = iter(object.items())
         dictionary = object
     elif hasattr(object, "__dict__"):  # object with dictionary, module
-        name_vals = object.__dict__.iteritems()
+        name_vals = iter(object.__dict__.items())
         dictionary = object.__dict__
     infos = []
     for name, val in name_vals:

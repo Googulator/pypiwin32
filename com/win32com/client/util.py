@@ -100,6 +100,6 @@ class Iterator:
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         return _get_good_object_(
-            self._iter_.next(), resultCLSID=self.resultCLSID)
+            next(self._iter_), resultCLSID=self.resultCLSID)

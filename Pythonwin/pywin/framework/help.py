@@ -30,7 +30,7 @@ def FinalizeHelp():
                 win32help.HH_UNINITIALIZE,
                 htmlhelp_handle)
         except win32help.error:
-            print "Failed to finalize htmlhelp!"
+            print("Failed to finalize htmlhelp!")
         htmlhelp_handle = None
 
 
@@ -166,7 +166,7 @@ def SetHelpMenuOtherHelp(mainMenu):
         otherMenu.DeleteMenu(0, win32con.MF_BYPOSITION)
 
     if helpIDMap:
-        for id, (desc, fname) in helpIDMap.iteritems():
+        for id, (desc, fname) in helpIDMap.items():
             otherMenu.AppendMenu(
                 win32con.MF_ENABLED | win32con.MF_STRING, id, desc)
     else:

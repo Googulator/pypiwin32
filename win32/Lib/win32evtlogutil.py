@@ -132,7 +132,7 @@ def FormatMessage(eventLogRecord, logType="Application"):
                 break
     finally:
         win32api.RegCloseKey(handle)
-    return data or u''  # Don't want "None" ever being returned.
+    return data or ''  # Don't want "None" ever being returned.
 
 
 def SafeFormatMessage(eventLogRecord, logType=None):
@@ -147,8 +147,8 @@ def SafeFormatMessage(eventLogRecord, logType=None):
         if eventLogRecord.StringInserts is None:
             desc = ""
         else:
-            desc = u", ".join(eventLogRecord.StringInserts)
-        return u"<The description for Event ID ( %d ) in Source ( %r ) could not be found. It contains the following insertion string(s):%r.>" % (
+            desc = ", ".join(eventLogRecord.StringInserts)
+        return "<The description for Event ID ( %d ) in Source ( %r ) could not be found. It contains the following insertion string(s):%r.>" % (
             winerror.HRESULT_CODE(eventLogRecord.EventID), eventLogRecord.SourceName, desc)
 
 
@@ -163,6 +163,6 @@ def FeedEventLogRecords(feeder, machineName=None,
             objects = win32evtlog.ReadEventLog(h, readFlags, 0)
             if not objects:
                 break
-            map(lambda item, feeder=feeder: feeder(*(item,)), objects)
+            list(map(lambda item, feeder=feeder: feeder(*(item,)), objects))
     finally:
         win32evtlog.CloseEventLog(h)

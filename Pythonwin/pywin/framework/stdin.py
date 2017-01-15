@@ -108,7 +108,7 @@ class Stdin:
         """Grab one line from get_input_line() and append it to the buffer.
         """
         line = get_input_line()
-        print '>>>', line  # echo input to console
+        print('>>>', line)  # echo input to console
         self.buffer = self.buffer + line + '\n'
 
     def readlines(self, *sizehint):
@@ -163,12 +163,12 @@ Sell you soul to the devil, baby
     # totally broken
     try:
         x = Stdin()
-        print x.read()
-        print x.readline()
-        print x.read(12)
-        print x.readline(47)
-        print x.readline(3)
-        print x.readlines()
+        print(x.read())
+        print(x.readline())
+        print(x.read(12))
+        print(x.readline(47))
+        print(x.readline(3))
+        print(x.readlines())
     finally:
         get_input_line = raw_input
 else:

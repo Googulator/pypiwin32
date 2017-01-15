@@ -156,11 +156,11 @@ class EditorDocumentBase(ParentEditorDocument):
             newstat = os.stat(self.GetPathName())
         except os.error as exc:
             if not self.bReportedFileNotFound:
-                print "The file '%s' is open for editing, but\nchecking it for changes caused the error: %s" % (self.GetPathName(), exc.strerror)
+                print("The file '%s' is open for editing, but\nchecking it for changes caused the error: %s" % (self.GetPathName(), exc.strerror))
                 self.bReportedFileNotFound = 1
             return
         if self.bReportedFileNotFound:
-            print "The file '%s' has re-appeared - continuing to watch for changes..." % (self.GetPathName(),)
+            print("The file '%s' has re-appeared - continuing to watch for changes..." % (self.GetPathName(),))
             # Once found again we want to start complaining.
             self.bReportedFileNotFound = 0
         changed = (self.fileStat is None) or \
@@ -247,7 +247,7 @@ class EditorDocumentBase(ParentEditorDocument):
             return 0
 
         if pretend_ss:
-            print "We are only pretending to check it out!"
+            print("We are only pretending to check it out!")
             win32api.SetFileAttributes(
                 self.GetPathName(),
                 win32con.FILE_ATTRIBUTE_NORMAL)
@@ -262,7 +262,7 @@ class EditorDocumentBase(ParentEditorDocument):
                     self.scModule = getattr(self.scModule, part)
             except:
                 traceback.print_exc()
-                print "Error loading source control module."
+                print("Error loading source control module.")
                 return 0
 
         if self.scModule.CheckoutFile(self.GetPathName()):
@@ -284,7 +284,7 @@ class EditorDocumentBase(ParentEditorDocument):
                 frame.MDIActivate()
                 frame.AutoRestore()
             except:
-                print "Could not bring document to foreground"
+                print("Could not bring document to foreground")
         return self._obj_.SaveModified()
 
 # NOTE - I DONT use the standard threading module,
@@ -324,7 +324,7 @@ class FileWatchingThread(pywin.mfc.thread.WinThread):
                 self.watchEvent = win32api.FindFirstChangeNotification(
                     path, 0, filter)
             except win32api.error as exc:
-                print "Can not watch file", path, "for changes -", exc.strerror
+                print("Can not watch file", path, "for changes -", exc.strerror)
 
     def SignalStop(self):
         win32event.SetEvent(self.stopEvent)
@@ -347,7 +347,7 @@ class FileWatchingThread(pywin.mfc.thread.WinThread):
                     # this error.
                     win32api.FindNextChangeNotification(self.watchEvent)
                 except win32api.error as exc:
-                    print "Can not watch file", self.doc.GetPathName(), "for changes -", exc.strerror
+                    print("Can not watch file", self.doc.GetPathName(), "for changes -", exc.strerror)
                     break
 
         # close a circular reference

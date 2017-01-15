@@ -145,9 +145,9 @@ if logging is not None:
         def emit(self, record):
             self.num_emits += 1
             return
-            print "--- record start"
-            print self.format(record)
-            print "--- record end"
+            print("--- record start")
+            print(self.format(record))
+            print("--- record end")
 
     def testLogger():
         assert not hasattr(win32com, "logger")
@@ -180,6 +180,6 @@ if __name__ == '__main__':
     test()
     if logging is not None:
         testLogger()
-    from util import CheckClean
+    from .util import CheckClean
     CheckClean()
-    print "error semantic tests worked"
+    print("error semantic tests worked")

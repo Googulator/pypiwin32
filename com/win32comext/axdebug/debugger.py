@@ -75,7 +75,7 @@ def BuildModule(module, built_nodes, rootNode,
 
 
 def RefreshAllModules(builtItems, rootNode, create_node, create_node_args):
-    for module in sys.modules.values():
+    for module in list(sys.modules.values()):
         BuildModule(
             module,
             builtItems,
@@ -108,8 +108,8 @@ class CodeContainerProvider(documents.CodeContainerProvider):
     def Close(self):
         documents.CodeContainerProvider.Close(self)
         self.axdebugger = None
-        print "Closing %d nodes" % (len(self.nodes))
-        for node in self.nodes.itervalues():
+        print("Closing %d nodes" % (len(self.nodes)))
+        for node in self.nodes.values():
             node.Close()
         self.nodes = {}
 
@@ -243,11 +243,11 @@ def dosomething():
 
 def test():
     Break()
-    raw_input("Waiting...")
+    input("Waiting...")
     dosomething()
-    print "Done"
+    print("Done")
 
 if __name__ == '__main__':
-    print "About to test the debugging interfaces!"
+    print("About to test the debugging interfaces!")
     test()
-    print " %d/%d com objects still alive" % (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount())
+    print(" %d/%d com objects still alive" % (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount()))

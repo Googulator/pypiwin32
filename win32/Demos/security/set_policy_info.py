@@ -8,7 +8,7 @@ policy_handle = win32security.GetPolicyHandle(
 
 event_audit_info = win32security.LsaQueryInformationPolicy(
     policy_handle, win32security.PolicyAuditEventsInformation)
-print event_audit_info
+print(event_audit_info)
 
 new_audit_info = list(event_audit_info[1])
 new_audit_info[win32security.AuditCategoryPolicyChange] = \

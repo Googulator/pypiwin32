@@ -31,8 +31,8 @@ from win32com.client import gencache
 try:
     gencache.EnsureModule('{6BCDCB60-5605-11D0-AE5F-CADD4C000000}', 0, 1, 1)
 except pythoncom.com_error:
-    print "The PyCOMTest module can not be located or generated."
-    print importMsg
+    print("The PyCOMTest module can not be located or generated.")
+    print(importMsg)
     raise RuntimeError(importMsg)
 
 # We had a bg where RegisterInterfaces would fail if gencache had
@@ -74,8 +74,8 @@ def check_get_set_raises(exc, func, arg):
 def progress(*args):
     if verbose:
         for arg in args:
-            print arg,
-        print
+            print(arg, end=' ')
+        print()
 
 
 def TestApplyResult(fn, args, result):
@@ -130,8 +130,8 @@ class RandomEventHandler:
 
     def _DumpFireds(self):
         if not self.fireds:
-            print "ERROR: Nothing was received!"
-        for firedId, no in self.fireds.iteritems():
+            print("ERROR: Nothing was received!")
+        for firedId, no in self.fireds.items():
             progress("ID %d fired %d times" % (firedId, no))
 
 # Test everything which can be tested using both the "dynamic" and "generated"
@@ -146,19 +146,19 @@ def TestCommon(o, is_generated):
     progress("Checking default args")
     rc = o.TestOptionals()
     if rc[:-1] != ("def", 0, 1) or abs(rc[-1] - 3.14) > .01:
-        print rc
+        print(rc)
         raise error("Did not get the optional values correctly")
     rc = o.TestOptionals("Hi", 2, 3, 1.1)
     if rc[:-1] != ("Hi", 2, 3) or abs(rc[-1] - 1.1) > .01:
-        print rc
+        print(rc)
         raise error("Did not get the specified optional values correctly")
     rc = o.TestOptionals2(0)
     if rc != (0, "", 1):
-        print rc
+        print(rc)
         raise error("Did not get the optional2 values correctly")
     rc = o.TestOptionals2(1.1, "Hi", 2)
     if rc[1:] != ("Hi", 2) or abs(rc[0] - 1.1) > .01:
-        print rc
+        print(rc)
         raise error("Did not get the specified optional2 values correctly")
 
     progress("Checking getting/passing IUnknown")
@@ -261,7 +261,7 @@ def TestCommon(o, is_generated):
     TestConstant("UCharTest", 255)
     TestConstant("CharTest", -1)
     # 'Hello Loraine', but the 'r' is the "Registered" sign (\xae)
-    TestConstant("StringTest", u"Hello Lo\xaeaine")
+    TestConstant("StringTest", "Hello Lo\xaeaine")
 
     progress("Checking dates and times")
     if issubclass(pywintypes.TimeType, datetime.datetime):
@@ -540,11 +540,11 @@ def TestPyVariant(o, is_generated):
         o, is_generated, VARIANT(
             pythoncom.VT_ARRAY | pythoncom.VT_UI4, [
                 1, 2, 3]))
-    _TestPyVariant(o, is_generated, VARIANT(pythoncom.VT_BSTR, u"hello"))
+    _TestPyVariant(o, is_generated, VARIANT(pythoncom.VT_BSTR, "hello"))
     _TestPyVariant(
         o, is_generated, VARIANT(
             pythoncom.VT_ARRAY | pythoncom.VT_BSTR, [
-                u"hello", u"there"]))
+                "hello", "there"]))
 
     def check_dispatch(got):
         assert isinstance(
@@ -582,7 +582,7 @@ def TestCounter(counter, bIsGenerated):
     # Test random access into container
     progress("Testing counter", repr(counter))
     import random
-    for i in xrange(50):
+    for i in range(50):
         num = int(random.random() * len(counter))
         try:
             ret = counter[num]
@@ -609,7 +609,7 @@ def TestCounter(counter, bIsGenerated):
     counter.LBound = 1
     counter.UBound = 10
     if counter.LBound != 1 or counter.UBound != 10:
-        print "** Error - counter did not keep its properties"
+        print("** Error - counter did not keep its properties")
 
     if bIsGenerated:
         bounds = counter.GetBounds()
@@ -767,8 +767,8 @@ if __name__ == '__main__':
     # Should NOT be necessary
     def NullThreadFunc():
         pass
-    import thread
-    thread.start_new(NullThreadFunc, ())
+    import _thread
+    _thread.start_new(NullThreadFunc, ())
 
     if "-v" in sys.argv:
         verbose = 1

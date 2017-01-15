@@ -24,4 +24,4 @@ def GetDomainName():
     return dom
 
 if __name__ == '__main__':
-    print "Domain name is", GetDomainName()
+    print("Domain name is", GetDomainName())

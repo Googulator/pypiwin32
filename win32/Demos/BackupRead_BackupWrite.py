@@ -19,7 +19,7 @@ all_sd_info = win32security.DACL_SECURITY_INFORMATION | win32security.DACL_SECUR
 tempdir = win32api.GetTempPath()
 tempfile = win32api.GetTempFileName(tempdir, 'bkr')[0]
 outfile = win32api.GetTempFileName(tempdir, 'out')[0]
-print 'Filename:', tempfile, 'Output file:', outfile
+print('Filename:', tempfile, 'Output file:', outfile)
 
 f = open(tempfile, 'w')
 f.write('some random junk' + 'x' * 100)
@@ -93,7 +93,7 @@ while True:
         break
     bytes_written, outctxt = win32file.BackupWrite(
         outh, bytes_read, buf, False, True, outctxt)
-    print 'Written:', bytes_written, 'Context:', outctxt
+    print('Written:', bytes_written, 'Context:', outctxt)
 win32file.BackupRead(h, 0, buf, True, True, ctxt)
 win32file.BackupWrite(outh, 0, str2bytes(''), True, True, outctxt)
 win32file.CloseHandle(h)

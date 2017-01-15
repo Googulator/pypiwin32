@@ -163,7 +163,7 @@ def RegisterModule(modName, modPath):
         import os
         os.stat(modPath)
     except os.error:
-        print "Warning: Registering non-existant module %s" % modPath
+        print("Warning: Registering non-existant module %s" % modPath)
     win32api.RegSetValue(GetRootKey(),
                          BuildDefaultPythonKey() + "\\Modules\\%s" % modName,
                          win32con.REG_SZ, modPath)
@@ -268,7 +268,7 @@ def RegisterCoreDLL(coredllName=None):
         try:
             os.stat(coredllName)
         except os.error:
-            print "Warning: Registering non-existant core DLL %s" % coredllName
+            print("Warning: Registering non-existant core DLL %s" % coredllName)
 
     hKey = win32api.RegCreateKey(GetRootKey(), BuildDefaultPythonKey())
     try:

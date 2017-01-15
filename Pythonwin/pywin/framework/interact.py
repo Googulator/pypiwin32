@@ -29,7 +29,7 @@ ID_EDIT_EXEC_CLIPBOARD = 0x2003
 
 trace = pywin.scintilla.formatter.trace
 
-import winout
+from . import winout
 
 import re
 # from IDLE.
@@ -299,7 +299,7 @@ class PythonwinInteractiveInterpreter(code.InteractiveInterpreter):
 
     def runcode(self, code):
         try:
-            exec code in self.globals, self.locals
+            exec(code, self.globals, self.locals)
         except SystemExit:
             raise
         except:
@@ -337,7 +337,7 @@ class InteractiveCore:
         if rcfile:
             import __main__
             try:
-                execfile(rcfile, __main__.__dict__, __main__.__dict__)
+                exec(compile(open(rcfile).read(), rcfile, 'exec'), __main__.__dict__, __main__.__dict__)
             except:
                 sys.stderr.write(
                     ">>> \nError executing PYTHONSTARTUP script %r\n" %
@@ -621,7 +621,7 @@ class InteractiveCore:
         win32clipboard.OpenClipboard()
         try:
             win32clipboard.SetClipboardData(
-                win32clipboard.CF_UNICODETEXT, unicode(out_code))
+                win32clipboard.CF_UNICODETEXT, str(out_code))
         finally:
             win32clipboard.CloseClipboard()
 
@@ -637,7 +637,7 @@ class InteractiveCore:
         code = code.replace('\r\n', '\n') + '\n'
         try:
             o = compile(code, '<clipboard>', 'exec')
-            exec o in __main__.__dict__
+            exec(o, __main__.__dict__)
         except:
             traceback.print_exc()
 
@@ -694,7 +694,7 @@ class InteractiveCore:
                     win32ui.SetStatusText(
                         "The last active Window has been closed.")
             except AttributeError:
-                print "Can't find the last active window!"
+                print("Can't find the last active window!")
                 lastActive = None
             if lastActive is not None:
                 lastActive.MDIActivate()

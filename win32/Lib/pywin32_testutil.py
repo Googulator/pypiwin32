@@ -145,7 +145,7 @@ class TestLoader(unittest.TestLoader):
         # one or 2 tests in the COM test suite set this...
         no_leak_tests = getattr(test, "no_leak_tests", False)
         if no_leak_tests:
-            print "Test says it doesn't want leak tests!"
+            print("Test says it doesn't want leak tests!")
             return test
         return LeakTestCase(test)
 
@@ -163,7 +163,7 @@ class TestLoader(unittest.TestLoader):
         elif isinstance(test, unittest.TestCase):
             test = self._getTestWrapper(test)
         else:
-            print "XXX - what is", test
+            print("XXX - what is", test)
         return test
 
 # Lots of classes necessary to support one simple feature: we want a 3rd
@@ -253,7 +253,7 @@ class TestResult(unittest._TextTestResult):
 
     def printErrors(self):
         super(TestResult, self).printErrors()
-        for reason, num_skipped in self.skips.iteritems():
+        for reason, num_skipped in self.skips.items():
             self.stream.writeln(
                 "SKIPPED: %d tests - %s" %
                 (num_skipped, reason))

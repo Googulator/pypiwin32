@@ -81,7 +81,7 @@ is_py3k = sys.version_info > (3,)  # get this out of the way early on...
 if is_py3k:
     import winreg as _winreg
 else:
-    import _winreg
+    import winreg
 
 # The rest of our imports.
 from setuptools import setup, find_packages
@@ -122,7 +122,7 @@ if not "." in build_id_patch:
     build_id_patch = build_id_patch + ".0"
 pywin32_version = "%d.%d.%s" % (sys.version_info[0], sys.version_info[1],
                                 build_id_patch)
-print("Building pywin32", pywin32_version)
+print(("Building pywin32", pywin32_version))
 
 try:
     this_file = __file__
@@ -152,7 +152,7 @@ def find_platform_sdk_dir():
     sdkdir = os.environ.get("MSSdk")
     if sdkdir:
         if DEBUG:
-            print("PSDK: try %%MSSdk%%: '%s'" % sdkdir)
+            print(("PSDK: try %%MSSdk%%: '%s'" % sdkdir))
         if os.path.isfile(os.path.join(sdkdir, landmark)):
             return sdkdir
     # 2. The "Install Dir" value in the
@@ -160,15 +160,15 @@ def find_platform_sdk_dir():
     #    sometimes points to the right thing. However, after upgrading to
     #    the "Platform SDK for Windows Server 2003 SP1" this is dead end.
     try:
-        key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
                               r"Software\Microsoft\MicrosoftSDK\Directories")
-        sdkdir, ignore = _winreg.QueryValueEx(key, "Install Dir")
+        sdkdir, ignore = winreg.QueryValueEx(key, "Install Dir")
     except EnvironmentError:
         pass
     else:
         if DEBUG:
-            print(r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDK"
-                  "\Directories\Install Dir': '%s'" % sdkdir)
+            print((r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDK"
+                  "\Directories\Install Dir': '%s'" % sdkdir))
         if os.path.isfile(os.path.join(sdkdir, landmark)):
             return sdkdir
     # 3. Each installed SDK (not just the platform SDK) seems to have GUID
@@ -176,21 +176,21 @@ def find_platform_sdk_dir():
     #    it *looks* like the latest installed Platform SDK will be the
     #    only one with an "Install Dir" sub-value.
     try:
-        key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
                               r"Software\Microsoft\MicrosoftSDK\InstalledSDKs")
         i = 0
         while True:
-            guid = _winreg.EnumKey(key, i)
-            guidkey = _winreg.OpenKey(key, guid)
+            guid = winreg.EnumKey(key, i)
+            guidkey = winreg.OpenKey(key, guid)
             try:
-                sdkdir, ignore = _winreg.QueryValueEx(guidkey, "Install Dir")
+                sdkdir, ignore = winreg.QueryValueEx(guidkey, "Install Dir")
             except EnvironmentError:
                 pass
             else:
                 if DEBUG:
-                    print(r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDK"
+                    print((r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDK"
                           "\InstallSDKs\%s\Install Dir': '%s'"
-                          % (guid, sdkdir))
+                          % (guid, sdkdir)))
                 if os.path.isfile(os.path.join(sdkdir, landmark)):
                     return sdkdir
             i += 1
@@ -198,15 +198,15 @@ def find_platform_sdk_dir():
         pass
     # 4.  Vista's SDK
     try:
-        key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
                               r"Software\Microsoft\Microsoft SDKs\Windows")
-        sdkdir, ignore = _winreg.QueryValueEx(key, "CurrentInstallFolder")
+        sdkdir, ignore = winreg.QueryValueEx(key, "CurrentInstallFolder")
     except EnvironmentError:
         pass
     else:
         if DEBUG:
-            print(r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDKs"
-                  "\Windows\CurrentInstallFolder': '%s'" % sdkdir)
+            print((r"PSDK: try 'HKLM\Software\Microsoft\MicrosoftSDKs"
+                  "\Windows\CurrentInstallFolder': '%s'" % sdkdir))
         if os.path.isfile(os.path.join(sdkdir, landmark)):
             return sdkdir
 
@@ -218,7 +218,7 @@ def find_platform_sdk_dir():
     ]
     for sdkdir in defaultlocs:
         if DEBUG:
-            print("PSDK: try default location: '%s'" % sdkdir)
+            print(("PSDK: try default location: '%s'" % sdkdir))
         if os.path.isfile(os.path.join(sdkdir, landmark)):
             return sdkdir
 
@@ -236,7 +236,7 @@ def find_platform_sdk_dir_setuptools():
             vc_dir = ei.si.VCInstallDir
             break
         except Exception as e:
-            print('Failed to guess VC installation version:', e)
+            print(('Failed to guess VC installation version:', e))
 
     vcvarsall = subprocess.check_output(
         'cmd /c "{}" && set'.format(os.path.join(vc_dir, 'vcvarsall.bat')))
@@ -617,18 +617,18 @@ class WinExt_win32com_mapi(WinExt_win32com):
         sdk_install_dir = None
         libs = kw.get("libraries", "")
         keyname = "SOFTWARE\Microsoft\Exchange\SDK"
-        flags = _winreg.KEY_READ
+        flags = winreg.KEY_READ
         try:
-            flags |= _winreg.KEY_WOW64_32KEY
+            flags |= winreg.KEY_WOW64_32KEY
         except AttributeError:
             # this version doesn't support 64 bits, so must already be using
             # 32bit key.
             pass
-        for root in _winreg.HKEY_LOCAL_MACHINE, _winreg.HKEY_CURRENT_USER:
+        for root in winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER:
             try:
-                keyob = _winreg.OpenKey(root, keyname, 0, flags)
-                value, type_id = _winreg.QueryValueEx(keyob, "INSTALLDIR")
-                if type_id == _winreg.REG_SZ:
+                keyob = winreg.OpenKey(root, keyname, 0, flags)
+                value, type_id = winreg.QueryValueEx(keyob, "INSTALLDIR")
+                if type_id == winreg.REG_SZ:
                     sdk_install_dir = value
                     break
             except WindowsError:
@@ -764,7 +764,7 @@ class my_build(build):
             f.write("%s\n" % build_id)
             f.close()
         except EnvironmentError as why:
-            print("Failed to open '%s': %s" % (ver_fname, why))
+            print(("Failed to open '%s': %s" % (ver_fname, why)))
 
 
 class my_build_ext(build_ext):
@@ -1095,10 +1095,10 @@ class my_build_ext(build_ext):
         for root, dirs, files in os.walk(startpath):
             level = root.replace(startpath, '').count(os.sep)
             indent = ' ' * 4 * (level)
-            print('{}{}/'.format(indent, os.path.basename(root)))
+            print(('{}{}/'.format(indent, os.path.basename(root))))
             subindent = ' ' * 4 * (level + 1)
             for f in files:
-                print('{}{}'.format(subindent, f))
+                print(('{}{}'.format(subindent, f)))
 
     def build_extensions(self):
         # First, sanity-check the 'extensions' list
@@ -1133,7 +1133,7 @@ class my_build_ext(build_ext):
             if why is not None:
                 self.excluded_extensions.append((ext, why))
                 assert why, "please give a reason, or None"
-                print("Skipping %s: %s" % (ext.name, why))
+                print(("Skipping %s: %s" % (ext.name, why)))
                 continue
 
             try:
@@ -1200,7 +1200,7 @@ class my_build_ext(build_ext):
 
                 # On a 64bit host, the value we are looking for is actually in
                 # SysWow64Node - but that is only available on xp and later.
-                access = _winreg.KEY_READ
+                access = winreg.KEY_READ
                 if sys.getwindowsversion()[0] >= 5:
                     access = access | 512  # KEY_WOW64_32KEY
                 if self.plat_name == 'win-amd64':
@@ -1208,9 +1208,9 @@ class my_build_ext(build_ext):
                 else:
                     plat_dir = "x86"
                 # Find the redist directory.
-                vckey = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, product_key,
+                vckey = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, product_key,
                                         0, access)
-                val, val_typ = _winreg.QueryValueEx(vckey, "ProductDir")
+                val, val_typ = winreg.QueryValueEx(vckey, "ProductDir")
                 mfc_dir = os.path.join(val, "redist", plat_dir, mfc_dir)
                 if not os.path.isdir(mfc_dir):
                     raise RuntimeError(
@@ -1219,7 +1219,7 @@ class my_build_ext(build_ext):
                 for f in mfc_files:
                     self.copy_file(os.path.join(mfc_dir, f), target_dir)
         except (EnvironmentError, RuntimeError) as exc:
-            print("Can't find an installed VC for the MFC DLLs:", exc)
+            print(("Can't find an installed VC for the MFC DLLs:", exc))
 
     def build_exefile(self, ext):
         sources = ext.sources
@@ -1275,7 +1275,7 @@ class my_build_ext(build_ext):
         # any sensible compiler will give precedence to later
         # command line args.  Hence we combine them in order:
         extra_args = ext.extra_compile_args or []
-        print("Sources generated:", sources)
+        print(("Sources generated:", sources))
 
         macros = ext.define_macros[:]
         for undef in ext.undef_macros:
@@ -1343,7 +1343,7 @@ class my_build_ext(build_ext):
         if why is not None:
             self.excluded_extensions.append((ext, why))
             assert why, "please give a reason, or None"
-            print("Skipping %s: %s" % (ext.name, why))
+            print(("Skipping %s: %s" % (ext.name, why)))
             return
         self.current_extension = ext
 
@@ -1689,7 +1689,7 @@ class my_install_data(install_data):
         if self.install_dir is None:
             installobj = self.distribution.get_command_obj('install')
             self.install_dir = installobj.install_lib
-        print('Installing data files to %s' % self.install_dir)
+        print(('Installing data files to %s' % self.install_dir))
         install_data.finalize_options(self)
 
     def copy_file(self, src, dest):
@@ -2715,12 +2715,12 @@ if 'build_ext' in dist.command_obj:
     if 'build_ext' in dist.command_obj:
         excluded_extensions = dist.command_obj['build_ext'].excluded_extensions
         if excluded_extensions:
-            print(
+            print((
                 "*** NOTE: The following extensions were NOT %s:" %
-                what_string)
+                what_string))
             for ext, why in excluded_extensions:
-                print(" %s: %s" % (ext.name, why))
+                print((" %s: %s" % (ext.name, why)))
             print("For more details on installing the correct libraries and headers,")
             print("please execute this script with no arguments (or see the docstring)")
         else:
-            print("All extension modules %s OK" % (what_string,))
+            print(("All extension modules %s OK" % (what_string,)))

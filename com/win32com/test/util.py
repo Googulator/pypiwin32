@@ -9,8 +9,8 @@ import winerror
 from pythoncom import _GetInterfaceCount, _GetGatewayCount
 import win32com
 import logging
-import _winreg
-import cStringIO as StringIO
+import winreg
+import io as StringIO
 
 import pywin32_testutil
 from pywin32_testutil import TestLoader, TestResult, TestRunner, LeakTestCase
@@ -25,15 +25,15 @@ def CheckClean():
         pass  # py3k
     c = _GetInterfaceCount()
     if c:
-        print "Warning - %d com interface objects still alive" % c
+        print("Warning - %d com interface objects still alive" % c)
     c = _GetGatewayCount()
     if c:
-        print "Warning - %d com gateway objects still alive" % c
+        print("Warning - %d com gateway objects still alive" % c)
 
 
 def RegisterPythonServer(filename, progids=None, verbose=0):
     if progids:
-        if isinstance(progids, basestring):
+        if isinstance(progids, str):
             progids = [progids]
         # we know the CLSIDs we need, but we might not be an admin user
         # and otherwise unable to register them.  So as long as the progids
@@ -47,9 +47,9 @@ def RegisterPythonServer(filename, progids=None, verbose=0):
                 break
             # have a CLSID - open it.
             try:
-                HKCR = _winreg.HKEY_CLASSES_ROOT
-                hk = _winreg.OpenKey(HKCR, "CLSID\\%s" % clsid)
-                dll = _winreg.QueryValue(hk, "InprocServer32")
+                HKCR = winreg.HKEY_CLASSES_ROOT
+                hk = winreg.OpenKey(HKCR, "CLSID\\%s" % clsid)
+                dll = winreg.QueryValue(hk, "InprocServer32")
             except WindowsError:
                 # no CLSID or InProcServer32 - not good!
                 break
@@ -67,7 +67,7 @@ def RegisterPythonServer(filename, progids=None, verbose=0):
     try:
         from win32com.shell.shell import IsUserAnAdmin
     except ImportError:
-        print "Can't import win32com.shell - no idea if you are an admin or not?"
+        print("Can't import win32com.shell - no idea if you are an admin or not?")
         is_admin = False
     else:
         try:
@@ -87,12 +87,12 @@ def RegisterPythonServer(filename, progids=None, verbose=0):
     cmd = '%s "%s" --unattended > nul 2>&1' % (
         win32api.GetModuleFileName(0), filename)
     if verbose:
-        print "Registering engine", filename
+        print("Registering engine", filename)
 #       print cmd
     rc = os.system(cmd)
     if rc:
-        print "Registration command was:"
-        print cmd
+        print("Registration command was:")
+        print(cmd)
         raise RuntimeError("Registration of engine '%s' failed" % filename)
 
 
@@ -120,11 +120,11 @@ def ExecuteShellCommand(cmd, testcase,
             raise Failed("traceback in program output")
         return output
     except Failed as why:
-        print "Failed to exec command '%r'" % cmd
-        print "Failed as", why
-        print "** start of program output **"
-        print output
-        print "** end of program output **"
+        print("Failed to exec command '%r'" % cmd)
+        print("Failed as", why)
+        print("** start of program output **")
+        print(output)
+        print("** end of program output **")
         testcase.fail("Executing '%s' failed as %s" % (cmd, why))
 
 
@@ -234,7 +234,7 @@ class _CapturingFunctionTestCase(
         output = writer.get_captured()
         self.checkOutput(output, result)
         if result.showAll:
-            print output
+            print(output)
 
     def checkOutput(self, output, result):
         if output.find("Traceback") >= 0:

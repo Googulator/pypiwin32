@@ -20,20 +20,20 @@ def try_connection(verbose, *args, **kwargs):
     try:
         s = dbconnect(*args, **kwargs)  # connect to server
         if verbose:
-            print 'Connected to:', s.connection_string
-            print 'which has tables:', s.get_table_names()
+            print('Connected to:', s.connection_string)
+            print('which has tables:', s.get_table_names())
         s.close()  # thanks, it worked, goodbye
     except (adodbapi.DatabaseError, pyroError) as inst:
-        print inst.args[0]   # should be the error message
-        print '***Failed getting connection using=', repr(args), repr(kwargs)
+        print(inst.args[0])   # should be the error message
+        print('***Failed getting connection using=', repr(args), repr(kwargs))
         if remote:
-            print '** Is your Python2 ado.connection server running?'
-            print '* Have you run "setuptestframework.py" to create server_test.mdb?'
+            print('** Is your Python2 ado.connection server running?')
+            print('* Have you run "setuptestframework.py" to create server_test.mdb?')
         return False, (args, kwargs), None
 
     if remote:
-        print "  (remote)",
-    print "  (successful)"
+        print("  (remote)", end=' ')
+    print("  (successful)")
 
     return True, (args, kwargs, remote), dbconnect
 

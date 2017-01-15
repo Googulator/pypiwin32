@@ -1,9 +1,9 @@
 """ General Server side utilities
 """
 import pythoncom
-import policy
+from . import policy
 import winerror
-from exception import COMException
+from .exception import COMException
 
 
 def wrap(ob, iid=None, usePolicy=None, useDispatcher=None):
@@ -101,7 +101,7 @@ class ListEnumeratorGateway(ListEnumerator):
     def Next(self, count):
         result = self._list_[self.index:self.index + count]
         self.Skip(count)
-        return map(self._wrap, result)
+        return list(map(self._wrap, result))
 
 
 def NewEnum(seq,

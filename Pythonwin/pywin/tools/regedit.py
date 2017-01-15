@@ -4,7 +4,7 @@ import win32ui
 import win32con
 import commctrl
 from pywin.mfc import window, docview, dialog
-import hierlist
+from . import hierlist
 import regutil
 import string
 

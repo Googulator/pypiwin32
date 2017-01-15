@@ -80,7 +80,7 @@ class IDLEEditorWindow:
         self.edit = self.text = None
         self.extension_menus = None
         try:
-            for ext in self.extensions.itervalues():
+            for ext in self.extensions.values():
                 closer = getattr(ext, "close", None)
                 if closer is not None:
                     closer()
@@ -107,7 +107,7 @@ class IDLEEditorWindow:
         # Get all menu items for the menu name (eg, "edit")
         bindings = self.edit.bindings
         ret = []
-        for ext in self.extensions.itervalues():
+        for ext in self.extensions.values():
             menudefs = getattr(ext, "menudefs", [])
             for name, items in menudefs:
                 if name == menu_name:
@@ -514,13 +514,13 @@ class TkText:
 def TestCheck(index, edit, expected=None):
     rc = TkIndexToOffset(index, edit, {})
     if rc != expected:
-        print "ERROR: Index", index, ", expected", expected, "but got", rc
+        print("ERROR: Index", index, ", expected", expected, "but got", rc)
 
 
 def TestGet(fr, to, t, expected):
     got = t.get(fr, to)
     if got != expected:
-        print "ERROR: get(%s, %s) expected %s, but got %s" % (repr(fr), repr(to), repr(expected), repr(got))
+        print("ERROR: get(%s, %s) expected %s, but got %s" % (repr(fr), repr(to), repr(expected), repr(got)))
 
 
 def test():

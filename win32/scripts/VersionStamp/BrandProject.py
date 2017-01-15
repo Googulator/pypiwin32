@@ -21,7 +21,7 @@ def BrandProject(vssProjectName, descFile, stampPath,
 
     build = vssutil.MakeNewBuildNo(vssProjectName, buildDesc, auto, bRebrand)
     if build is None:
-        print "Cancelled"
+        print("Cancelled")
         return
 
     bulkstamp.scan(build, stampPath, descFile)
@@ -31,8 +31,8 @@ def BrandProject(vssProjectName, descFile, stampPath,
 
 
 def usage(msg):
-    print msg
-    print """\
+    print(msg)
+    print("""\
 %s Usage:
 %s [options] vssProject descFile stampPath
 
@@ -49,7 +49,7 @@ Options:
 -d     - A description for the VSS Label.
 -f infile=outfile - Substitute special VSS labels in the specified text
                     file with the text extracted from VSS.
-""" % (os.path.basename(sys.argv[0]), os.path.basename(sys.argv[0]))
+""" % (os.path.basename(sys.argv[0]), os.path.basename(sys.argv[0])))
     sys.exit(1)
 
 if __name__ == '__main__':

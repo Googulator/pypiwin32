@@ -2,12 +2,12 @@
 """
 
 import axdebug
-import gateways
+from . import gateways
 import pythoncom
-from util import _wrap, _wrap_remove, RaiseNotImpl, trace
+from .util import _wrap, _wrap_remove, RaiseNotImpl, trace
 from win32com.server.util import unwrap
-import codecontainer
-import contexts
+from . import codecontainer
+from . import contexts
 from win32com.server.exception import Exception
 import win32api
 import winerror
@@ -129,7 +129,7 @@ class CodeContainerProvider:
         return cc
 
     def Close(self):
-        for cc, node in self.ccsAndNodes.itervalues():
+        for cc, node in self.ccsAndNodes.values():
             try:
                 # Must close the node before closing the provider
                 # as node may make calls on provider (eg Reset breakpoints etc)

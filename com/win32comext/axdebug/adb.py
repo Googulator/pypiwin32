@@ -3,15 +3,15 @@
 from win32com.axdebug.util import trace, _wrap, _wrap_remove
 from win32com.server.util import unwrap
 import win32com.client.connect
-import gateways
+from . import gateways
 import sys
 import bdb
 import traceback
 import axdebug
-import stackframe
+from . import stackframe
 import win32api
 import pythoncom
-import thread
+import _thread
 import os
 
 
@@ -92,7 +92,7 @@ class Adb(bdb.Bdb, gateways.RemoteDebugApplicationEvents):
         self.currentframe = None  # The frame we are currently in.
         self.recursiveData = []  # Data saved for each reentery on this thread.
         bdb.Bdb.__init__(self)
-        self._threadprotectlock = thread.allocate_lock()
+        self._threadprotectlock = _thread.allocate_lock()
         self.reset()
 
     def canonic(self, fname):
@@ -136,7 +136,7 @@ class Adb(bdb.Bdb, gateways.RemoteDebugApplicationEvents):
         elif self.breakFlags == axdebug.APPBREAKFLAG_STEP:
             self.breakReason = axdebug.BREAKREASON_STEP
         else:
-            print "Calling base 'break_here' with", self.breaks
+            print("Calling base 'break_here' with", self.breaks)
             if bdb.Bdb.break_here(self, frame):
                 self.breakReason = axdebug.BREAKREASON_BREAKPOINT
         return self.breakReason is not None
@@ -464,7 +464,7 @@ class Adb(bdb.Bdb, gateways.RemoteDebugApplicationEvents):
         if bps == axdebug.BREAKPOINT_ENABLED:
             problem = self.set_break(key, lineNo)
             if problem:
-                print "*** set_break failed -", problem
+                print("*** set_break failed -", problem)
             trace("_OnSetBreakPoint just set BP and has breaks", self.breaks)
         else:
             self.clear_break(key, lineNo)

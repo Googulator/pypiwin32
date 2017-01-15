@@ -131,7 +131,7 @@ verbose = 1  # The level - 0 is quiet.
 
 def log(level, what):
     if verbose >= level:
-        print what
+        print(what)
 
 # Convert an ADSI COM exception to the Win32 error code embedded in it.
 
@@ -225,7 +225,7 @@ def FindWebServer(options, server_desc):
     server_desc = options.server or server_desc
     # make sure server_desc is unicode (could be mbcs if passed in
     #  sys.argv).
-    if server_desc and not isinstance(server_desc, unicode):
+    if server_desc and not isinstance(server_desc, str):
         server_desc = server_desc.decode('mbcs')
 
     # get the server (if server_desc is None, the default site is acquired)
@@ -686,12 +686,12 @@ standard_arguments = {
 
 
 def build_usage(handler_map):
-    docstrings = [handler.__doc__ for handler in handler_map.itervalues()]
-    all_args = dict(zip(handler_map.iterkeys(), docstrings))
-    arg_names = "|".join(all_args.iterkeys())
+    docstrings = [handler.__doc__ for handler in handler_map.values()]
+    all_args = dict(list(zip(iter(handler_map.keys()), docstrings)))
+    arg_names = "|".join(iter(all_args.keys()))
     usage_string = "%prog [options] [" + arg_names + "]\n"
     usage_string += "commands:\n"
-    for arg, desc in all_args.iteritems():
+    for arg, desc in all_args.items():
         usage_string += " %-10s: %s" % (arg, desc) + "\n"
     return usage_string[:-1]
 
@@ -784,6 +784,6 @@ def HandleCommandLine(params, argv=None, conf_module_name=None,
     except (ItemNotFound, InstallationError) as details:
         if options.verbose > 1:
             traceback.print_exc()
-        print "%s: %s" % (details.__class__.__name__, details)
+        print("%s: %s" % (details.__class__.__name__, details))
     except KeyError:
         parser.error("Invalid arg '%s'" % arg)

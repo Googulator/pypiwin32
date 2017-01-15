@@ -48,7 +48,7 @@ class ShellTester(win32com.test.util.TestCase):
             num += 1
         if num == 0:
             # This isn't a fatal error, but is unlikely.
-            print "Could not find any links on your desktop or programs dir, which is unusual"
+            print("Could not find any links on your desktop or programs dir, which is unusual")
 
     def testShellFolder(self):
         sf = shell.SHGetDesktopFolder()
@@ -190,7 +190,7 @@ class FILEGROUPDESCRIPTORTester(win32com.test.util.TestCase):
                   ftLastAccessTime=atime,
                   ftLastWriteTime=wtime,
                   nFileSize=sys_maxsize + 1),
-             dict(cFileName=u"foo\xa9.txt",
+             dict(cFileName="foo\xa9.txt",
                   sizel=(1, 2),
                   pointl=(3, 4),
                   dwFileAttributes=win32con.FILE_ATTRIBUTE_NORMAL,
@@ -237,10 +237,10 @@ class FileOperationTester(win32com.test.util.TestCase):
              self.dest_name)
 
         rc, aborted = shell.SHFileOperation(s)
-        self.failUnless(not aborted)
-        self.failUnlessEqual(0, rc)
-        self.failUnless(os.path.isfile(self.src_name))
-        self.failUnless(os.path.isfile(self.dest_name))
+        self.assertTrue(not aborted)
+        self.assertEqual(0, rc)
+        self.assertTrue(os.path.isfile(self.src_name))
+        self.assertTrue(os.path.isfile(self.dest_name))
 
     def testRename(self):
         s = (0,  # hwnd,
@@ -248,10 +248,10 @@ class FileOperationTester(win32com.test.util.TestCase):
              self.src_name,
              self.dest_name)
         rc, aborted = shell.SHFileOperation(s)
-        self.failUnless(not aborted)
-        self.failUnlessEqual(0, rc)
-        self.failUnless(os.path.isfile(self.dest_name))
-        self.failUnless(not os.path.isfile(self.src_name))
+        self.assertTrue(not aborted)
+        self.assertEqual(0, rc)
+        self.assertTrue(os.path.isfile(self.dest_name))
+        self.assertTrue(not os.path.isfile(self.src_name))
 
     def testMove(self):
         s = (0,  # hwnd,
@@ -259,10 +259,10 @@ class FileOperationTester(win32com.test.util.TestCase):
              self.src_name,
              self.dest_name)
         rc, aborted = shell.SHFileOperation(s)
-        self.failUnless(not aborted)
-        self.failUnlessEqual(0, rc)
-        self.failUnless(os.path.isfile(self.dest_name))
-        self.failUnless(not os.path.isfile(self.src_name))
+        self.assertTrue(not aborted)
+        self.assertEqual(0, rc)
+        self.assertTrue(os.path.isfile(self.dest_name))
+        self.assertTrue(not os.path.isfile(self.src_name))
 
     def testDelete(self):
         s = (0,  # hwnd,
@@ -270,9 +270,9 @@ class FileOperationTester(win32com.test.util.TestCase):
              self.src_name, None,
              FOF_NOCONFIRMATION)
         rc, aborted = shell.SHFileOperation(s)
-        self.failUnless(not aborted)
-        self.failUnlessEqual(0, rc)
-        self.failUnless(not os.path.isfile(self.src_name))
+        self.assertTrue(not aborted)
+        self.assertEqual(0, rc)
+        self.assertTrue(not os.path.isfile(self.src_name))
 
 if __name__ == '__main__':
     win32com.test.util.testmain()

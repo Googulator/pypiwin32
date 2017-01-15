@@ -4,7 +4,7 @@ import win32api
 from pywin.mfc import docview
 import pywin.framework.window
 import os
-import frame
+from . import frame
 
 ParentEditorTemplate = docview.DocTemplate
 
@@ -43,7 +43,7 @@ class EditorTemplateBase(ParentEditorTemplate):
     def GetPythonPropertyPages(self):
         """Returns a list of property pages
         """
-        import configui
+        from . import configui
         return [configui.EditorPropertyPage(
         ), configui.EditorWhitespacePropertyPage()]
 

@@ -40,7 +40,7 @@ import sys
 import time
 from functools import reduce
 
-import scriptutils
+from . import scriptutils
 import win32api
 import win32con
 import win32ui
@@ -113,7 +113,7 @@ class dirpath:
                                     if sd not in dirs:
                                         dirs[sd] = None
         self.dirs = []
-        for d in dirs.iterkeys():
+        for d in dirs.keys():
             self.dirs.append(d)
 
     def __getitem__(self, key):
@@ -331,8 +331,8 @@ class TheDocument(docview.RichEditDoc):
             win32api.LoadCursor(
                 0, win32con.IDC_APPSTARTING))
         win32ui.GetApp().AddIdleHandler(self.idleHandler)
-        import thread
-        thread.start_new(self.threadPycheckerRun, ())
+        import _thread
+        _thread.start_new(self.threadPycheckerRun, ())
         # win32api.SetCursor(old)
 
     def threadPycheckerRun(self):
@@ -374,7 +374,7 @@ class TheDocument(docview.RichEditDoc):
             self.GetFirstView().Append(result)
         finally:
             self.result = result
-            print '== Pychecker run finished =='
+            print('== Pychecker run finished ==')
             self.GetFirstView().Append('\n' + '== Pychecker run finished ==')
             self.SetModifiedFlag(0)
 

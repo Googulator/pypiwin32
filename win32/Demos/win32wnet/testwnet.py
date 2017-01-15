@@ -16,25 +16,25 @@ def _doDumpHandle(handle, level=0):
         for item in items:
             try:
                 if item.dwDisplayType == RESOURCEDISPLAYTYPE_SHARE:
-                    print indent + "Have share with name:", item.lpRemoteName
+                    print(indent + "Have share with name:", item.lpRemoteName)
                     possible_shares.append(item)
                 elif item.dwDisplayType == RESOURCEDISPLAYTYPE_GENERIC:
-                    print indent + "Have generic resource with name:", item.lpRemoteName
+                    print(indent + "Have generic resource with name:", item.lpRemoteName)
                 else:
                     # Try generic!
-                    print indent + "Enumerating " + item.lpRemoteName,
+                    print(indent + "Enumerating " + item.lpRemoteName, end=' ')
                     k = win32wnet.WNetOpenEnum(
                         RESOURCE_GLOBALNET, RESOURCETYPE_ANY, 0, item)
-                    print
+                    print()
                     _doDumpHandle(k, level + 1)
                     # could do k.Close(), but this is a good test!
                     win32wnet.WNetCloseEnum(k)
             except win32wnet.error as details:
-                print indent + "Couldn't enumerate this resource: " + details.strerror
+                print(indent + "Couldn't enumerate this resource: " + details.strerror)
 
 
 def TestOpenEnum():
-    print "Enumerating all resources on the network - this may take some time..."
+    print("Enumerating all resources on the network - this may take some time...")
     handle = win32wnet.WNetOpenEnum(
         RESOURCE_GLOBALNET, RESOURCETYPE_ANY, 0, None)
 
@@ -42,7 +42,7 @@ def TestOpenEnum():
         _doDumpHandle(handle)
     finally:
         handle.Close()
-    print "Finished dumping all resources."
+    print("Finished dumping all resources.")
 
 
 def findUnusedDriveLetter():
@@ -67,16 +67,16 @@ def findUnusedDriveLetter():
 
 def TestConnection():
     if len(possible_shares) == 0:
-        print "Couldn't find any potential shares to connect to"
+        print("Couldn't find any potential shares to connect to")
         return
     localName = findUnusedDriveLetter() + ':'
     for share in possible_shares:
-        print "Attempting connection of", localName, "to", share.lpRemoteName
+        print("Attempting connection of", localName, "to", share.lpRemoteName)
         try:
             win32wnet.WNetAddConnection2(
                 share.dwType, localName, share.lpRemoteName)
         except win32wnet.error as details:
-            print "Couldn't connect: " + details.strerror
+            print("Couldn't connect: " + details.strerror)
             continue
         # Have a connection.
         try:
@@ -85,10 +85,10 @@ def TestConnection():
                 os.listdir(
                     localName + "\\")[0])
             try:
-                print "Universal name of '%s' is '%s'" % (fname, win32wnet.WNetGetUniversalName(fname))
+                print("Universal name of '%s' is '%s'" % (fname, win32wnet.WNetGetUniversalName(fname)))
             except win32wnet.error as details:
-                print "Couldn't get universal name of '%s': %s" % (fname, details.strerror)
-            print "User name for this connection is", win32wnet.WNetGetUser(localName)
+                print("Couldn't get universal name of '%s': %s" % (fname, details.strerror))
+            print("User name for this connection is", win32wnet.WNetGetUser(localName))
         finally:
             win32wnet.WNetCancelConnection2(localName, 0, 0)
         # and do it again, but this time by using the more modern
@@ -110,7 +110,7 @@ def TestConnection():
 
 def TestGetUser():
     u = win32wnet.WNetGetUser()
-    print "Current global user is", repr(u)
+    print("Current global user is", repr(u))
     if u != win32wnet.WNetGetUser(None):
         raise RuntimeError("Default value didnt seem to work!")
 

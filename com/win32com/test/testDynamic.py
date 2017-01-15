@@ -40,8 +40,8 @@ class VeryPermissive:
             raise Exception(scode=winerror.DISP_E_BADPARAMCOUNT)
 
         for arg in args[:-1]:
-            print str(arg),
-        print str(args[-1])
+            print(str(arg), end=' ')
+        print(str(args[-1]))
 
 
 def Test():
@@ -54,7 +54,7 @@ def Test():
     try:
         handle = pythoncom.RegisterActiveObject(ob, iid, 0)
     except pythoncom.com_error as details:
-        print "Warning - could not register the object in the ROT:", details
+        print("Warning - could not register the object in the ROT:", details)
         handle = None
     try:
         import win32com.client.dynamic

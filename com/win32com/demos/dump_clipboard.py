@@ -11,13 +11,13 @@ for f in formats:
     val = getattr(win32con, f)
     format_name_map[val] = f
 
-tymeds = [attr for attr in pythoncom.__dict__.iterkeys()
+tymeds = [attr for attr in pythoncom.__dict__.keys()
           if attr.startswith("TYMED_")]
 
 
 def DumpClipboard():
     do = pythoncom.OleGetClipboard()
-    print "Dumping all clipboard formats..."
+    print("Dumping all clipboard formats...")
     for fe in do.EnumFormatEtc():
         fmt, td, aspect, index, tymed = fe
         tymeds_this = [
@@ -26,7 +26,7 @@ def DumpClipboard():
                 t) for t in tymeds if tymed & getattr(
                 pythoncom,
                 t)]
-        print "Clipboard format", format_name_map.get(fmt, str(fmt))
+        print("Clipboard format", format_name_map.get(fmt, str(fmt)))
         for t_this in tymeds_this:
             # As we are enumerating there should be no need to call
             # QueryGetData, but we do anyway!
@@ -34,12 +34,12 @@ def DumpClipboard():
             try:
                 do.QueryGetData(fetc_query)
             except pythoncom.com_error:
-                print "Eeek - QGD indicated failure for tymed", t_this
+                print("Eeek - QGD indicated failure for tymed", t_this)
             # now actually get it.
             try:
                 medium = do.GetData(fetc_query)
             except pythoncom.com_error as exc:
-                print "Failed to get the clipboard data:", exc
+                print("Failed to get the clipboard data:", exc)
                 continue
             if medium.tymed == pythoncom.TYMED_GDI:
                 data = "GDI handle %d" % medium.data
@@ -65,11 +65,11 @@ def DumpClipboard():
                 data = "a IStorage"
             else:
                 data = "*** unknown tymed!"
-            print " -> got", data
+            print(" -> got", data)
     do = None
 
 if __name__ == '__main__':
     DumpClipboard()
     if pythoncom._GetInterfaceCount() + pythoncom._GetGatewayCount():
-        print "XXX - Leaving with %d/%d COM objects alive" % \
-              (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount())
+        print("XXX - Leaving with %d/%d COM objects alive" % \
+              (pythoncom._GetInterfaceCount(), pythoncom._GetGatewayCount()))

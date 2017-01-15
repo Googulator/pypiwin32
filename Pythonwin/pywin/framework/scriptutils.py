@@ -14,7 +14,7 @@ import traceback
 import linecache
 import bdb
 
-from cmdline import ParseArgs
+from .cmdline import ParseArgs
 
 RS_DEBUGGER_NONE = 0  # Dont run under the debugger.
 RS_DEBUGGER_STEP = 1  # Start stepping under the debugger
@@ -90,7 +90,7 @@ def IsOnPythonPath(path):
             if syspath and win32ui.FullPath(syspath) == path:
                 return 1
         except win32ui.error as details:
-            print "Warning: The sys.path entry '%s' is invalid\n%s" % (syspath, details)
+            print("Warning: The sys.path entry '%s' is invalid\n%s" % (syspath, details))
     return 0
 
 
@@ -354,11 +354,11 @@ def RunScript(defName=None, defArgs=None, bShowDialog=1, debuggingType=None):
             debugger.run(codeObject, __main__.__dict__, start_stepping=0)
         else:
             # Post mortem or no debugging
-            exec codeObject in __main__.__dict__
+            exec(codeObject, __main__.__dict__)
         bWorked = 1
     except bdb.BdbQuit:
         # Dont print tracebacks when the debugger quit, but do print a message.
-        print "Debugging session cancelled."
+        print("Debugging session cancelled.")
         exitCode = 1
         bWorked = 1
     except SystemExit as code:
@@ -435,7 +435,7 @@ def ImportFile():
     # meaning sys.modules can change as a side-effect of looking at
     # module.__file__ - so we must take a copy (ie, items() in py2k,
     # list(items()) in py3k)
-    for key, mod in sys.modules.items():
+    for key, mod in list(sys.modules.items()):
         if hasattr(mod, '__file__'):
             fname = mod.__file__
             base, ext = os.path.splitext(fname)
@@ -469,7 +469,7 @@ def ImportFile():
         win32ui.SetStatusText('Invalid filename for import: "' + modName + '"')
         return
     try:
-        exec codeObj in __main__.__dict__
+        exec(codeObj, __main__.__dict__)
         mod = sys.modules.get(modName)
         if bNeedReload:
             try:
@@ -502,7 +502,7 @@ def CheckFile():
     try:
         f = open(pathName)
     except IOError as details:
-        print "Cant open file '%s' - %s" % (pathName, details)
+        print("Cant open file '%s' - %s" % (pathName, details))
         return
     try:
         code = f.read() + "\n"
@@ -524,7 +524,7 @@ def CheckFile():
 
 
 def RunTabNanny(filename):
-    import cStringIO as io
+    import io as io
     tabnanny = FindTabNanny()
     if tabnanny is None:
         win32ui.MessageBox(
@@ -554,8 +554,8 @@ def RunTabNanny(filename):
                 "The TabNanny found trouble at line %d" %
                 lineno)
         except (IndexError, TypeError, ValueError):
-            print "The tab nanny complained, but I cant see where!"
-            print data
+            print("The tab nanny complained, but I cant see where!")
+            print(data)
         return 0
     return 1
 
@@ -590,7 +590,7 @@ def JumpToDocument(fileName, lineno=0, col=1, nChars=0, bScrollToTop=0):
         try:
             view.EnsureCharsVisible(charNo)
         except AttributeError:
-            print "Doesnt appear to be one of our views?"
+            print("Doesnt appear to be one of our views?")
         view.SetSel(min(start, size), min(start + nChars, size))
     if bScrollToTop:
         curTop = view.GetFirstVisibleLine()
@@ -637,14 +637,14 @@ def FindTabNanny():
             "SOFTWARE\\Python\\PythonCore\\%s\\InstallPath" %
             (sys.winver))
     except win32api.error:
-        print "WARNING - The Python registry does not have an 'InstallPath' setting"
-        print "          The file '%s' can not be located" % (filename)
+        print("WARNING - The Python registry does not have an 'InstallPath' setting")
+        print("          The file '%s' can not be located" % (filename))
         return None
     fname = os.path.join(path, "Tools\\Scripts\\%s" % filename)
     try:
         os.stat(fname)
     except os.error:
-        print "WARNING - The file '%s' can not be located in path '%s'" % (filename, path)
+        print("WARNING - The file '%s' can not be located in path '%s'" % (filename, path))
         return None
 
     tabnannyhome, tabnannybase = os.path.split(fname)
