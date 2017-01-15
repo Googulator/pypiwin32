@@ -1,8 +1,9 @@
 import string
 
+
 class History:
 
-    def __init__(self, text, output_sep = "\n"):
+    def __init__(self, text, output_sep="\n"):
         self.text = text
         self.history = []
         self.history_prefix = None
@@ -44,7 +45,7 @@ class History:
             else:
                 pointer = -1
         nprefix = len(prefix)
-        while 1:
+        while True:
             if reverse:
                 pointer = pointer - 1
             else:
@@ -86,4 +87,3 @@ class History:
         self.text.mark_set("insert", "end-1c")
         self.text.insert("insert", s)
         self.text.see("insert")
-

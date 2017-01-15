@@ -13,24 +13,30 @@ automatically calls this.
 #
 import string
 
+
 def is_interface_enum(enumtype):
-  return not (enumtype[0] in string.uppercase and enumtype[2] in string.uppercase)
+    return not (enumtype[0] in string.uppercase and enumtype[
+                2] in string.uppercase)
 
 
 def _write_enumifc_cpp(f, interface):
-  enumtype = interface.name[5:]
-  if is_interface_enum(enumtype):
-    # Assume an interface.
-    enum_interface = "I" + enumtype[:-1]
-    converter = "PyObject *ob = PyCom_PyObjectFromIUnknown(rgVar[i], IID_%(enum_interface)s, FALSE);" % locals()
-    arraydeclare = "%(enum_interface)s **rgVar = new %(enum_interface)s *[celt];" % locals()
-  else:
-    # Enum of a simple structure
-    converter = "PyObject *ob = PyCom_PyObjectFrom%(enumtype)s(&rgVar[i]);" % locals()
-    arraydeclare = "%(enumtype)s *rgVar = new %(enumtype)s[celt];" % locals()
+    enumtype = interface.name[5:]
+    if is_interface_enum(enumtype):
+        # Assume an interface.
+        enum_interface = "I" + enumtype[:-1]
+        converter = "PyObject *ob = PyCom_PyObjectFromIUnknown(rgVar[i], IID_%(enum_interface)s, FALSE);" % locals(
+        )
+        arraydeclare = "%(enum_interface)s **rgVar = new %(enum_interface)s *[celt];" % locals(
+        )
+    else:
+        # Enum of a simple structure
+        converter = "PyObject *ob = PyCom_PyObjectFrom%(enumtype)s(&rgVar[i]);" % locals(
+        )
+        arraydeclare = "%(enumtype)s *rgVar = new %(enumtype)s[celt];" % locals(
+        )
 
-  f.write(\
-'''
+    f.write(
+        '''
 // ---------------------------------------------------
 //
 // Interface Implementation
@@ -185,19 +191,20 @@ PyComEnumTypeObject PyIEnum%(enumtype)s::type("PyIEnum%(enumtype)s",
 ''' % locals() )
 
 
-
 def _write_enumgw_cpp(f, interface):
-  enumtype = interface.name[5:]
-  if is_interface_enum(enumtype):
-    # Assume an interface.
-    enum_interface = "I" + enumtype[:-1]
-    converter = "if ( !PyCom_InterfaceFromPyObject(ob, IID_%(enum_interface)s, (void **)&rgVar[i], FALSE) )" % locals()
-    argdeclare="%(enum_interface)s __RPC_FAR * __RPC_FAR *rgVar" % locals()
-  else:
-    argdeclare="%(enumtype)s __RPC_FAR *rgVar" % locals()
-    converter="if ( !PyCom_PyObjectAs%(enumtype)s(ob, &rgVar[i]) )" % locals()
-  f.write(
-'''
+    enumtype = interface.name[5:]
+    if is_interface_enum(enumtype):
+        # Assume an interface.
+        enum_interface = "I" + enumtype[:-1]
+        converter = "if ( !PyCom_InterfaceFromPyObject(ob, IID_%(enum_interface)s, (void **)&rgVar[i], FALSE) )" % locals(
+        )
+        argdeclare = "%(enum_interface)s __RPC_FAR * __RPC_FAR *rgVar" % locals()
+    else:
+        argdeclare = "%(enumtype)s __RPC_FAR *rgVar" % locals()
+        converter = "if ( !PyCom_PyObjectAs%(enumtype)s(ob, &rgVar[i]) )" % locals(
+        )
+    f.write(
+        '''
 // ---------------------------------------------------
 //
 // Gateway Implementation
@@ -211,7 +218,7 @@ STDMETHODIMP PyGEnum%(enumtype)s::GetTypeInfo(UINT itinfo, LCID lcid, ITypeInfo 
 STDMETHODIMP PyGEnum%(enumtype)s::GetIDsOfNames(REFIID refiid, OLECHAR FAR* FAR* rgszNames, UINT cNames, LCID lcid, DISPID FAR* rgdispid) {return PyGatewayBase::GetIDsOfNames( refiid, rgszNames, cNames, lcid, rgdispid);}
 STDMETHODIMP PyGEnum%(enumtype)s::Invoke(DISPID dispid, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS FAR* params, VARIANT FAR* pVarResult, EXCEPINFO FAR* pexcepinfo, UINT FAR* puArgErr) {return PyGatewayBase::Invoke( dispid, riid, lcid, wFlags, params, pVarResult, pexcepinfo, puArgErr);}
 
-STDMETHODIMP PyGEnum%(enumtype)s::Next( 
+STDMETHODIMP PyGEnum%(enumtype)s::Next(
             /* [in] */ ULONG celt,
             /* [length_is][size_is][out] */ %(argdeclare)s,
             /* [out] */ ULONG __RPC_FAR *pCeltFetched)
@@ -258,7 +265,7 @@ STDMETHODIMP PyGEnum%(enumtype)s::Next(
 	return PyCom_SetCOMErrorFromSimple(E_FAIL, IID_IEnum%(enumtype)s, "Next() did not return a sequence of objects");
 }
 
-STDMETHODIMP PyGEnum%(enumtype)s::Skip( 
+STDMETHODIMP PyGEnum%(enumtype)s::Skip(
             /* [in] */ ULONG celt)
 {
 	PY_GATEWAY_METHOD;
@@ -271,7 +278,7 @@ STDMETHODIMP PyGEnum%(enumtype)s::Reset(void)
 	return InvokeViaPolicy("Reset");
 }
 
-STDMETHODIMP PyGEnum%(enumtype)s::Clone( 
+STDMETHODIMP PyGEnum%(enumtype)s::Clone(
             /* [out] */ IEnum%(enumtype)s __RPC_FAR *__RPC_FAR *ppEnum)
 {
 	PY_GATEWAY_METHOD;
