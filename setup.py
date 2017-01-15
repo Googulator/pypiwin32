@@ -78,10 +78,7 @@ from tempfile import gettempdir
 is_py3k = sys.version_info > (3,)  # get this out of the way early on...
 # We have special handling for _winreg so our setup3.py script can avoid
 # using the 'imports' fixer and therefore start much faster...
-if is_py3k:
-    pass
-else:
-    import winreg
+import winreg
 
 # The rest of our imports.
 from setuptools import setup, find_packages
