@@ -683,32 +683,6 @@ class WinExt_system32(WinExt):
 do_2to3 = is_py3k
 
 
-def refactor_filenames(filenames):
-    from lib2to3.refactor import RefactoringTool
-    # we only need some fixers.
-    fixers = """basestring exec except dict import imports next nonzero
-                print raise raw_input long standarderror types unicode
-                urllib xrange""".split()
-    fqfixers = ['lib2to3.fixes.fix_' + f for f in fixers]
-
-    options = dict(doctests_only=False, fix=[], list_fixes=[],
-                   print_function=False, verbose=False,
-                   write=True)
-    r = RefactoringTool(fqfixers, options)
-    for updated_file in filenames:
-        if os.path.splitext(updated_file)[1] not in ['.py', '.pys']:
-            continue
-        log.info("Refactoring %s" % updated_file)
-        try:
-            r.refactor_file(updated_file, write=True, doctests_only=False)
-            if os.path.exists(updated_file + ".bak"):
-                os.unlink(updated_file + ".bak")
-        except Exception:
-            log.warn(
-                "WARNING: Failed to 2to3 %s: %s" %
-                (updated_file, sys.exc_info()[1]))
-
-
 # Force 2to3 to be run for py3k versions.
 class my_build_py(build_py):
 
@@ -729,7 +703,7 @@ class my_build_py(build_py):
             self.build_package_data()
 
         # 2to3
-        refactor_filenames(self.updated_files)
+        # refactor_filenames(self.updated_files)
 
         # Remaining base class code
         self.byte_compile(self.get_outputs(include_bytecode=0))
@@ -747,8 +721,8 @@ class my_build_scripts(build_scripts):
     def copy_file(self, src, dest):
         dest, copied = build_scripts.copy_file(self, src, dest)
         # 2to3
-        if not self.dry_run and copied:
-            refactor_filenames([dest])
+        # if not self.dry_run and copied:
+        # refactor_filenames([dest])
         return dest, copied
 
 
@@ -1696,8 +1670,6 @@ class my_install_data(install_data):
     def copy_file(self, src, dest):
         dest, copied = install_data.copy_file(self, src, dest)
         # 2to3
-        if not self.dry_run and copied:
-            refactor_filenames([dest])
         return dest, copied
 
 
