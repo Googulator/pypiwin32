@@ -6,15 +6,9 @@
 # This will execute the method 'test1' below.  See below for the list of
 # test methods that are acceptable.
 
-from isapi import isapicon, threaded_extension, ExtensionError
-from isapi.simple import SimpleFilter
-import traceback
-import urllib
-import winerror
-
-# If we have no console (eg, am running from inside IIS), redirect output
-# somewhere useful - in this case, the standard win32 trace collector.
 import win32api
+
+from isapi import threaded_extension, ExtensionError
 try:
     win32api.GetConsoleTitle()
 except win32api.error:
@@ -23,33 +17,40 @@ except win32api.error:
 
 # The ISAPI extension - handles requests in our virtual dir, and sends the
 # response to the client.
+
+
 class Extension(threaded_extension.ThreadPoolExtension):
     "Python ISAPI Tester"
+
     def Dispatch(self, ecb):
-        print 'Tester dispatching "%s"' % (ecb.GetServerVariable("URL"),)
+        print('Tester dispatching "%s"' % (ecb.GetServerVariable("URL"),))
         url = ecb.GetServerVariable("URL")
         test_name = url.split("/")[-1]
         meth = getattr(self, test_name, None)
         if meth is None:
-            raise AttributeError, "No test named '%s'" % (test_name,)
+            raise AttributeError("No test named '%s'" % (test_name,))
         result = meth(ecb)
         if result is None:
             # This means the test finalized everything
             return
-        ecb.SendResponseHeaders("200 OK", "Content-type: text/html\r\n\r\n", 
+        ecb.SendResponseHeaders("200 OK", "Content-type: text/html\r\n\r\n",
                                 False)
-        print >> ecb, "<HTML><BODY>Finished running test <i>", test_name, "</i>"
-        print >> ecb, "<pre>"
-        print >> ecb, result
-        print >> ecb, "</pre>"
-        print >> ecb, "</BODY></HTML>"
+        print(
+            "<HTML><BODY>Finished running test <i>",
+            test_name,
+            "</i>",
+            file=ecb)
+        print("<pre>", file=ecb)
+        print(result, file=ecb)
+        print("</pre>", file=ecb)
+        print("</BODY></HTML>", file=ecb)
         ecb.DoneWithSession()
 
     def test1(self, ecb):
         try:
             ecb.GetServerVariable("foo bar")
-            raise RuntimeError, "should have failed!"
-        except ExtensionError, err:
+            raise RuntimeError("should have failed!")
+        except ExtensionError as err:
             assert err.errno == winerror.ERROR_INVALID_INDEX, err
         return "worked!"
 
@@ -59,11 +60,11 @@ class Extension(threaded_extension.ThreadPoolExtension):
         # the code that handles an overflow by ensuring there are more
         # than 8k worth of chars in the URL.
         expected_query = ('x' * 8500)
-        if len(qs)==0:
+        if len(qs) == 0:
             # Just the URL with no query part - redirect to myself, but with
             # a huge query portion.
             me = ecb.GetServerVariable("URL")
-            headers = "Location: " +  me + "?" + expected_query + "\r\n\r\n"
+            headers = "Location: " + me + "?" + expected_query + "\r\n\r\n"
             ecb.SendResponseHeaders("301 Moved", headers)
             ecb.DoneWithSession()
             return None
@@ -81,17 +82,20 @@ class Extension(threaded_extension.ThreadPoolExtension):
             return "This is IIS version %g - unicode only works in IIS6 and later" % ver
 
         us = ecb.GetServerVariable("UNICODE_SERVER_NAME")
-        if not isinstance(us, unicode):
-            raise RuntimeError, "unexpected type!"
-        if us != unicode(ecb.GetServerVariable("SERVER_NAME")):
-            raise RuntimeError, "Unicode and non-unicode values were not the same"
+        if not isinstance(us, str):
+            raise RuntimeError("unexpected type!")
+        if us != str(ecb.GetServerVariable("SERVER_NAME")):
+            raise RuntimeError(
+                "Unicode and non-unicode values were not the same")
         return "worked!"
 
 # The entry points for the ISAPI extension.
+
+
 def __ExtensionFactory__():
     return Extension()
 
-if __name__=='__main__':
+if __name__ == '__main__':
     # If run from the command-line, install ourselves.
     from isapi.install import *
     params = ISAPIParameters()
@@ -103,9 +107,9 @@ if __name__=='__main__':
         ScriptMapParams(Extension="*", Flags=0)
     ]
     vd = VirtualDirParameters(Name="pyisapi_test",
-                              Description = Extension.__doc__,
-                              ScriptMaps = sm,
-                              ScriptMapUpdate = "replace"
+                              Description=Extension.__doc__,
+                              ScriptMaps=sm,
+                              ScriptMapUpdate="replace"
                               )
     params.VirtualDirs = [vd]
     HandleCommandLine(params)
