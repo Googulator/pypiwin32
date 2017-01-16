@@ -105,6 +105,7 @@ from distutils.filelist import FileList
 from distutils.errors import DistutilsExecError
 import distutils.util
 import subprocess
+import distutils.file_util
 
 # prevent the new in 3.5 suffix of "cpXX-win32" from being added.
 # (adjusting both .cp35-win_amd64.pyd and .cp35-win32.pyd to .pyd)
@@ -1664,9 +1665,25 @@ class my_install_data(install_data):
         print(('Installing data files to %s' % self.install_dir))
         install_data.finalize_options(self)
 
+        data_files = []
+        for directory, files in self.data_files:
+            files = list(files)
+            for file in files.copy():
+                file_path = os.path.join(self.install_dir, directory, file)
+                print(file_path)
+                if os.path.exists(file_path):
+                    files.remove(file)
+            data_files.append((directory, files))
+
+            dir_path = os.path.join(self.install_dir, directory)
+            if os.path.isfile(dir_path):
+                os.remove(dir_path)
+
+        self.data_files = data_files
+
+
     def copy_file(self, src, dest):
         dest, copied = install_data.copy_file(self, src, dest)
-        # 2to3
         return dest, copied
 
 
