@@ -38,20 +38,13 @@ def run_test(script, cmdline_rest=""):
 
     thread = threading.Thread(target=print_output, args=(process,))
     thread.start()
+    thread.join(timeout=60 * 3)
 
-    elapsed = 0
-    dt = 10
-    while elapsed < 60 * 5:
-        time.sleep(dt)
-        elapsed += dt
-        if process.poll():
-            break
+    if process.poll() is None:
+        for i in range(5):
+            os.kill(process.pid, signal.SIGINT)
 
-    with suppress(Exception):
-        os.kill(process.pid, signal.SIGINT)
-
-    time.sleep(10)
-
+    time.sleep(10)  # Give ten seconds before we kill everything
     with suppress(Exception):
         process.kill()
 
