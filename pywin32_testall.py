@@ -21,15 +21,14 @@ def run_test(script, cmdline_rest=""):
         cmd,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        universal_newlines=True)
+        universal_newlines=True,
+        bufsize=1)
 
-    for stdout_line in iter(popen.stdout.readline, ""):
-        print(stdout_line)
+    while popen.poll() is None:
+        out = popen.stdout.read(1)
+        sys.stdout.write(out)
+        sys.stdout.flush()
 
-    popen.stdout.close()
-    return_code = popen.wait()
-    if return_code:
-        print("****** %s failed: %s" % (script, return_code))
 
 
 def find_and_run(possible_locations, script, cmdline_rest=""):
