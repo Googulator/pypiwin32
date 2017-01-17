@@ -1654,6 +1654,7 @@ class my_install_data(install_data):
         print(('Installing data files to %s' % self.install_dir))
         install_data.finalize_options(self)
 
+        # TODO: Find out why these files exist
         data_files = []
         for directory, files in self.data_files:
             files = list(files)
@@ -1669,11 +1670,6 @@ class my_install_data(install_data):
                 os.remove(dir_path)
 
         self.data_files = data_files
-
-
-    def copy_file(self, src, dest):
-        dest, copied = install_data.copy_file(self, src, dest)
-        return dest, copied
 
 
 ################################################################
