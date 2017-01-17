@@ -1084,6 +1084,8 @@ class my_build_ext(build_ext):
                 self.package = ext.get_pywin32_dir()
             except AttributeError:
                 raise RuntimeError("Not a win32 package!")
+            ext.extra_compile_args = ext.extra_compile_args or []
+            ext.extra_compile_args.extend(['/DUNICODE', '/D_UNICODE', '/DWINNT'])
             self.build_extension(ext)
 
         for ext in W32_exe_files:
