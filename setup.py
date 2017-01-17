@@ -1113,8 +1113,8 @@ class my_build_ext(build_ext):
         clib_files = (['win32', 'pywintypes%s.lib'],
                       ['win32com', 'pythoncom%s.lib'],
                       ['win32com', 'axscript%s.lib'])
-        print('Listing build directory:')
-        self.list_files(os.path.dirname(self.build_temp))
+        # print('Listing build directory:')
+        # self.list_files(os.path.dirname(self.build_temp))
         for clib_file in clib_files:
             target_dir = os.path.join(self.build_lib, clib_file[0], "libs")
             if not os.path.exists(target_dir):
