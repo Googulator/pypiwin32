@@ -7,8 +7,6 @@ import ntsecuritycon
 import pytest
 import win32con
 import winerror
-
-xfail = pytest.mark.xfail
 from pywin32_testutil import TestSkipped, ob2memory
 
 
@@ -101,13 +99,13 @@ class DomainTests(unittest.TestCase):
 
 
 class TestDS(DomainTests):
-    @xfail
+    @pytest.mark.xfail
     def testDsGetDcName(self):
         # Not sure what we can actually test here!  At least calling it
         # does something :)
         win32security.DsGetDcName()
 
-    @xfail
+    @pytest.mark.xfail
     def testDsListServerInfo(self):
         # again, not checking much, just exercising the code.
         h = win32security.DsBind()
@@ -127,7 +125,7 @@ class TestDS(DomainTests):
                 site):
                 pass
 
-    @xfail
+    @pytest.mark.xfail
     def testDsCrackNames(self):
         h = win32security.DsBind()
         fmt_offered = ntsecuritycon.DS_FQDN_1779_NAME
@@ -136,7 +134,7 @@ class TestDS(DomainTests):
             h, 0, fmt_offered, fmt_offered, (name,))
         assert name == result[0][2]
 
-    @xfail
+    @pytest.mark.xfail
     def testDsCrackNamesSyntax(self):
         # Do a syntax check only - that allows us to avoid binding.
         # But must use DS_CANONICAL_NAME (or _EX)
@@ -160,25 +158,25 @@ class TestTranslate(DomainTests):
         got = win32security.TranslateName(name, fmt_from, fmt_to)
         assert got == expected
 
-    @xfail
+    @pytest.mark.xfail
     def testTranslate1(self):
         self._testTranslate(
             win32api.NameFullyQualifiedDN,
             win32api.NameSamCompatible)
 
-    @xfail
+    @pytest.mark.xfail
     def testTranslate2(self):
         self._testTranslate(
             win32api.NameSamCompatible,
             win32api.NameFullyQualifiedDN)
 
-    @xfail
+    @pytest.mark.xfail
     def testTranslate3(self):
         self._testTranslate(
             win32api.NameFullyQualifiedDN,
             win32api.NameUniqueId)
 
-    @xfail
+    @pytest.mark.xfail
     def testTranslate4(self):
         self._testTranslate(
             win32api.NameUniqueId,

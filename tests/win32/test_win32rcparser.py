@@ -6,8 +6,6 @@ import pytest
 import win32con
 import win32rcparser
 
-xfail = pytest.mark.xfail
-
 
 class TestParser(unittest.TestCase):
     def setUp(self):
@@ -17,7 +15,7 @@ class TestParser(unittest.TestCase):
             "test.rc")
         self.resources = win32rcparser.Parse(rc_file)
 
-    @xfail
+    @pytest.mark.xfail
     def testStrings(self):
         for sid, expected in [
             ("IDS_TEST_STRING4", "Test 'single quoted' string"),
@@ -28,14 +26,14 @@ class TestParser(unittest.TestCase):
             got = self.resources.stringTable[sid].value
             assert got == expected
 
-    @xfail
+    @pytest.mark.xfail
     def testStandardIds(self):
         for idc in "IDOK IDCANCEL".split():
             correct = getattr(win32con, idc)
             assert self.resources.names[correct] == idc
             assert self.resources.ids[idc] == correct
 
-    @xfail
+    @pytest.mark.xfail
     def testTabStop(self):
         d = self.resources.dialogs["IDD_TEST_DIALOG2"]
         tabstop_names = ["IDC_EDIT1", "IDOK"]  # should have WS_TABSTOP

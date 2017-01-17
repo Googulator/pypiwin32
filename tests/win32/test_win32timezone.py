@@ -6,11 +6,9 @@ import unittest
 import pytest
 import win32timezone
 
-xfail = pytest.mark.xfail
-
 
 class Win32TimeZoneTest(unittest.TestCase):
-    @xfail
+    @pytest.mark.xfail
     def testWin32TZ(self):
         failed, total = doctest.testmod(win32timezone, verbose=False)
         assert not failed

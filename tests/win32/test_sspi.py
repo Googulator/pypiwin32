@@ -8,8 +8,6 @@ import win32security
 import pytest
 import sspi
 import sspicon
-
-xfail = pytest.mark.xfail
 from pywin32_testutil import TestSkipped, str2bytes
 
 
@@ -53,7 +51,7 @@ class TestSSPI(unittest.TestCase):
         sspiserver.ctxt.ImpersonateSecurityContext()
         sspiserver.ctxt.RevertSecurityContext()
 
-    @xfail
+    @pytest.mark.xfail
     def testImpersonateKerberos(self):
         applyHandlingSkips(self._doTestImpersonate, "Kerberos")
 
@@ -93,7 +91,7 @@ class TestSSPI(unittest.TestCase):
     def testEncryptNTLM(self):
         self._doTestEncrypt("NTLM")
 
-    @xfail
+    @pytest.mark.xfail
     def testEncryptKerberos(self):
         applyHandlingSkips(self._doTestEncrypt, "Kerberos")
 
@@ -137,7 +135,7 @@ class TestSSPI(unittest.TestCase):
     def testSignNTLM(self):
         self._doTestSign("NTLM")
 
-    @xfail
+    @pytest.mark.xfail
     def testSignKerberos(self):
         applyHandlingSkips(self._doTestSign, "Kerberos")
 
@@ -149,7 +147,7 @@ class TestSSPI(unittest.TestCase):
         self.assertRaisesHRESULT(sspicon.SEC_E_OUT_OF_SEQUENCE,
                                  sspiserver.verify, 'hello', key)
 
-    @xfail
+    @pytest.mark.xfail
     def testSequenceSign(self):
         applyHandlingSkips(self._testSequenceSign)
 
@@ -161,7 +159,7 @@ class TestSSPI(unittest.TestCase):
         self.assertRaisesHRESULT(sspicon.SEC_E_OUT_OF_SEQUENCE,
                                  sspiserver.decrypt, blob, key)
 
-    @xfail
+    @pytest.mark.xfail
     def testSequenceEncrypt(self):
         applyHandlingSkips(self._testSequenceEncrypt)
 

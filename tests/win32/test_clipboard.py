@@ -9,8 +9,6 @@ from win32clipboard import *
 import pytest
 import pywintypes
 import win32con
-
-xfail = pytest.mark.xfail
 from pywin32_testutil import str2bytes
 
 custom_format_name = "PythonClipboardTestFormat"
@@ -53,7 +51,7 @@ class TestBitmap(unittest.TestCase):
         if self.bmp_handle:
             win32gui.DeleteObject(self.bmp_handle)
 
-    @xfail
+    @pytest.mark.xfail
     def test_bitmap_roundtrip(self):
         OpenClipboard()
         try:

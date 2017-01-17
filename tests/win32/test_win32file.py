@@ -18,8 +18,6 @@ import pywintypes
 import win32con
 import win32timezone
 import winerror
-
-xfail = pytest.mark.xfail
 from pywin32_testutil import str2bytes, TestSkipped
 
 try:
@@ -33,7 +31,7 @@ class TestReadBuffer(unittest.TestCase):
         buffer = win32file.AllocateReadBuffer(1)
         assert len(buffer) == 1
 
-    @xfail
+    @pytest.mark.xfail
     def testSimpleIndex(self):
         val = str2bytes('\xFF')
         buffer = win32file.AllocateReadBuffer(1)
@@ -174,7 +172,7 @@ class TestSimpleOps(unittest.TestCase):
             f.Close()
             os.unlink(filename)
 
-    @xfail
+    @pytest.mark.xfail
     def testFileTimesTimezones(self):
         if not issubclass(pywintypes.TimeType, datetime.datetime):
             # maybe should report 'skipped', but that's not quite right as
@@ -207,7 +205,7 @@ class TestSimpleOps(unittest.TestCase):
             h.close()
             os.unlink(filename)
 
-    @xfail
+    @pytest.mark.xfail
     def testFileTimes(self):
         if issubclass(pywintypes.TimeType, datetime.datetime):
             from win32timezone import TimeZoneInfo
