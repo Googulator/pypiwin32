@@ -2622,6 +2622,7 @@ dist = setup(name="pywin32",
              author_email="mhammond@users.sourceforge.net",
              url="http://sourceforge.net/projects/pywin32/",
              license="PSF",
+             install_requires=['adodbapi'],
              cmdclass=cmdclass,
              options={"bdist_wininst":
                           {"install_script": "pywin32_postinstall.py",
@@ -2700,9 +2701,6 @@ dist = setup(name="pywin32",
                  'isapi/doc/*.html',
                  'isapi/test/*.py',
                  'isapi/test/*.txt',
-                 'adodbapi/*.txt',
-                 'adodbapi/test/*.py',
-                 'adodbapi/examples/*.py'
              ]) +
              # The headers and .lib files
              [
