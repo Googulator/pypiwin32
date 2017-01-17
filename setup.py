@@ -1307,8 +1307,6 @@ class my_build_ext(build_ext):
             return
         self.current_extension = ext
 
-        ext.finalize_options(self)
-
         # ensure the SWIG .i files are treated as dependencies.
         for source in ext.sources:
             if source.endswith(".i"):
@@ -1339,37 +1337,8 @@ class my_build_ext(build_ext):
             self.compiler.compile_options_debug.append('/MTd')
 
         try:
-            build_ext.build_extension(self, ext)
-            # XXX This has to be changed for mingw32
-            # Get the .lib files we need.  This is limited to pywintypes,
-            # pythoncom and win32ui - but the first 2 have special names
-            extra = self.debug and "_d.lib" or ".lib"
-            if ext.name in ("pywintypes", "pythoncom"):
-                # The import libraries are created as PyWinTypes23.lib, but
-                # are expected to be pywintypes.lib.
-                name1 = "%s%d%d%s" % (ext.name, sys.version_info[
-                                      0], sys.version_info[1], extra)
-                name2 = "%s%s" % (ext.name, extra)
-            elif ext.name in ("win32ui",):
-                name1 = name2 = ext.name + extra
-            else:
-                name1 = name2 = None
-            if name1 is not None:
-                # The compiler always creates 'pywintypes22.lib', whereas we
-                # actually want 'pywintypes.lib' - copy it over.
-                # Worse: 2.3+ MSVCCompiler constructs the .lib file in the same
-                # directory as the first source file's object file:
-                #    os.path.dirname(objects[0])
-                # rather than in the self.build_temp directory
-                # 2.3+ - Wrong dir, numbered name
-                src = os.path.join(old_build_temp,
-                                   os.path.dirname(ext.sources[0]),
-                                   name1)
-                dst = os.path.join(old_build_temp, name2)
-                if os.path.abspath(src) != os.path.abspath(dst):
-                    self.copy_file(src, dst)  # , update=1)
+            build_ext.run(self, ext)
         finally:
-            self.build_temp = old_build_temp
             if want_static_crt:
                 self.compiler.compile_options.remove('/MT')
                 self.compiler.compile_options.append('/MD')
