@@ -2701,9 +2701,6 @@ dist = setup(name="pywin32",
                  'isapi/doc/*.html',
                  'isapi/test/*.py',
                  'isapi/test/*.txt',
-                 'adodbapi/*.txt',
-                 'adodbapi/test/*.py',
-                 'adodbapi/examples/*.py'
              ]) +
              # The headers and .lib files
              [
