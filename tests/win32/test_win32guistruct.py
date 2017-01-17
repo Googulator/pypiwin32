@@ -10,14 +10,14 @@ class TestBase(unittest.TestCase):
     def assertDictEquals(self, d, **kw):
         checked = dict()
         for n, v in kw.items():
-            self.assertEqual(v, d[n],
-                             "'%s' doesn't match: %r != %r" % (n, v, d[n]))
+            assert v == d[n], \
+                "'%s' doesn't match: %r != %r" % (n, v, d[n])
             checked[n] = True
         checked_keys = list(checked.keys())
         passed_keys = list(kw.keys())
         checked_keys.sort()
         passed_keys.sort()
-        self.assertEqual(checked_keys, passed_keys)
+        assert checked_keys == passed_keys
 
 
 class TestMenuItemInfo(TestBase):
@@ -52,19 +52,19 @@ class TestMenuItemInfo(TestBase):
         fType, fState, wID, hSubMenu, hbmpChecked, hbmpUnchecked, \
         dwItemData, text, hbmpItem = win32gui_struct.UnpackMENUITEMINFO(
             mii)
-        self.assertEqual(fType, 0)
-        self.assertEqual(fState, 0)
-        self.assertEqual(wID, 0)
-        self.assertEqual(hSubMenu, 0)
-        self.assertEqual(hbmpChecked, 0)
-        self.assertEqual(hbmpUnchecked, 0)
-        self.assertEqual(dwItemData, 0)
-        self.assertEqual(hbmpItem, 0)
+        assert fType == 0
+        assert fState == 0
+        assert wID == 0
+        assert hSubMenu == 0
+        assert hbmpChecked == 0
+        assert hbmpUnchecked == 0
+        assert dwItemData == 0
+        assert hbmpItem == 0
         # it's not clear if UnpackMENUITEMINFO() should ignore cch, instead
         # assuming it is a buffer size rather than 'current length' - but it
         # never has (and this gives us every \0 in the string), and actually
         # helps us test the unicode/str semantics.
-        self.assertEqual(text, '\0' * len(text))
+        assert text == '\0' * len(text)
 
 
 class TestMenuInfo(TestBase):
@@ -85,11 +85,11 @@ class TestMenuInfo(TestBase):
         mi = win32gui_struct.EmptyMENUINFO()
         dwStyle, cyMax, hbrBack, dwContextHelpID, dwMenuData = \
             win32gui_struct.UnpackMENUINFO(mi)
-        self.assertEqual(dwStyle, 0)
-        self.assertEqual(cyMax, 0)
-        self.assertEqual(hbrBack, 0)
-        self.assertEqual(dwContextHelpID, 0)
-        self.assertEqual(dwMenuData, 0)
+        assert dwStyle == 0
+        assert cyMax == 0
+        assert hbrBack == 0
+        assert dwContextHelpID == 0
+        assert dwMenuData == 0
 
 
 class TestTreeViewItem(TestBase):
@@ -115,14 +115,14 @@ class TestTreeViewItem(TestBase):
         ti, extras = win32gui_struct.EmptyTVITEM(0)
         hitem, state, stateMask, text, image, selimage, citems, param = \
             win32gui_struct.UnpackTVITEM(ti)
-        self.assertEqual(hitem, 0)
-        self.assertEqual(state, 0)
-        self.assertEqual(stateMask, 0)
-        self.assertEqual(text, '')
-        self.assertEqual(image, 0)
-        self.assertEqual(selimage, 0)
-        self.assertEqual(citems, 0)
-        self.assertEqual(param, 0)
+        assert hitem == 0
+        assert state == 0
+        assert stateMask == 0
+        assert text == ''
+        assert image == 0
+        assert selimage == 0
+        assert citems == 0
+        assert param == 0
 
 
 class TestListViewItem(TestBase):
@@ -151,14 +151,14 @@ class TestListViewItem(TestBase):
         ti, extras = win32gui_struct.EmptyLVITEM(1, 2)
         item, subItem, state, stateMask, text, image, param, indent = \
             win32gui_struct.UnpackLVITEM(ti)
-        self.assertEqual(item, 1)
-        self.assertEqual(subItem, 2)
-        self.assertEqual(state, 0)
-        self.assertEqual(stateMask, 0)
-        self.assertEqual(text, '')
-        self.assertEqual(image, 0)
-        self.assertEqual(param, 0)
-        self.assertEqual(indent, 0)
+        assert item == 1
+        assert subItem == 2
+        assert state == 0
+        assert stateMask == 0
+        assert text == ''
+        assert image == 0
+        assert param == 0
+        assert indent == 0
 
 
 class TestLVColumn(TestBase):
@@ -182,12 +182,12 @@ class TestLVColumn(TestBase):
         ti, extras = win32gui_struct.EmptyLVCOLUMN()
         fmt, cx, text, subItem, image, order = \
             win32gui_struct.UnpackLVCOLUMN(ti)
-        self.assertEqual(fmt, 0)
-        self.assertEqual(cx, 0)
-        self.assertEqual(text, '')
-        self.assertEqual(subItem, 0)
-        self.assertEqual(image, 0)
-        self.assertEqual(order, 0)
+        assert fmt == 0
+        assert cx == 0
+        assert text == ''
+        assert subItem == 0
+        assert image == 0
+        assert order == 0
 
 
 class TestDEV_BROADCAST_HANDLE(TestBase):
@@ -195,15 +195,15 @@ class TestDEV_BROADCAST_HANDLE(TestBase):
         s = win32gui_struct.PackDEV_BROADCAST_HANDLE(123)
         c = array.array("b", s)
         got = win32gui_struct.UnpackDEV_BROADCAST(c.buffer_info()[0])
-        self.assertEqual(got.handle, 123)
+        assert got.handle == 123
 
     def testGUID(self):
         s = win32gui_struct.PackDEV_BROADCAST_HANDLE(
             123, guid=pythoncom.IID_IUnknown)
         c = array.array("b", s)
         got = win32gui_struct.UnpackDEV_BROADCAST(c.buffer_info()[0])
-        self.assertEqual(got.handle, 123)
-        self.assertEqual(got.eventguid, pythoncom.IID_IUnknown)
+        assert got.handle == 123
+        assert got.eventguid == pythoncom.IID_IUnknown
 
 
 class TestDEV_BROADCAST_DEVICEINTERFACE(TestBase):
@@ -212,8 +212,8 @@ class TestDEV_BROADCAST_DEVICEINTERFACE(TestBase):
             pythoncom.IID_IUnknown, "hello")
         c = array.array("b", s)
         got = win32gui_struct.UnpackDEV_BROADCAST(c.buffer_info()[0])
-        self.assertEqual(got.classguid, pythoncom.IID_IUnknown)
-        self.assertEqual(got.name, "hello")
+        assert got.classguid == pythoncom.IID_IUnknown
+        assert got.name == "hello"
 
 
 class TestDEV_BROADCAST_VOLUME(TestBase):
@@ -221,8 +221,8 @@ class TestDEV_BROADCAST_VOLUME(TestBase):
         s = win32gui_struct.PackDEV_BROADCAST_VOLUME(123, 456)
         c = array.array("b", s)
         got = win32gui_struct.UnpackDEV_BROADCAST(c.buffer_info()[0])
-        self.assertEqual(got.unitmask, 123)
-        self.assertEqual(got.flags, 456)
+        assert got.unitmask == 123
+        assert got.flags == 456
 
 
 if __name__ == '__main__':

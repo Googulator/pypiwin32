@@ -13,6 +13,7 @@ import win32file
 import win32pipe
 
 import ntsecuritycon
+import pytest
 import pywintypes
 import win32con
 import win32timezone
@@ -28,19 +29,19 @@ except NameError:
 class TestReadBuffer(unittest.TestCase):
     def testLen(self):
         buffer = win32file.AllocateReadBuffer(1)
-        self.assertEqual(len(buffer), 1)
+        assert len(buffer) == 1
 
     def testSimpleIndex(self):
         val = str2bytes('\xFF')
         buffer = win32file.AllocateReadBuffer(1)
         buffer[0] = val
-        self.assertEqual(buffer[0], val)
+        assert buffer[0] == val
 
     def testSimpleSlice(self):
         buffer = win32file.AllocateReadBuffer(2)
         val = str2bytes('\0\0')
         buffer[:2] = val
-        self.assertEqual(buffer[0:2], val)
+        assert buffer[0:2] == val
 
 
 class TestSimpleOps(unittest.TestCase):
@@ -70,7 +71,7 @@ class TestSimpleOps(unittest.TestCase):
                 0,
                 None)
             rc, data = win32file.ReadFile(handle, 1024)
-            self.assertEqual(data, test_data)
+            assert data == test_data
         finally:
             handle.Close()
             try:
@@ -99,42 +100,37 @@ class TestSimpleOps(unittest.TestCase):
 
         win32file.WriteFile(h, data)
 
-        self.assertTrue(
-            win32file.GetFileSize(h) == len(data),
-            "WARNING: Written file does not have the same size as the length of the data in it!")
+        assert win32file.GetFileSize(h) == len(data), \
+            "WARNING: Written file does not have the same size as the length of the data in it!"
 
         # Ensure we can read the data back.
         win32file.SetFilePointer(h, 0, win32file.FILE_BEGIN)
         hr, read_data = win32file.ReadFile(
             h, len(data) + 10)  # + 10 to get anything extra
-        self.assertTrue(hr == 0, "Readfile returned %d" % hr)
+        assert hr == 0, "Readfile returned %d" % hr
 
-        self.assertTrue(read_data == data, "Read data is not what we wrote!")
+        assert read_data == data, "Read data is not what we wrote!"
 
         # Now truncate the file at 1/2 its existing size.
         newSize = len(data) // 2
         win32file.SetFilePointer(h, newSize, win32file.FILE_BEGIN)
         win32file.SetEndOfFile(h)
-        self.assertEqual(win32file.GetFileSize(h), newSize)
+        assert win32file.GetFileSize(h) == newSize
 
         # GetFileAttributesEx/GetFileAttributesExW tests.
-        self.assertEqual(
-            win32file.GetFileAttributesEx(testName),
-            win32file.GetFileAttributesExW(testName))
+        assert win32file.GetFileAttributesEx(testName) == \
+               win32file.GetFileAttributesExW(testName)
 
         attr, ct, at, wt, size = win32file.GetFileAttributesEx(testName)
-        self.assertTrue(
-            size == newSize,
-            "Expected GetFileAttributesEx to return the same size as GetFileSize()")
-        self.assertTrue(
-            attr == win32file.GetFileAttributes(testName),
-            "Expected GetFileAttributesEx to return the same attributes as GetFileAttributes")
+        assert size == newSize, \
+            "Expected GetFileAttributesEx to return the same size as GetFileSize()"
+        assert attr == win32file.GetFileAttributes(testName), \
+            "Expected GetFileAttributesEx to return the same attributes as GetFileAttributes"
 
         h = None  # Close the file by removing the last reference to the handle!
 
-        self.assertTrue(
-            not os.path.isfile(testName),
-            "After closing the file, it still exists!")
+        assert not os.path.isfile(testName), \
+            "After closing the file, it still exists!"
 
     def testFilePointer(self):
         # via [ 979270 ] SetFilePointer fails with negative offset
@@ -155,22 +151,22 @@ class TestSimpleOps(unittest.TestCase):
             data = str2bytes('Some data')
             (res, written) = win32file.WriteFile(f, data)
 
-            self.assertFalse(res)
-            self.assertEqual(written, len(data))
+            assert not res
+            assert written == len(data)
 
             # Move at the beginning and read the data
             win32file.SetFilePointer(f, 0, win32file.FILE_BEGIN)
             (res, s) = win32file.ReadFile(f, len(data))
 
-            self.assertFalse(res)
-            self.assertEqual(s, data)
+            assert not res
+            assert s == data
 
             # Move at the end and read the data
             win32file.SetFilePointer(f, -len(data), win32file.FILE_END)
             (res, s) = win32file.ReadFile(f, len(data))
 
-            self.assertFalse(res)
-            self.assertEqual(s, data)
+            assert not res
+            assert s == data
         finally:
             f.Close()
             os.unlink(filename)
@@ -194,15 +190,15 @@ class TestSimpleOps(unittest.TestCase):
         try:
             win32file.SetFileTime(h, now_utc, now_utc, now_utc)
             ct, at, wt = win32file.GetFileTime(h)
-            self.assertEqual(now_local, ct)
-            self.assertEqual(now_local, at)
-            self.assertEqual(now_local, wt)
+            assert now_local == ct
+            assert now_local == at
+            assert now_local == wt
             # and the reverse - set local, check against utc
             win32file.SetFileTime(h, now_local, now_local, now_local)
             ct, at, wt = win32file.GetFileTime(h)
-            self.assertEqual(now_utc, ct)
-            self.assertEqual(now_utc, at)
-            self.assertEqual(now_utc, wt)
+            assert now_utc == ct
+            assert now_utc == at
+            assert now_utc == wt
         finally:
             h.close()
             os.unlink(filename)
@@ -238,14 +234,12 @@ class TestSimpleOps(unittest.TestCase):
             None)
         try:
             ct, at, wt = win32file.GetFileTime(f)
-            self.assertTrue(
-                ct >= now, "File was created in the past - now=%s, created=%s" %
-                (now, ct))
-            self.assertTrue(now <= ct <= nowish, (now, ct))
-            self.assertTrue(
-                wt >= now, "File was written-to in the past now=%s, written=%s" %
-                (now, wt))
-            self.assertTrue(now <= wt <= nowish, (now, wt))
+            assert ct >= now, "File was created in the past - now=%s, created=%s" % \
+                              (now, ct)
+            assert now <= ct <= nowish, (now, ct)
+            assert wt >= now, "File was written-to in the past now=%s, written=%s" % \
+                              (now, wt)
+            assert now <= wt <= nowish, (now, wt)
 
             # Now set the times.
             win32file.SetFileTime(f, later, later, later)
@@ -254,9 +248,9 @@ class TestSimpleOps(unittest.TestCase):
             # XXX - the builtin PyTime type appears to be out by a dst offset.
             # just ignore that type here...
             if issubclass(pywintypes.TimeType, datetime.datetime):
-                self.assertEqual(ct, later)
-                self.assertEqual(at, later)
-                self.assertEqual(wt, later)
+                assert ct == later
+                assert at == later
+                assert wt == later
 
         finally:
             f.Close()
@@ -342,9 +336,8 @@ class TestOverlapped(unittest.TestCase):
             win32file.CloseHandle(hv)
             raise RuntimeError("Expected close to fail!")
         except win32file.error as details:
-            self.assertEqual(
-                details.winerror,
-                winerror.ERROR_INVALID_HANDLE)
+            assert details.winerror == \
+                   winerror.ERROR_INVALID_HANDLE
 
     def testCompletionPortsQueued(self):
         class Foo:
@@ -357,8 +350,8 @@ class TestOverlapped(unittest.TestCase):
         errCode, bytes, key, overlapped = \
             win32file.GetQueuedCompletionStatus(
                 io_req_port, win32event.INFINITE)
-        self.assertEqual(errCode, 0)
-        self.assertTrue(isinstance(overlapped.object, Foo))
+        assert errCode == 0
+        assert isinstance(overlapped.object, Foo)
 
     def _IOCPServerThread(self, handle, port, drop_overlapped_reference):
         overlapped = pywintypes.OVERLAPPED()
@@ -371,15 +364,16 @@ class TestOverlapped(unittest.TestCase):
             # even if we fail, be sure to close the handle; prevents hangs
             # on Vista 64...
             try:
-                self.assertRaises(
-                    RuntimeError, win32file.GetQueuedCompletionStatus, port, -1)
+                with pytest.raises(
+                        RuntimeError):
+                    win32file.GetQueuedCompletionStatus(port, -1)
             finally:
                 handle.Close()
             return
 
         result = win32file.GetQueuedCompletionStatus(port, -1)
         ol2 = result[-1]
-        self.assertTrue(ol2 is overlapped)
+        assert ol2 is overlapped
         data = win32file.ReadFile(handle, 512)[1]
         win32file.WriteFile(handle, data)
 
@@ -425,7 +419,7 @@ class TestOverlapped(unittest.TestCase):
             if not test_overlapped_death:
                 handle.Close()
             t.join(3)
-            self.assertFalse(t.isAlive(), "thread didn't finish")
+            assert not t.isAlive(), "thread didn't finish"
 
     def testCompletionPortsNonQueuedBadReference(self):
         self.testCompletionPortsNonQueued(True)
@@ -434,29 +428,29 @@ class TestOverlapped(unittest.TestCase):
         overlapped = pywintypes.OVERLAPPED()
         d = {}
         d[overlapped] = "hello"
-        self.assertEqual(d[overlapped], "hello")
+        assert d[overlapped] == "hello"
 
     def testComparable(self):
         overlapped = pywintypes.OVERLAPPED()
-        self.assertEqual(overlapped, overlapped)
+        assert overlapped == overlapped
         # ensure we explicitly test the operators.
-        self.assertTrue(overlapped == overlapped)
-        self.assertFalse(overlapped != overlapped)
+        assert overlapped == overlapped
+        assert not (overlapped != overlapped)
 
     def testComparable2(self):
         # 2 overlapped objects compare equal if their contents are the same.
         overlapped1 = pywintypes.OVERLAPPED()
         overlapped2 = pywintypes.OVERLAPPED()
-        self.assertEqual(overlapped1, overlapped2)
+        assert overlapped1 == overlapped2
         # ensure we explicitly test the operators.
-        self.assertTrue(overlapped1 == overlapped2)
-        self.assertFalse(overlapped1 != overlapped2)
+        assert overlapped1 == overlapped2
+        assert not (overlapped1 != overlapped2)
         # now change something in one of them - should no longer be equal.
         overlapped1.hEvent = 1
-        self.assertNotEqual(overlapped1, overlapped2)
+        assert overlapped1 != overlapped2
         # ensure we explicitly test the operators.
-        self.assertFalse(overlapped1 == overlapped2)
-        self.assertTrue(overlapped1 != overlapped2)
+        assert not (overlapped1 == overlapped2)
+        assert overlapped1 != overlapped2
 
 
 class TestSocketExtensions(unittest.TestCase):
@@ -474,10 +468,9 @@ class TestSocketExtensions(unittest.TestCase):
         # We used to allow strings etc to be passed here, and they would be
         # modified!  Obviously this is evil :)
         buffer = " " * 1024  # EVIL - SHOULD NOT BE ALLOWED.
-        self.assertRaises(
-            TypeError,
-            win32file.AcceptEx,
-            listener,
+        with pytest.raises(
+                TypeError):
+            win32file.AcceptEx(listener,
             accepter,
             buffer,
             overlapped)
@@ -485,7 +478,7 @@ class TestSocketExtensions(unittest.TestCase):
         # This is the correct way to allocate the buffer...
         buffer = win32file.AllocateReadBuffer(1024)
         rc = win32file.AcceptEx(listener, accepter, buffer, overlapped)
-        self.assertEqual(rc, winerror.ERROR_IO_PENDING)
+        assert rc == winerror.ERROR_IO_PENDING
         # Set the event to say we are all ready
         running_event.set()
         # and wait for the connection.
@@ -517,13 +510,14 @@ class TestSocketExtensions(unittest.TestCase):
         overlapped.hEvent = win32event.CreateEvent(None, 0, 0, None)
         # Like above - WSARecv used to allow strings as the receive buffer!!
         buffer = " " * 10
-        self.assertRaises(TypeError, win32file.WSARecv, s, buffer, overlapped)
+        with pytest.raises(TypeError):
+            win32file.WSARecv(s, buffer, overlapped)
         # This one should work :)
         buffer = win32file.AllocateReadBuffer(10)
         win32file.WSARecv(s, buffer, overlapped)
         nbytes = win32file.GetOverlappedResult(s.fileno(), overlapped, True)
         got = buffer[:nbytes]
-        self.assertEqual(got, str2bytes("hello"))
+        assert got == str2bytes("hello")
         # thread should have stopped
         stopped.wait(2)
         if not stopped.isSet():
@@ -540,18 +534,19 @@ class TestFindFiles(unittest.TestCase):
         for file in win32file.FindFilesIterator(dir):
             set2.add(file)
         assert len(set2) > 5, "This directory has less than 5 files!?"
-        self.assertEqual(set1, set2)
+        assert set1 == set2
 
     def testBadDir(self):
         dir = os.path.join(os.getcwd(), "a dir that doesnt exist", "*")
-        self.assertRaises(win32file.error, win32file.FindFilesIterator, dir)
+        with pytest.raises(win32file.error):
+            win32file.FindFilesIterator(dir)
 
     def testEmptySpec(self):
         spec = os.path.join(os.getcwd(), "*.foo_bar")
         num = 0
         for i in win32file.FindFilesIterator(spec):
             num += 1
-        self.assertEqual(0, num)
+        assert 0 == num
 
     def testEmptyDir(self):
         test_path = os.path.join(
@@ -570,7 +565,7 @@ class TestFindFiles(unittest.TestCase):
             for i in win32file.FindFilesIterator(os.path.join(test_path, "*")):
                 num += 1
             # Expecting "." and ".." only
-            self.assertEqual(2, num)
+            assert 2 == num
         finally:
             os.rmdir(test_path)
 
@@ -688,7 +683,7 @@ class TestDirectoryChanges(unittest.TestCase):
 
         self.stablize()
         changes = self.watcher_thread_changes[0]
-        self.assertEqual(changes, [(1, "test_file")])
+        assert changes == [(1, "test_file")]
 
     def testSmall(self):
         self.stablize()
@@ -698,7 +693,7 @@ class TestDirectoryChanges(unittest.TestCase):
 
         self.stablize()
         changes = self.watcher_thread_changes[0]
-        self.assertEqual(changes, [(1, "x")])
+        assert changes == [(1, "x")]
 
 
 class TestEncrypt(unittest.TestCase):
@@ -787,10 +782,10 @@ class TestConnect(unittest.TestCase):
         win32file.WSARecv(s2, buff, ol, 0)
         length = win32file.GetOverlappedResult(s2.fileno(), ol, 1)
         self.response = buff[:length]
-        self.assertEqual(self.response, str2bytes('some expected response'))
-        self.assertEqual(self.request, str2bytes('some expected request'))
+        assert self.response == str2bytes('some expected response')
+        assert self.request == str2bytes('some expected request')
         t.join(5)
-        self.assertFalse(t.isAlive(), "worker thread didn't terminate")
+        assert not t.isAlive(), "worker thread didn't terminate"
 
     def test_connect_without_payload(self):
         giveup_event = win32event.CreateEvent(None, 0, 0, None)
@@ -816,9 +811,9 @@ class TestConnect(unittest.TestCase):
         win32file.WSARecv(s2, buff, ol, 0)
         length = win32file.GetOverlappedResult(s2.fileno(), ol, 1)
         self.response = buff[:length]
-        self.assertEqual(self.response, str2bytes('some expected response'))
+        assert self.response == str2bytes('some expected response')
         t.join(5)
-        self.assertFalse(t.isAlive(), "worker thread didn't terminate")
+        assert not t.isAlive(), "worker thread didn't terminate"
 
 
 class TestTransmit(unittest.TestCase):
@@ -891,10 +886,10 @@ class TestTransmit(unittest.TestCase):
         s2.close()
         th.join()
         buf = str2bytes('').join(self.request)
-        self.assertEqual(length, len(buf))
+        assert length == len(buf)
         expected = val + aaa + val + bbb + val + val + ccc + ddd + val
-        self.assertEqual(type(expected), type(buf))
-        self.assertTrue(expected == buf)
+        assert type(expected) == type(buf)
+        assert expected == buf
 
 
 class TestWSAEnumNetworkEvents(unittest.TestCase):
@@ -902,30 +897,34 @@ class TestWSAEnumNetworkEvents(unittest.TestCase):
         s = socket.socket()
         e = win32event.CreateEvent(None, 1, 0, None)
         win32file.WSAEventSelect(s, e, 0)
-        self.assertEqual(win32file.WSAEnumNetworkEvents(s), {})
-        self.assertEqual(win32file.WSAEnumNetworkEvents(s, e), {})
-        self.assertRaises(TypeError, win32file.WSAEnumNetworkEvents, s, e, 3)
-        self.assertRaises(TypeError, win32file.WSAEnumNetworkEvents, s, "spam")
-        self.assertRaises(TypeError, win32file.WSAEnumNetworkEvents, "spam", e)
-        self.assertRaises(TypeError, win32file.WSAEnumNetworkEvents, "spam")
+        assert win32file.WSAEnumNetworkEvents(s) == {}
+        assert win32file.WSAEnumNetworkEvents(s, e) == {}
+        with pytest.raises(TypeError):
+            win32file.WSAEnumNetworkEvents(s, e, 3)
+        with pytest.raises(TypeError):
+            win32file.WSAEnumNetworkEvents(s, "spam")
+        with pytest.raises(TypeError):
+            win32file.WSAEnumNetworkEvents("spam", e)
+        with pytest.raises(TypeError):
+            win32file.WSAEnumNetworkEvents("spam")
         f = open("NUL")
         h = win32file._get_osfhandle(f.fileno())
-        self.assertRaises(win32file.error, win32file.WSAEnumNetworkEvents, h)
-        self.assertRaises(
-            win32file.error,
-            win32file.WSAEnumNetworkEvents,
-            s,
+        with pytest.raises(win32file.error):
+            win32file.WSAEnumNetworkEvents(h)
+        with pytest.raises(
+                win32file.error):
+            win32file.WSAEnumNetworkEvents(s,
             h)
         try:
             win32file.WSAEnumNetworkEvents(h)
         except win32file.error as e:
-            self.assertEqual(e.winerror, win32file.WSAENOTSOCK)
+            assert e.winerror == win32file.WSAENOTSOCK
         try:
             win32file.WSAEnumNetworkEvents(s, h)
         except win32file.error as e:
             # According to the docs it would seem reasonable that
             # this would fail with WSAEINVAL, but it doesn't.
-            self.assertEqual(e.winerror, win32file.WSAENOTSOCK)
+            assert e.winerror == win32file.WSAENOTSOCK
 
     def test_functional(self):
         # This is not really a unit test, but it does exercise the code
@@ -949,12 +948,12 @@ class TestWSAEnumNetworkEvents(unittest.TestCase):
                                  win32file.FD_WRITE |
                                  win32file.FD_CLOSE)
         err = client.connect_ex(port.getsockname())
-        self.assertEqual(err, win32file.WSAEWOULDBLOCK)
+        assert err == win32file.WSAEWOULDBLOCK
 
         res = win32event.WaitForSingleObject(port_event, 1000)
-        self.assertEqual(res, win32event.WAIT_OBJECT_0)
+        assert res == win32event.WAIT_OBJECT_0
         events = win32file.WSAEnumNetworkEvents(port, port_event)
-        self.assertEqual(events, {win32file.FD_ACCEPT: 0})
+        assert events == {win32file.FD_ACCEPT: 0}
 
         server, addr = port.accept()
         server.setblocking(0)
@@ -964,15 +963,15 @@ class TestWSAEnumNetworkEvents(unittest.TestCase):
                                  win32file.FD_WRITE |
                                  win32file.FD_CLOSE)
         res = win32event.WaitForSingleObject(server_event, 1000)
-        self.assertEqual(res, win32event.WAIT_OBJECT_0)
+        assert res == win32event.WAIT_OBJECT_0
         events = win32file.WSAEnumNetworkEvents(server, server_event)
-        self.assertEqual(events, {win32file.FD_WRITE: 0})
+        assert events == {win32file.FD_WRITE: 0}
 
         res = win32event.WaitForSingleObject(client_event, 1000)
-        self.assertEqual(res, win32event.WAIT_OBJECT_0)
+        assert res == win32event.WAIT_OBJECT_0
         events = win32file.WSAEnumNetworkEvents(client, client_event)
-        self.assertEqual(events, {win32file.FD_CONNECT: 0,
-                                  win32file.FD_WRITE: 0})
+        assert events == {win32file.FD_CONNECT: 0,
+                          win32file.FD_WRITE: 0}
         sent = 0
         data = str2bytes("x") * 16 * 1024
         while sent < 16 * 1024 * 1024:
@@ -989,12 +988,12 @@ class TestWSAEnumNetworkEvents(unittest.TestCase):
             self.fail("could not find socket buffer limit")
 
         events = win32file.WSAEnumNetworkEvents(client)
-        self.assertEqual(events, {})
+        assert events == {}
 
         res = win32event.WaitForSingleObject(server_event, 1000)
-        self.assertEqual(res, win32event.WAIT_OBJECT_0)
+        assert res == win32event.WAIT_OBJECT_0
         events = win32file.WSAEnumNetworkEvents(server, server_event)
-        self.assertEqual(events, {win32file.FD_READ: 0})
+        assert events == {win32file.FD_READ: 0}
 
         received = 0
         while received < sent:
@@ -1006,18 +1005,18 @@ class TestWSAEnumNetworkEvents(unittest.TestCase):
                 else:
                     raise
 
-        self.assertEqual(received, sent)
+        assert received == sent
         events = win32file.WSAEnumNetworkEvents(server)
-        self.assertEqual(events, {})
+        assert events == {}
 
         res = win32event.WaitForSingleObject(client_event, 1000)
-        self.assertEqual(res, win32event.WAIT_OBJECT_0)
+        assert res == win32event.WAIT_OBJECT_0
         events = win32file.WSAEnumNetworkEvents(client, client_event)
-        self.assertEqual(events, {win32file.FD_WRITE: 0})
+        assert events == {win32file.FD_WRITE: 0}
 
         client.shutdown(socket.SHUT_WR)
         res = win32event.WaitForSingleObject(server_event, 1000)
-        self.assertEqual(res, win32event.WAIT_OBJECT_0)
+        assert res == win32event.WAIT_OBJECT_0
         # strange timing issues...
         for i in range(5):
             events = win32file.WSAEnumNetworkEvents(server, server_event)
@@ -1026,19 +1025,19 @@ class TestWSAEnumNetworkEvents(unittest.TestCase):
             win32api.Sleep(100)
         else:
             raise AssertionError("failed to get events")
-        self.assertEqual(events, {win32file.FD_CLOSE: 0})
+        assert events == {win32file.FD_CLOSE: 0}
         events = win32file.WSAEnumNetworkEvents(client)
-        self.assertEqual(events, {})
+        assert events == {}
 
         server.close()
         res = win32event.WaitForSingleObject(client_event, 1000)
-        self.assertEqual(res, win32event.WAIT_OBJECT_0)
+        assert res == win32event.WAIT_OBJECT_0
         events = win32file.WSAEnumNetworkEvents(client, client_event)
-        self.assertEqual(events, {win32file.FD_CLOSE: 0})
+        assert events == {win32file.FD_CLOSE: 0}
 
         client.close()
         events = win32file.WSAEnumNetworkEvents(port)
-        self.assertEqual(events, {})
+        assert events == {}
 
 
 if __name__ == '__main__':

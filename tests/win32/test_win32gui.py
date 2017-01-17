@@ -5,6 +5,7 @@ import sys
 import unittest
 import win32gui
 
+import pytest
 import pywin32_testutil
 
 
@@ -22,9 +23,12 @@ def ob2bytes(ob):
 class TestPyGetString(unittest.TestCase):
     def test_get_string(self):
         # test invalid addresses cause a ValueError rather than crash!
-        self.assertRaises(ValueError, win32gui.PyGetString, 0)
-        self.assertRaises(ValueError, win32gui.PyGetString, 1)
-        self.assertRaises(ValueError, win32gui.PyGetString, 1, 1)
+        with pytest.raises(ValueError):
+            win32gui.PyGetString(0)
+        with pytest.raises(ValueError):
+            win32gui.PyGetString(1)
+        with pytest.raises(ValueError):
+            win32gui.PyGetString(1, 1)
 
 
 class TestPyGetMemory(unittest.TestCase):
@@ -34,8 +38,8 @@ class TestPyGetMemory(unittest.TestCase):
         c = array.array("b", test_data)
         addr, buflen = c.buffer_info()
         got = win32gui.PyGetMemory(addr, buflen)
-        self.assertEqual(len(got), len(test_data))
-        self.assertEqual(ob2bytes(got), test_data)
+        assert len(got) == len(test_data)
+        assert ob2bytes(got) == test_data
 
     def test_memory_index(self):
         # Check we can index into the buffer object returned by PyGetMemory
@@ -43,7 +47,7 @@ class TestPyGetMemory(unittest.TestCase):
         c = array.array("b", test_data)
         addr, buflen = c.buffer_info()
         got = win32gui.PyGetMemory(addr, buflen)
-        self.assertEqual(got[0], pywin32_testutil.str2bytes('\0'))
+        assert got[0] == pywin32_testutil.str2bytes('\0')
 
     def test_memory_slice(self):
         # Check we can slice the buffer object returned by PyGetMemory
@@ -51,7 +55,7 @@ class TestPyGetMemory(unittest.TestCase):
         c = array.array("b", test_data)
         addr, buflen = c.buffer_info()
         got = win32gui.PyGetMemory(addr, buflen)
-        self.assertEqual(got[0:3], pywin32_testutil.str2bytes('\0\1\2'))
+        assert got[0:3] == pywin32_testutil.str2bytes('\0\1\2')
 
     def test_real_view(self):
         # Do the PyGetMemory, then change the original memory, then ensure
@@ -60,10 +64,10 @@ class TestPyGetMemory(unittest.TestCase):
         c = array.array("b", test_data)
         addr, buflen = c.buffer_info()
         got = win32gui.PyGetMemory(addr, buflen)
-        self.assertEqual(got[0], pywin32_testutil.str2bytes('\0'))
+        assert got[0] == pywin32_testutil.str2bytes('\0')
         new = pywin32_testutil.str2bytes('\1')
         c[0] = 1
-        self.assertEqual(got[0], new)
+        assert got[0] == new
 
     def test_memory_not_writable(self):
         # Check the buffer object fetched by PyGetMemory isn't writable.
@@ -72,7 +76,8 @@ class TestPyGetMemory(unittest.TestCase):
         addr, buflen = c.buffer_info()
         got = win32gui.PyGetMemory(addr, buflen)
         new = pywin32_testutil.str2bytes('\1')
-        self.assertRaises(TypeError, operator.setitem, got, 0, new)
+        with pytest.raises(TypeError):
+            operator.setitem(got, 0, new)
 
 
 if __name__ == '__main__':

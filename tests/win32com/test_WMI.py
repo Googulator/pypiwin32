@@ -11,10 +11,9 @@ class Simple(win32com.test.util.TestCase):
         for cs in cses:
             val = cs.Properties_("Caption").Value
             vals.append(val)
-        self.assertFalse(
-            len(vals) < 5,
-            "We only found %d processes!" %
-            len(vals))
+        assert not (len(vals) < 5), \
+            "We only found %d processes!" % \
+            len(vals)
 
 
 if __name__ == '__main__':

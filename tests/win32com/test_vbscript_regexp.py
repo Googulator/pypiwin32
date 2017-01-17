@@ -10,7 +10,7 @@ class RegexTest(win32com.test.util.TestCase):
         found = []
         for imatch in match:
             found.append(imatch.FirstIndex)
-        self.assertEqual(list(found), list(expected))
+        assert list(found) == list(expected)
 
     def _TestVBScriptRegex(self, re):
         StringToSearch = "Python python pYthon Python"

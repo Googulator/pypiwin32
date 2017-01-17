@@ -76,7 +76,7 @@ class TestEnum(win32com.test.util.TestCase):
         psread = None
         expected_summaries.sort()
         found_summaries.sort()
-        self.assertEqual(expected_summaries, found_summaries)
+        assert expected_summaries == found_summaries
 
 
 if __name__ == '__main__':

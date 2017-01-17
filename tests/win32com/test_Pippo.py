@@ -32,8 +32,8 @@ class PippoTester(unittest.TestCase):
 
     def testResults(self):
         rc, out1 = self.object.Method2(123, 111)
-        self.assertEqual(rc, 123)
-        self.assertEqual(out1, 222)
+        assert rc == 123
+        assert out1 == 222
 
     def testLeaksGencache(self):
         try:

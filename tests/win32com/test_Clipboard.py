@@ -107,7 +107,7 @@ class ClipboardTester(unittest.TestCase):
         do = TestDataObject("Hello from Python")
         do = WrapCOMObject(do, iid=pythoncom.IID_IDataObject)
         pythoncom.OleSetClipboard(do)
-        self.assertTrue(pythoncom.OleIsCurrentClipboard(do))
+        assert pythoncom.OleIsCurrentClipboard(do)
 
     def testComToWin32(self):
         # Set the data via our DataObject
@@ -119,10 +119,10 @@ class ClipboardTester(unittest.TestCase):
         got = win32clipboard.GetClipboardData(win32con.CF_TEXT)
         # CF_TEXT gives bytes on py3k - use str2bytes() to ensure that's true.
         expected = str2bytes("Hello from Python")
-        self.assertEqual(got, expected)
+        assert got == expected
         # Now check unicode
         got = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
-        self.assertEqual(got, "Hello from Python")
+        assert got == "Hello from Python"
         win32clipboard.CloseClipboard()
 
     def testWin32ToCom(self):
@@ -139,26 +139,26 @@ class ClipboardTester(unittest.TestCase):
         # The data we get back has the \0, as our STGMEDIUM has no way of
         # knowing if it meant to be a string, or a binary buffer, so
         # it must return it too.
-        self.assertEqual(got, str2bytes("Hello again!\0"))
+        assert got == str2bytes("Hello again!\0")
 
     def testDataObjectFlush(self):
         do = TestDataObject("Hello from Python")
         do = WrapCOMObject(do, iid=pythoncom.IID_IDataObject)
         pythoncom.OleSetClipboard(do)
-        self.assertEqual(num_do_objects, 1)
+        assert num_do_objects == 1
 
         do = None  # clear my ref!
         pythoncom.OleFlushClipboard()
-        self.assertEqual(num_do_objects, 0)
+        assert num_do_objects == 0
 
     def testDataObjectReset(self):
         do = TestDataObject("Hello from Python")
         do = WrapCOMObject(do)
         pythoncom.OleSetClipboard(do)
         do = None  # clear my ref!
-        self.assertEqual(num_do_objects, 1)
+        assert num_do_objects == 1
         pythoncom.OleSetClipboard(None)
-        self.assertEqual(num_do_objects, 0)
+        assert num_do_objects == 0
 
 
 if __name__ == '__main__':

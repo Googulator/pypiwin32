@@ -2,6 +2,7 @@ import sys
 import unittest
 import win32api
 
+import pytest
 import pywintypes
 from pywin32_testutil import int2long
 
@@ -35,10 +36,12 @@ class PyHandleTestCase(unittest.TestCase):
             except ZeroDivisionError as exc:
                 raise IOError("raise 2")
 
-        self.assertRaises(IOError, f2, False)
+        with pytest.raises(IOError):
+            f2(False)
         # Now do it again, but so the auto object destruction
         # actually fails.
-        self.assertRaises(IOError, f2, True)
+        with pytest.raises(IOError):
+            f2(True)
 
     def testCleanup2(self):
         # Cause an exception during object destruction.
@@ -68,18 +71,20 @@ class PyHandleTestCase(unittest.TestCase):
         import win32event
         h = win32event.CreateEvent(None, 0, 0, None)
         win32api.CloseHandle(int(h))
-        self.assertRaises(win32api.error, h.Close)
+        with pytest.raises(win32api.error):
+            h.Close()
         # A following Close is documented as working
         h.Close()
 
     def testInvalid(self):
         h = pywintypes.HANDLE(-2)
-        self.assertRaises(win32api.error, h.Close)
+        with pytest.raises(win32api.error):
+            h.Close()
 
     def testOtherHandle(self):
         h = pywintypes.HANDLE(1)
         h2 = pywintypes.HANDLE(h)
-        self.assertEqual(h, h2)
+        assert h == h2
         # but the above doesn't really test everything - we want a way to
         # pass the handle directly into PyWinLong_AsVoidPtr.  One way to
         # to that is to abuse win32api.GetProcAddress() - the 2nd param
@@ -91,41 +96,41 @@ class PyHandleTestCase(unittest.TestCase):
     def testHandleInDict(self):
         h = pywintypes.HANDLE(1)
         d = dict(foo=h)
-        self.assertEqual(d['foo'], h)
+        assert d['foo'] == h
 
     def testHandleInDictThenInt(self):
         h = pywintypes.HANDLE(1)
         d = dict(foo=h)
-        self.assertEqual(d['foo'], 1)
+        assert d['foo'] == 1
 
     def testHandleCompareNone(self):
         h = pywintypes.HANDLE(1)
-        self.assertNotEqual(h, None)
-        self.assertNotEqual(None, h)
+        assert h != None
+        assert None != h
         # ensure we use both __eq__ and __ne__ ops
-        self.assertFalse(h is None)
-        self.assertTrue(h is not None)
+        assert not (h is None)
+        assert h is not None
 
     def testHandleCompareInt(self):
         h = pywintypes.HANDLE(1)
-        self.assertNotEqual(h, 0)
-        self.assertEqual(h, 1)
+        assert h != 0
+        assert h == 1
         # ensure we use both __eq__ and __ne__ ops
-        self.assertTrue(h == 1)
-        self.assertTrue(1 == h)
-        self.assertFalse(h != 1)
-        self.assertFalse(1 != h)
-        self.assertFalse(h == 0)
-        self.assertFalse(0 == h)
-        self.assertTrue(h != 0)
-        self.assertTrue(0 != h)
+        assert h == 1
+        assert 1 == h
+        assert not (h != 1)
+        assert not (1 != h)
+        assert not (h == 0)
+        assert not (0 == h)
+        assert h != 0
+        assert 0 != h
 
     def testHandleNonZero(self):
         h = pywintypes.HANDLE(0)
-        self.assertFalse(h)
+        assert not h
 
         h = pywintypes.HANDLE(1)
-        self.assertTrue(h)
+        assert h
 
     def testLong(self):
         # sys.maxint+1 should always be a 'valid' handle, treated as an
@@ -152,8 +157,10 @@ class PyHandleTestCase(unittest.TestCase):
         gc.collect()
 
     def testTypes(self):
-        self.assertRaises(TypeError, pywintypes.HANDLE, "foo")
-        self.assertRaises(TypeError, pywintypes.HANDLE, ())
+        with pytest.raises(TypeError):
+            pywintypes.HANDLE("foo")
+        with pytest.raises(TypeError):
+            pywintypes.HANDLE(())
         # should be able to get a long!
         pywintypes.HANDLE(int2long(0))
 

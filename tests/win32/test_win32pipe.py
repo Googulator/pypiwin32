@@ -17,12 +17,11 @@ class PipeTests(unittest.TestCase):
     def _serverThread(self, pipe_handle, event, wait_time):
         # just do one connection and terminate.
         hr = win32pipe.ConnectNamedPipe(pipe_handle)
-        self.assertTrue(
-            hr in (
-                0, winerror.ERROR_PIPE_CONNECTED), "Got error code 0x%x" %
-            (hr,))
+        assert hr in (
+            0, winerror.ERROR_PIPE_CONNECTED), "Got error code 0x%x" % \
+                                               (hr,)
         hr, got = win32file.ReadFile(pipe_handle, 100)
-        self.assertEqual(got, str2bytes("foo\0bar"))
+        assert got == str2bytes("foo\0bar")
         time.sleep(wait_time)
         win32file.WriteFile(pipe_handle, str2bytes("bar\0foo"))
         pipe_handle.Close()
@@ -58,9 +57,9 @@ class PipeTests(unittest.TestCase):
 
         got = win32pipe.CallNamedPipe(self.pipename, str2bytes(
             "foo\0bar"), 1024, win32pipe.NMPWAIT_WAIT_FOREVER)
-        self.assertEqual(got, str2bytes("bar\0foo"))
+        assert got == str2bytes("bar\0foo")
         event.wait(5)
-        self.assertTrue(event.isSet(), "Pipe server thread didn't terminate")
+        assert event.isSet(), "Pipe server thread didn't terminate"
 
     def testTransactNamedPipeBlocking(self):
         event = threading.Event()
@@ -81,9 +80,9 @@ class PipeTests(unittest.TestCase):
 
         hr, got = win32pipe.TransactNamedPipe(
             hpipe, str2bytes("foo\0bar"), 1024, None)
-        self.assertEqual(got, str2bytes("bar\0foo"))
+        assert got == str2bytes("bar\0foo")
         event.wait(5)
-        self.assertTrue(event.isSet(), "Pipe server thread didn't terminate")
+        assert event.isSet(), "Pipe server thread didn't terminate"
 
     def testTransactNamedPipeBlockingBuffer(self):
         # Like testTransactNamedPipeBlocking, but a pre-allocated buffer is
@@ -107,9 +106,9 @@ class PipeTests(unittest.TestCase):
         buffer = win32file.AllocateReadBuffer(1024)
         hr, got = win32pipe.TransactNamedPipe(
             hpipe, str2bytes("foo\0bar"), buffer, None)
-        self.assertEqual(got, str2bytes("bar\0foo"))
+        assert got == str2bytes("bar\0foo")
         event.wait(5)
-        self.assertTrue(event.isSet(), "Pipe server thread didn't terminate")
+        assert event.isSet(), "Pipe server thread didn't terminate"
 
     def testTransactNamedPipeAsync(self):
         event = threading.Event()
@@ -133,12 +132,12 @@ class PipeTests(unittest.TestCase):
         buffer = win32file.AllocateReadBuffer(1024)
         hr, got = win32pipe.TransactNamedPipe(
             hpipe, str2bytes("foo\0bar"), buffer, overlapped)
-        self.assertEqual(hr, winerror.ERROR_IO_PENDING)
+        assert hr == winerror.ERROR_IO_PENDING
         nbytes = win32file.GetOverlappedResult(hpipe, overlapped, True)
         got = buffer[:nbytes]
-        self.assertEqual(got, str2bytes("bar\0foo"))
+        assert got == str2bytes("bar\0foo")
         event.wait(5)
-        self.assertTrue(event.isSet(), "Pipe server thread didn't terminate")
+        assert event.isSet(), "Pipe server thread didn't terminate"
 
 
 if __name__ == '__main__':

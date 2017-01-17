@@ -3,6 +3,7 @@
 import sys
 import unittest
 
+import pytest
 import pythoncom
 import win32com.server.util
 import win32com.test.util
@@ -21,14 +22,14 @@ class _BaseTestCase(win32com.test.util.TestCase):
         got = []
         for v in iter:
             got.append(v)
-        self.assertEqual(got, self.expected_data)
+        assert got == self.expected_data
 
     def test_yield(self):
         ob, i = self.iter_factory()
         got = []
         for v in yield_iter(iter(i)):
             got.append(v)
-        self.assertEqual(got, self.expected_data)
+        assert got == self.expected_data
 
     def _do_test_nonenum(self, object):
         try:
@@ -37,8 +38,10 @@ class _BaseTestCase(win32com.test.util.TestCase):
             self.fail("Could iterate over a non-iterable object")
         except TypeError:
             pass  # this is expected.
-        self.assertRaises(TypeError, iter, object)
-        self.assertRaises(AttributeError, getattr, object, "next")
+        with pytest.raises(TypeError):
+            iter(object)
+        with pytest.raises(AttributeError):
+            getattr(object, "next")
 
     def test_nonenum_wrapper(self):
         # Check our raw PyIDispatch
@@ -49,8 +52,10 @@ class _BaseTestCase(win32com.test.util.TestCase):
             self.fail("Could iterate over a non-iterable object")
         except TypeError:
             pass  # this is expected.
-        self.assertRaises(TypeError, iter, ob)
-        self.assertRaises(AttributeError, getattr, ob, "next")
+        with pytest.raises(TypeError):
+            iter(ob)
+        with pytest.raises(AttributeError):
+            getattr(ob, "next")
 
         # And our Dispatch wrapper
         ob = self.object
@@ -71,7 +76,8 @@ class _BaseTestCase(win32com.test.util.TestCase):
         except TypeError:
             pass
         # And it should never have a 'next' method
-        self.assertRaises(AttributeError, getattr, ob, "next")
+        with pytest.raises(AttributeError):
+            getattr(ob, "next")
 
 
 class VBTestCase(_BaseTestCase):

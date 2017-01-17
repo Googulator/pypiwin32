@@ -22,13 +22,13 @@ class TestParser(unittest.TestCase):
             ("IDS_TEST_STRING2", 'Test string'),
         ]:
             got = self.resources.stringTable[sid].value
-            self.assertEqual(got, expected)
+            assert got == expected
 
     def testStandardIds(self):
         for idc in "IDOK IDCANCEL".split():
             correct = getattr(win32con, idc)
-            self.assertEqual(self.resources.names[correct], idc)
-            self.assertEqual(self.resources.ids[idc], correct)
+            assert self.resources.names[correct] == idc
+            assert self.resources.ids[idc] == correct
 
     def testTabStop(self):
         d = self.resources.dialogs["IDD_TEST_DIALOG2"]
@@ -43,14 +43,13 @@ class TestParser(unittest.TestCase):
             style = cdef[-2]
             styleex = cdef[-1]
             if cid in tabstop_ids:
-                self.assertEqual(
-                    style & win32con.WS_TABSTOP,
-                    win32con.WS_TABSTOP)
+                assert style & win32con.WS_TABSTOP == \
+                       win32con.WS_TABSTOP
                 num_ok += 1
             elif cid in notabstop_ids:
-                self.assertEqual(style & win32con.WS_TABSTOP, 0)
+                assert style & win32con.WS_TABSTOP == 0
                 num_ok += 1
-        self.assertEqual(num_ok, len(tabstop_ids) + len(notabstop_ids))
+        assert num_ok == len(tabstop_ids) + len(notabstop_ids)
 
 
 class TestGenerated(TestParser):

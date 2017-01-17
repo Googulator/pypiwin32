@@ -30,7 +30,7 @@ class TestSSPI(unittest.TestCase):
             return func(*args)
             raise RuntimeError("expecting %s failure" % (hr,))
         except win32security.error as exc:
-            self.assertEqual(exc.winerror, hr)
+            assert exc.winerror == hr
 
     def _doAuth(self, pkg_name):
         sspiclient = sspi.ClientAuth(
@@ -77,14 +77,14 @@ class TestSSPI(unittest.TestCase):
         encbuf[0].Buffer = msg
         sspiclient.ctxt.EncryptMessage(0, encbuf, 1)
         sspiserver.ctxt.DecryptMessage(encbuf, 1)
-        self.assertEqual(msg, encbuf[0].Buffer)
+        assert msg == encbuf[0].Buffer
         # and test the higher-level functions
         data_in = str2bytes("hello")
         data, sig = sspiclient.encrypt(data_in)
-        self.assertEqual(sspiserver.decrypt(data, sig), data_in)
+        assert sspiserver.decrypt(data, sig) == data_in
 
         data, sig = sspiserver.encrypt(data_in)
-        self.assertEqual(sspiclient.decrypt(data, sig), data_in)
+        assert sspiclient.decrypt(data, sig) == data_in
 
     def testEncryptNTLM(self):
         self._doTestEncrypt("NTLM")

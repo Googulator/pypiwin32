@@ -56,7 +56,7 @@ class TestStuff(unittest.TestCase):
         # This needs to be adjusted for sql server syntax for unicode fields
         # - memo -> TEXT
         # - varchar -> nvarchar
-        self.assertEqual(self.cur.execute(
+        assert self.cur.execute(
             """create table %s (
                     userid varchar(25),
                     username varchar(25),
@@ -67,7 +67,7 @@ class TestStuff(unittest.TestCase):
                     rawfield varbinary(100),
                     longtextfield memo,
                     longbinaryfield image
-            )""" % self.tablename), -1)
+            )""" % self.tablename) == -1
 
     def tearDown(self):
         if self.cur is not None:
@@ -88,21 +88,21 @@ class TestStuff(unittest.TestCase):
                 pass
 
     def test_insert_select(self, userid='Frank', username='Frank Millman'):
-        self.assertEqual(self.cur.execute("insert into %s (userid, username) \
-            values (?,?)" % self.tablename, [userid, username]), 1)
-        self.assertEqual(self.cur.execute("select * from %s \
-            where userid = ?" % self.tablename, [userid.lower()]), 0)
-        self.assertEqual(self.cur.execute("select * from %s \
-            where username = ?" % self.tablename, [username.lower()]), 0)
+        assert self.cur.execute("insert into %s (userid, username) \
+            values (?,?)" % self.tablename, [userid, username]) == 1
+        assert self.cur.execute("select * from %s \
+            where userid = ?" % self.tablename, [userid.lower()]) == 0
+        assert self.cur.execute("select * from %s \
+            where username = ?" % self.tablename, [username.lower()]) == 0
 
     def test_insert_select_unicode(
             self, userid='Frank', username="Frank Millman"):
-        self.assertEqual(self.cur.execute("insert into %s (userid, username)\
-            values (?,?)" % self.tablename, [userid, username]), 1)
-        self.assertEqual(self.cur.execute("select * from %s \
-            where userid = ?" % self.tablename, [userid.lower()]), 0)
-        self.assertEqual(self.cur.execute("select * from %s \
-            where username = ?" % self.tablename, [username.lower()]), 0)
+        assert self.cur.execute("insert into %s (userid, username)\
+            values (?,?)" % self.tablename, [userid, username]) == 1
+        assert self.cur.execute("select * from %s \
+            where userid = ?" % self.tablename, [userid.lower()]) == 0
+        assert self.cur.execute("select * from %s \
+            where username = ?" % self.tablename, [username.lower()]) == 0
 
     def test_insert_select_unicode_ext(self):
         userid = "t-\xe0\xf2"
@@ -114,17 +114,17 @@ class TestStuff(unittest.TestCase):
             self.cur.execute(
                 "delete from %s where userid='Frank'" %
                 self.tablename)
-            self.assertEqual(self.cur.execute(
+            assert self.cur.execute(
                 "insert into %s (userid, %s) values (?,?)" % (
                     self.tablename, fieldName),
-                ["Frank", value]), 1)
+                ["Frank", value]) == 1
             self.cur.execute(
                 "select %s from %s where userid = ?" %
                 (fieldName, self.tablename), ["Frank"])
             rows = self.cur.fetchmany()
-            self.assertEqual(1, len(rows))
+            assert 1 == len(rows)
             row = rows[0]
-            self.assertEqual(row[0], value)
+            assert row[0] == value
 
     def testBit(self):
         self._test_val('bitfield', 1)
@@ -173,47 +173,40 @@ class TestStuff(unittest.TestCase):
             self._test_val('datefield', d)
 
     def test_set_nonzero_length(self):
-        self.assertEqual(
-            self.cur.execute(
+        assert self.cur.execute(
                 "insert into %s (userid,username) "
                 "values (?,?)" %
                 self.tablename, [
-                    'Frank', 'Frank Millman']), 1)
-        self.assertEqual(
-            self.cur.execute(
+                'Frank', 'Frank Millman']) == 1
+        assert self.cur.execute(
                 "update %s set username = ?" %
-                self.tablename, ['Frank']), 1)
-        self.assertEqual(
-            self.cur.execute(
+                self.tablename, ['Frank']) == 1
+        assert self.cur.execute(
                 "select * from %s" %
-                self.tablename), 0)
-        self.assertEqual(len(self.cur.fetchone()[1]), 5)
+                self.tablename) == 0
+        assert len(self.cur.fetchone()[1]) == 5
 
     def test_set_zero_length(self):
-        self.assertEqual(
-            self.cur.execute(
+        assert self.cur.execute(
                 "insert into %s (userid,username) "
                 "values (?,?)" %
                 self.tablename, [
-                    str2bytes('Frank'), '']), 1)
-        self.assertEqual(
-            self.cur.execute(
+                str2bytes('Frank'), '']) == 1
+        assert self.cur.execute(
                 "select * from %s" %
-                self.tablename), 0)
-        self.assertEqual(len(self.cur.fetchone()[1]), 0)
+                self.tablename) == 0
+        assert len(self.cur.fetchone()[1]) == 0
 
     def test_set_zero_length_unicode(self):
-        self.assertEqual(
-            self.cur.execute(
+        assert self.cur.execute(
                 "insert into %s (userid,username) "
                 "values (?,?)" %
                 self.tablename, [
-                    'Frank', '']), 1)
-        self.assertEqual(
-            self.cur.execute(
+                'Frank', '']) == 1
+        assert self.cur.execute(
                 "select * from %s" %
-                self.tablename), 0)
-        self.assertEqual(len(self.cur.fetchone()[1]), 0)
+                self.tablename) == 0
+        assert len(self.cur.fetchone()[1]) == 0
 
 
 if __name__ == '__main__':

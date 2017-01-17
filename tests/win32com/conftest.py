@@ -7,8 +7,7 @@ import unittest
 
 import pythoncom
 from pywin32_testutil import TestLoader, TestRunner
-from win32com.test.util import CheckClean, TestCase, \
-    CapturingFunctionTestCase, ShellTestCase, \
+from win32com.test.util import CheckClean, CapturingFunctionTestCase, ShellTestCase, \
     RegisterPythonServer
 
 verbosity = 1  # default unittest verbosity.
@@ -70,34 +69,22 @@ def ExecuteSilentlyIfOK(cmd, testcase):
     return RemoveRefCountOutput(data)
 
 
-class PyCOMTest(TestCase):
-    no_leak_tests = True  # done by the test itself
-
-    def testit(self):
+no_leak_tests = True  # done by the test itself
+deftestit(self):
         # Check that the item is registered, so we get the correct
         # 'skipped' behaviour (and recorded as such) rather than either
         # error or silence due to non-registration.
-        RegisterPythonServer(
-            os.path.join(
-                os.path.dirname(__file__),
-                '..',
-                "servers",
-                "test_pycomtest.py"),
-            "Python.Test.PyCOMTest")
-
-        # Execute testPyComTest in its own process so it can play
-        # with the Python thread state
-        fname = os.path.join(os.path.dirname(this_file), "testPyComTest.py")
-        cmd = '%s "%s" -q 2>&1' % (sys.executable, fname)
-        data = ExecuteSilentlyIfOK(cmd, self)
+RegisterPythonServer(os.path.join(os.path.dirname(__file__), '..', "servers", "test_pycomtest.py"),
+                     "Python.Test.PyCOMTest")
+fname = os.path.join(os.path.dirname(this_file), "testPyComTest.py")
+cmd = '%s "%s" -q 2>&1' % (sys.executable, fname)
+data = ExecuteSilentlyIfOK(cmd, self)
 
 
-class PippoTest(TestCase):
-    def testit(self):
+def testit(self):
         # Check we are registered before spawning the process.
         from win32com.test import pippo_server
         RegisterPythonServer(pippo_server.__file__, "Python.Test.Pippo")
-
         python = sys.executable
         fname = os.path.join(os.path.dirname(this_file), "testPippo.py")
         cmd = '%s "%s" 2>&1' % (python, fname)

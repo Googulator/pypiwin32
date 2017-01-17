@@ -1,5 +1,6 @@
 import unittest
 
+import pytest
 import pythoncom
 import win32com.server.util
 import win32com.test.util
@@ -86,10 +87,10 @@ class StreamTest(win32com.test.util.TestCase):
         write_stream.Write(data)
         read_stream.Seek(0, pythoncom.STREAM_SEEK_SET)
         got = read_stream.Read(len(data))
-        self.assertEqual(data, got)
+        assert data == got
         read_stream.Seek(1, pythoncom.STREAM_SEEK_SET)
         got = read_stream.Read(len(data) - 2)
-        self.assertEqual(data[1:-1], got)
+        assert data[1:-1] == got
 
     def testit(self):
         mydata = str2bytes('abcdefghijklmnopqrstuvwxyz')
@@ -100,7 +101,7 @@ class StreamTest(win32com.test.util.TestCase):
 
         p.Load(s)
         p.Save(s, 0)
-        self.assertEqual(s.data, mydata)
+        assert s.data == mydata
 
         # Wrap the Python objects as COM objects, and make the calls as if
         # they were non-Python COM objects.
@@ -117,7 +118,7 @@ class StreamTest(win32com.test.util.TestCase):
         s.Write(mydata)
         p2.Load(s2)
         p2.Save(s2, 0)
-        self.assertEqual(s.data, mydata)
+        assert s.data == mydata
 
     def testseek(self):
         s = Stream(str2bytes('yo'))
@@ -132,12 +133,13 @@ class StreamTest(win32com.test.util.TestCase):
         badstream = BadStream('Check for buffer overflow')
         badstream2 = win32com.server.util.wrap(
             badstream, pythoncom.IID_IStream)
-        self.assertRaises(pythoncom.com_error, badstream2.Read, 10)
+        with pytest.raises(pythoncom.com_error):
+            badstream2.Read(10)
         win32com.test.util.restore_test_logger(old_log)
         # expecting 2 pythoncom errors to have been raised by the gateways.
-        self.assertEqual(len(records), 2)
-        self.assertTrue(records[0].msg.startswith('pythoncom error'))
-        self.assertTrue(records[1].msg.startswith('pythoncom error'))
+        assert len(records) == 2
+        assert records[0].msg.startswith('pythoncom error')
+        assert records[1].msg.startswith('pythoncom error')
 
 
 if __name__ == '__main__':

@@ -16,9 +16,8 @@ from pywin32_testutil import str2bytes
 class CurrentUserTestCase(unittest.TestCase):
     def testGetCurrentUser(self):
         name = "%s\\%s" % (win32api.GetDomainName(), win32api.GetUserName())
-        self.assertTrue(
-            name == win32api.GetUserNameEx(
-                win32api.NameSamCompatible))
+        assert name == win32api.GetUserNameEx(
+            win32api.NameSamCompatible)
 
 
 class TestTime(unittest.TestCase):
@@ -98,8 +97,8 @@ class Registry(unittest.TestCase):
 
         for value_name, orig_type, orig_data in values:
             data, typ = win32api.RegQueryValueEx(hkey, value_name)
-            self.assertEqual(typ, orig_type)
-            self.assertEqual(data, orig_data)
+            assert typ == orig_type
+            assert data == orig_data
 
     def testNotifyChange(self):
         def change():
@@ -124,11 +123,11 @@ class Registry(unittest.TestCase):
             True)
         ret_code = win32event.WaitForSingleObject(evt, 0)
         # Should be no change.
-        self.assertTrue(ret_code == win32con.WAIT_TIMEOUT)
+        assert ret_code == win32con.WAIT_TIMEOUT
         change()
         # Our event should now be in a signalled state.
         ret_code = win32event.WaitForSingleObject(evt, 0)
-        self.assertTrue(ret_code == win32con.WAIT_OBJECT_0)
+        assert ret_code == win32con.WAIT_OBJECT_0
 
 
 class FileNames(unittest.TestCase):
@@ -140,20 +139,16 @@ class FileNames(unittest.TestCase):
         fname = os.path.abspath(me).lower()
         short_name = win32api.GetShortPathName(fname).lower()
         long_name = win32api.GetLongPathName(short_name).lower()
-        self.assertTrue(
-            long_name == fname, "Expected long name ('%s') to be original name ('%s')" %
-            (long_name, fname))
-        self.assertEqual(
-            long_name,
-            win32api.GetLongPathNameW(short_name).lower())
+        assert long_name == fname, "Expected long name ('%s') to be original name ('%s')" % \
+                                   (long_name, fname)
+        assert long_name == \
+               win32api.GetLongPathNameW(short_name).lower()
         long_name = win32api.GetLongPathNameW(short_name).lower()
-        self.assertTrue(
-            isinstance(
-                long_name, str), "GetLongPathNameW returned type '%s'" %
-                                 (type(long_name),))
-        self.assertTrue(
-            long_name == fname, "Expected long name ('%s') to be original name ('%s')" %
-            (long_name, fname))
+        assert isinstance(
+            long_name, str), "GetLongPathNameW returned type '%s'" % \
+                             (type(long_name),)
+        assert long_name == fname, "Expected long name ('%s') to be original name ('%s')" % \
+                                   (long_name, fname)
 
     def testShortUnicodeNames(self):
         try:
@@ -163,22 +158,18 @@ class FileNames(unittest.TestCase):
         fname = os.path.abspath(me).lower()
         # passing unicode should cause GetShortPathNameW to be called.
         short_name = win32api.GetShortPathName(str(fname)).lower()
-        self.assertTrue(isinstance(short_name, str))
+        assert isinstance(short_name, str)
         long_name = win32api.GetLongPathName(short_name).lower()
-        self.assertTrue(
-            long_name == fname, "Expected long name ('%s') to be original name ('%s')" %
-            (long_name, fname))
-        self.assertEqual(
-            long_name,
-            win32api.GetLongPathNameW(short_name).lower())
+        assert long_name == fname, "Expected long name ('%s') to be original name ('%s')" % \
+                                   (long_name, fname)
+        assert long_name == \
+               win32api.GetLongPathNameW(short_name).lower()
         long_name = win32api.GetLongPathNameW(short_name).lower()
-        self.assertTrue(
-            isinstance(
-                long_name, str), "GetLongPathNameW returned type '%s'" %
-                                 (type(long_name),))
-        self.assertTrue(
-            long_name == fname, "Expected long name ('%s') to be original name ('%s')" %
-            (long_name, fname))
+        assert isinstance(
+            long_name, str), "GetLongPathNameW returned type '%s'" % \
+                             (type(long_name),)
+        assert long_name == fname, "Expected long name ('%s') to be original name ('%s')" % \
+                                   (long_name, fname)
 
     def testLongLongPathNames(self):
         # We need filename where the FQN is > 256 - simplest way is to create a
@@ -205,10 +196,10 @@ class FileNames(unittest.TestCase):
                     raise
 
             attr = win32api.GetFileAttributes(str(fname))
-            self.assertTrue(attr & win32con.FILE_ATTRIBUTE_DIRECTORY, attr)
+            assert attr & win32con.FILE_ATTRIBUTE_DIRECTORY, attr
 
             long_name = win32api.GetLongPathNameW(fname)
-            self.assertEqual(long_name.lower(), fname.lower())
+            assert long_name.lower() == fname.lower()
         finally:
             win32file.RemoveDirectory(fname)
 
@@ -222,22 +213,22 @@ class FormatMessage(unittest.TestCase):
                                         0,  # ID
                                         0,  # LangID
                                         inserts)
-        self.assertEqual(result, "Hello Mark, how are you today?")
+        assert result == "Hello Mark, how are you today?"
 
 
 class Misc(unittest.TestCase):
     def test_last_error(self):
         for x in (0, 1, -1, winerror.TRUST_E_PROVIDER_UNKNOWN):
             win32api.SetLastError(x)
-            self.assertEqual(x, win32api.GetLastError())
+            assert x == win32api.GetLastError()
 
     def testVkKeyScan(self):
         # hopefully ' ' doesn't depend on the locale!
-        self.assertEqual(win32api.VkKeyScan(' '), 32)
+        assert win32api.VkKeyScan(' ') == 32
 
     def testVkKeyScanEx(self):
         # hopefully ' ' doesn't depend on the locale!
-        self.assertEqual(win32api.VkKeyScanEx(' ', 0), 32)
+        assert win32api.VkKeyScanEx(' ', 0) == 32
 
 
 if __name__ == '__main__':

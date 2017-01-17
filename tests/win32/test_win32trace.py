@@ -39,26 +39,32 @@ class TestInitOps(unittest.TestCase):
             pass
 
     def testInitTermRead(self):
-        self.assertRaises(win32trace.error, win32trace.read)
+        with pytest.raises(win32trace.error):
+            win32trace.read()
         win32trace.InitRead()
         result = win32trace.read()
-        self.assertEqual(result, '')
+        assert result == ''
         win32trace.TermRead()
-        self.assertRaises(win32trace.error, win32trace.read)
+        with pytest.raises(win32trace.error):
+            win32trace.read()
 
         win32trace.InitRead()
-        self.assertRaises(win32trace.error, win32trace.InitRead)
+        with pytest.raises(win32trace.error):
+            win32trace.InitRead()
         win32trace.InitWrite()
-        self.assertRaises(win32trace.error, win32trace.InitWrite)
+        with pytest.raises(win32trace.error):
+            win32trace.InitWrite()
         win32trace.TermWrite()
         win32trace.TermRead()
 
     def testInitTermWrite(self):
-        self.assertRaises(win32trace.error, win32trace.write, 'Hei')
+        with pytest.raises(win32trace.error):
+            win32trace.write('Hei')
         win32trace.InitWrite()
         win32trace.write('Johan Galtung')
         win32trace.TermWrite()
-        self.assertRaises(win32trace.error, win32trace.write, 'Hei')
+        with pytest.raises(win32trace.error):
+            win32trace.write('Hei')
 
     def testTermSematics(self):
         win32trace.InitWrite()
@@ -70,7 +76,7 @@ class TestInitOps(unittest.TestCase):
         # test for either the correct data or an empty string
         win32trace.TermWrite()
         win32trace.InitRead()
-        self.assertTrue(win32trace.read() in ['Ta da', ''])
+        assert win32trace.read() in ['Ta da', '']
         win32trace.TermRead()
 
         # we keep the data because we init read before terminating write
@@ -78,7 +84,7 @@ class TestInitOps(unittest.TestCase):
         win32trace.write('Ta da')
         win32trace.InitRead()
         win32trace.TermWrite()
-        self.assertEqual('Ta da', win32trace.read())
+        assert 'Ta da' == win32trace.read()
         win32trace.TermRead()
 
 
@@ -100,26 +106,25 @@ class TestModuleOps(BasicSetupTearDown):
     def testRoundTrip(self):
         win32trace.write('Syver Enstad')
         syverEnstad = win32trace.read()
-        self.assertEqual('Syver Enstad', syverEnstad)
+        assert 'Syver Enstad' == syverEnstad
 
     def testRoundTripUnicode(self):
         win32trace.write('\xa9opyright Syver Enstad')
         syverEnstad = win32trace.read()
         # str objects are always returned in py2k (latin-1 encoding was used
         # on unicode objects)
-        self.assertEqual('\xa9opyright Syver Enstad', syverEnstad)
+        assert '\xa9opyright Syver Enstad' == syverEnstad
 
     def testBlockingRead(self):
         win32trace.write('Syver Enstad')
-        self.assertEqual('Syver Enstad', win32trace.blockingread())
+        assert 'Syver Enstad' == win32trace.blockingread()
 
     def testBlockingReadUnicode(self):
         win32trace.write('\xa9opyright Syver Enstad')
         # str objects are always returned in py2k (latin-1 encoding was used
         # on unicode objects)
-        self.assertEqual(
-            '\xa9opyright Syver Enstad',
-            win32trace.blockingread())
+        assert '\xa9opyright Syver Enstad' == \
+               win32trace.blockingread()
 
     def testFlush(self):
         win32trace.flush()
@@ -130,11 +135,13 @@ class TestTraceObjectOps(BasicSetupTearDown):
         win32trace.TermRead()
         win32trace.TermWrite()
         traceObject = win32trace.GetTracer()
-        self.assertRaises(win32trace.error, traceObject.read)
-        self.assertRaises(win32trace.error, traceObject.write, '')
+        with pytest.raises(win32trace.error):
+            traceObject.read()
+        with pytest.raises(win32trace.error):
+            traceObject.write('')
         win32trace.InitRead()
         win32trace.InitWrite()
-        self.assertEqual('', traceObject.read())
+        assert '' == traceObject.read()
         traceObject.write('Syver')
 
     def testFlush(self):
@@ -148,7 +155,7 @@ class TestTraceObjectOps(BasicSetupTearDown):
     def testRoundTrip(self):
         traceObject = win32trace.GetTracer()
         traceObject.write('Syver Enstad')
-        self.assertEqual('Syver Enstad', traceObject.read())
+        assert 'Syver Enstad' == traceObject.read()
 
 
 class WriterThread(threading.Thread):
@@ -237,6 +244,7 @@ class TestHugeChunks(unittest.TestCase):
 
 import win32event
 import win32process
+import pytest
 
 
 class TraceWriteProcess:

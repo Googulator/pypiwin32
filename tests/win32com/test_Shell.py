@@ -19,6 +19,7 @@ from win32com.storagecon import *
 
 import win32com.test.util
 from pywin32_testutil import str2bytes
+import pytest
 
 
 class ShellTester(win32com.test.util.TestCase):
@@ -65,34 +66,35 @@ class ShellTester(win32com.test.util.TestCase):
             names_2.append(name)
         names_1.sort()
         names_2.sort()
-        self.assertEqual(names_1, names_2)
+        assert names_1 == names_2
 
 
 class PIDLTester(win32com.test.util.TestCase):
     def _rtPIDL(self, pidl):
         pidl_str = shell.PIDLAsString(pidl)
         pidl_rt = shell.StringAsPIDL(pidl_str)
-        self.assertEqual(pidl_rt, pidl)
+        assert pidl_rt == pidl
         pidl_str_rt = shell.PIDLAsString(pidl_rt)
-        self.assertEqual(pidl_str_rt, pidl_str)
+        assert pidl_str_rt == pidl_str
 
     def _rtCIDA(self, parent, kids):
         cida = parent, kids
         cida_str = shell.CIDAAsString(cida)
         cida_rt = shell.StringAsCIDA(cida_str)
-        self.assertEqual(cida, cida_rt)
+        assert cida == cida_rt
         cida_str_rt = shell.CIDAAsString(cida_rt)
-        self.assertEqual(cida_str_rt, cida_str)
+        assert cida_str_rt == cida_str
 
     def testPIDL(self):
         # A PIDL of "\1" is:   cb    pidl   cb
         expect = str2bytes("\03\00"  "\1"  "\0\0")
-        self.assertEqual(shell.PIDLAsString([str2bytes("\1")]), expect)
+        assert shell.PIDLAsString([str2bytes("\1")]) == expect
         self._rtPIDL([str2bytes("\0")])
         self._rtPIDL([str2bytes("\1"), str2bytes("\2"), str2bytes("\3")])
         self._rtPIDL([str2bytes("\0") * 2048] * 2048)
         # PIDL must be a list
-        self.assertRaises(TypeError, shell.PIDLAsString, "foo")
+        with pytest.raises(TypeError):
+            shell.PIDLAsString("foo")
 
     def testCIDA(self):
         self._rtCIDA([str2bytes("\0")], [[str2bytes("\0")]])
@@ -103,7 +105,8 @@ class PIDLTester(win32com.test.util.TestCase):
     def testBadShortPIDL(self):
         # A too-short child element:   cb    pidl   cb
         pidl = str2bytes("\01\00"  "\1")
-        self.assertRaises(ValueError, shell.StringAsPIDL, pidl)
+        with pytest.raises(ValueError):
+            shell.StringAsPIDL(pidl)
 
         # ack - tried to test too long PIDLs, but a len of 0xFFFF may not
         # always fail.
@@ -132,20 +135,20 @@ class FILEGROUPDESCRIPTORTester(win32com.test.util.TestCase):
         if 'dwFlags' not in fd:
             del fd2['dwFlags']
         if 'cFileName' not in fd:
-            self.assertEqual(fd2['cFileName'], '')
+            assert fd2['cFileName'] == ''
             del fd2['cFileName']
 
-        self.assertEqual(fd, fd2)
+        assert fd == fd2
 
     def _testSimple(self, make_unicode):
         fgd = shell.FILEGROUPDESCRIPTORAsString([], make_unicode)
         header = struct.pack("i", 0)
-        self.assertEqual(header, fgd[:len(header)])
+        assert header == fgd[:len(header)]
         self._testRT(dict())
         d = dict()
         fgd = shell.FILEGROUPDESCRIPTORAsString([d], make_unicode)
         header = struct.pack("i", 1)
-        self.assertEqual(header, fgd[:len(header)])
+        assert header == fgd[:len(header)]
         self._testRT(d)
 
     def testSimpleBytes(self):
@@ -201,7 +204,7 @@ class FILEGROUPDESCRIPTORTester(win32com.test.util.TestCase):
         # clobber 'dwFlags' - they are not expected to be identical
         for t in d2:
             del t['dwFlags']
-        self.assertEqual(d, d2)
+        assert d == d2
 
 
 class FileOperationTester(win32com.test.util.TestCase):
@@ -233,10 +236,10 @@ class FileOperationTester(win32com.test.util.TestCase):
              self.dest_name)
 
         rc, aborted = shell.SHFileOperation(s)
-        self.assertTrue(not aborted)
-        self.assertEqual(0, rc)
-        self.assertTrue(os.path.isfile(self.src_name))
-        self.assertTrue(os.path.isfile(self.dest_name))
+        assert not aborted
+        assert 0 == rc
+        assert os.path.isfile(self.src_name)
+        assert os.path.isfile(self.dest_name)
 
     def testRename(self):
         s = (0,  # hwnd,
@@ -244,10 +247,10 @@ class FileOperationTester(win32com.test.util.TestCase):
              self.src_name,
              self.dest_name)
         rc, aborted = shell.SHFileOperation(s)
-        self.assertTrue(not aborted)
-        self.assertEqual(0, rc)
-        self.assertTrue(os.path.isfile(self.dest_name))
-        self.assertTrue(not os.path.isfile(self.src_name))
+        assert not aborted
+        assert 0 == rc
+        assert os.path.isfile(self.dest_name)
+        assert not os.path.isfile(self.src_name)
 
     def testMove(self):
         s = (0,  # hwnd,
@@ -255,10 +258,10 @@ class FileOperationTester(win32com.test.util.TestCase):
              self.src_name,
              self.dest_name)
         rc, aborted = shell.SHFileOperation(s)
-        self.assertTrue(not aborted)
-        self.assertEqual(0, rc)
-        self.assertTrue(os.path.isfile(self.dest_name))
-        self.assertTrue(not os.path.isfile(self.src_name))
+        assert not aborted
+        assert 0 == rc
+        assert os.path.isfile(self.dest_name)
+        assert not os.path.isfile(self.src_name)
 
     def testDelete(self):
         s = (0,  # hwnd,
@@ -266,9 +269,9 @@ class FileOperationTester(win32com.test.util.TestCase):
              self.src_name, None,
              FOF_NOCONFIRMATION)
         rc, aborted = shell.SHFileOperation(s)
-        self.assertTrue(not aborted)
-        self.assertEqual(0, rc)
-        self.assertTrue(not os.path.isfile(self.src_name))
+        assert not aborted
+        assert 0 == rc
+        assert not os.path.isfile(self.src_name)
 
 
 if __name__ == '__main__':

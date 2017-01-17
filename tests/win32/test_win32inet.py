@@ -11,26 +11,26 @@ class CookieTests(unittest.TestCase):
         data = "TestData=Test"
         InternetSetCookie("http://www.python.org", None, data)
         got = InternetGetCookie("http://www.python.org", None)
-        self.assertEqual(got, data)
+        assert got == data
 
     def testCookiesEmpty(self):
         try:
             InternetGetCookie("http://site-with-no-cookie.python.org", None)
             self.fail("expected win32 exception")
         except error as exc:
-            self.assertEqual(exc.winerror, winerror.ERROR_NO_MORE_ITEMS)
+            assert exc.winerror == winerror.ERROR_NO_MORE_ITEMS
 
 
 class UrlTests(unittest.TestCase):
     def testSimpleCanonicalize(self):
         ret = InternetCanonicalizeUrl("foo bar")
-        self.assertEqual(ret, "foo%20bar")
+        assert ret == "foo%20bar"
 
     def testLongCanonicalize(self):
         # a 4k URL causes the underlying API to request a bigger buffer"
         big = "x" * 2048
         ret = InternetCanonicalizeUrl(big + " " + big)
-        self.assertEqual(ret, big + "%20" + big)
+        assert ret == big + "%20" + big
 
 
 class TestNetwork(unittest.TestCase):

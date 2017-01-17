@@ -1,6 +1,8 @@
 import unittest
 import win32net
 
+import pytest
+
 
 class TestCase(unittest.TestCase):
     def testGroupsGoodResume(self, server=None):
@@ -15,10 +17,9 @@ class TestCase(unittest.TestCase):
 
     def testGroupsBadResume(self, server=None):
         res = 1  # Can't pass this first time round.
-        self.assertRaises(
-            win32net.error,
-            win32net.NetGroupEnum,
-            server,
+        with pytest.raises(
+                win32net.error):
+            win32net.NetGroupEnum(server,
             0,
             res)
 
