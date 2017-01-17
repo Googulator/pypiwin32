@@ -1298,10 +1298,6 @@ class my_build_ext(build_ext):
         # So in the fixed versions we only get the base name, and if the
         # output name is simply 'dir\name' we need to nothing.
 
-        # 3.1+ pywintypes
-        if name == "pywintypes":
-            return r"pywintypes%d%d%s" % (
-                sys.version_info[0], sys.version_info[1], extra_dll)
         # 3.1+ pythoncom
         if name == "pythoncom":
             return r"pythoncom%d%d%s" % (
