@@ -88,7 +88,6 @@ from setuptools.command.build_ext import build_ext
 from distutils.command.build import build
 from distutils.command.install_data import install_data
 from setuptools.command.build_py import build_py
-from distutils.command.build_scripts import build_scripts
 
 bdist_msi = None  # Do not build any MSI scripts
 
@@ -105,6 +104,7 @@ from distutils.filelist import FileList
 from distutils.errors import DistutilsExecError
 import distutils.util
 import subprocess
+import distutils.file_util
 
 # prevent the new in 3.5 suffix of "cpXX-win32" from being added.
 # (adjusting both .cp35-win_amd64.pyd and .cp35-win32.pyd to .pyd)
@@ -711,16 +711,6 @@ class my_build_py(build_py):
             # file was copied
             self.updated_files.append(res[0])
         return res
-
-
-class my_build_scripts(build_scripts):
-
-    def copy_file(self, src, dest):
-        dest, copied = build_scripts.copy_file(self, src, dest)
-        # 2to3
-        # if not self.dry_run and copied:
-        # refactor_filenames([dest])
-        return dest, copied
 
 
 # 'build' command
@@ -1664,9 +1654,25 @@ class my_install_data(install_data):
         print(('Installing data files to %s' % self.install_dir))
         install_data.finalize_options(self)
 
+        data_files = []
+        for directory, files in self.data_files:
+            files = list(files)
+            for file in files.copy():
+                file_path = os.path.join(self.install_dir, directory, file)
+                print(file_path)
+                if os.path.exists(file_path):
+                    files.remove(file)
+            data_files.append((directory, files))
+
+            dir_path = os.path.join(self.install_dir, directory)
+            if os.path.isfile(dir_path):
+                os.remove(dir_path)
+
+        self.data_files = data_files
+
+
     def copy_file(self, src, dest):
         dest, copied = install_data.copy_file(self, src, dest)
-        # 2to3
         return dest, copied
 
 
@@ -2603,7 +2609,6 @@ cmdclass = {'install': my_install,
             'build_ext': my_build_ext,
             'install_data': my_install_data,
             'build_py': my_build_py,
-            'build_scripts': my_build_scripts,
             }
 
 dist = setup(name="pywin32",
@@ -2628,7 +2633,7 @@ dist = setup(name="pywin32",
                            },
                       },
 
-             scripts=["pywin32_postinstall.py", "pywin32_testall.py"],
+             scripts=["scripts/pywin32_postinstall.py", "pywin32_testall.py"],
 
              ext_modules=ext_modules,
 
@@ -2666,6 +2671,7 @@ dist = setup(name="pywin32",
                  'com/win32com/test/*.txt',
                  'com/win32com/test/*.vbs',
                  'com/win32com/test/*.xsl',
+                 'com/win32com/test/*.py',
                  # win32com docs
                  'com/win32com/HTML/*.html',
                  'com/win32com/HTML/image/*.gif',

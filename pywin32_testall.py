@@ -1,61 +1,58 @@
 """A test runner for pywin32"""
 import distutils.sysconfig
 import os
+import signal
+import subprocess
 import sys
-
-import win32api
+import threading
+import time
+from contextlib import suppress
 
 # locate the dirs based on where this script is - it may be either in the
 # source tree, or in an installed Python 'Scripts' tree.
 this_dir = os.path.dirname(__file__)
 site_packages = distutils.sysconfig.get_python_lib(plat_specific=1)
 
-if hasattr(os, 'popen3'):
-    def run_test(script, cmdline_rest=""):
-        dirname, scriptname = os.path.split(script)
-        # some tests prefer to be run from their directory.
-        cwd = os.getcwd()
-        os.chdir(dirname)
-        try:
-            executable = win32api.GetShortPathName(sys.executable)
-            cmd = '%s "%s" %s' % (sys.executable, scriptname, cmdline_rest)
-            print(script)
-            stdin, stdout, stderr = os.popen3(cmd)
-            stdin.close()
-            while True:
-                char = stderr.read(1)
-                if not char:
-                    break
-                sys.stdout.write(char)
-            for line in stdout.readlines():
-                print(line)
-            stdout.close()
-            result = stderr.close()
-            if result is not None:
-                print("****** %s failed: %s" % (script, result))
-        finally:
-            os.chdir(cwd)
-else:
-    # a subprocess version - but we prefer the popen one if we can as we can
-    # see test results as they are run (whereas this one waits until the test
-    # is finished...)
-    import subprocess
 
-    def run_test(script, cmdline_rest=""):
-        dirname, scriptname = os.path.split(script)
-        # some tests prefer to be run from their directory.
-        cmd = [sys.executable, "-u", scriptname] + cmdline_rest.split()
-        print(script)
-        popen = subprocess.Popen(
-            cmd,
-            shell=True,
-            cwd=dirname,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT)
-        data = popen.communicate()[0]
-        sys.stdout.buffer.write(data)
-        if popen.returncode:
-            print("****** %s failed: %s" % (script, popen.returncode))
+def print_output(process):
+    while process.poll() is None:
+        out = process.stdout.read(1)
+        sys.stdout.write(out)
+        sys.stdout.flush()
+
+
+def run_test(script, cmdline_rest=""):
+    dirname, scriptname = os.path.split(script)
+    # some tests prefer to be run from their directory.
+    current_dir = os.getcwd()
+    os.chdir(os.path.join(this_dir, dirname))
+    print("Changed to: ", os.getcwd())
+    cmd = [sys.executable, "-u", scriptname] + cmdline_rest.split()
+    print("Running: ", ' '.join(cmd))
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        universal_newlines=True,
+        bufsize=1)
+
+    thread = threading.Thread(target=print_output, args=(process,))
+    thread.start()
+    thread.join(timeout=60 * 3)
+
+    if thread.isAlive():
+        for i in range(5):
+            with suppress(Exception):
+                os.kill(process.pid, signal.SIGINT)
+
+    time.sleep(10)  # Give ten seconds before we kill everything
+    try:
+        process.terminate()
+        process.kill()
+    except Exception as e:
+        print(e)
+
+    os.chdir(current_dir)
 
 
 def find_and_run(possible_locations, script, cmdline_rest=""):
@@ -89,7 +86,7 @@ if __name__ == '__main__':
     maybes = [os.path.join(this_dir, "adodbapi", "tests"),
               os.path.join(site_packages, "adodbapi", "tests"),
               ]
-    find_and_run(maybes, 'adodbapitest.py')
+    # find_and_run(maybes, 'adodbapitest.py')
     # This script has a hard-coded sql server name in it, (and markh typically
     # doesn't have a different server to test on) so don't bother trying to
     # run it...

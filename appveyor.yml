@@ -19,7 +19,7 @@ environment:
       # Break the tests into two runs, since together they exceed the 1 hour limit.
       # See https://github.com/pyinstaller/pyinstaller/issues/2024#issuecomment-224129520
       # for more discussion.
-      TEST1_CMD: "python setup.py build"
+      TEST1_CMD: "python pywin32_testall.py"
 
     - PYTHON: "C:\\Python35"
       PYTHON_VERSION: "3.5"
@@ -28,13 +28,13 @@ environment:
       # Break the tests into two runs, since together they exceed the 1 hour limit.
       # See https://github.com/pyinstaller/pyinstaller/issues/2024#issuecomment-224129520
       # for more discussion.
-      TEST1_CMD: "python setup.py build"
+      TEST1_CMD: "python pywin32_testall.py"
 
     - PYTHON: "C:\\Python36"
       PYTHON_VERSION: "3.6"
       PYTHON_ARCH: "32"
       VCVARSALL: "x86"
-      TEST1_CMD: "python setup.py build"
+      TEST1_CMD: "python pywin32_testall.py"
 
     - PYTHON: "C:\\Python36-x64"
       PYTHON_VERSION: "3.6"
@@ -43,7 +43,7 @@ environment:
       # Break the tests into two runs, since together they exceed the 1 hour limit.
       # See https://github.com/pyinstaller/pyinstaller/issues/2024#issuecomment-224129520
       # for more discussion.
-      TEST1_CMD: "python setup.py build"
+      TEST1_CMD: "python pywin32_testall.py"
 
 matrix:
   allow_failures:
@@ -79,8 +79,8 @@ install:
       %CMD_IN_ENV% pip install -U --disable-pip-version-check --timeout 5 --retries 2 -r tests/requirements-win32.txt
     ) ELSE (
       %CMD_IN_ENV% pip install -U --disable-pip-version-check --timeout 5 --retries 2 -r tests/requirements-win.txt )"
-  # Install into virtualenv.
-  - "%CMD_IN_ENV% pip install -e ."
+
+  - "%CMD_IN_ENV% pip install ."
 
 build: none
 

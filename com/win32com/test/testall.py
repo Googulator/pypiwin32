@@ -6,9 +6,10 @@ import traceback
 import unittest
 
 import pythoncom
+from pywin32_testutil import TestLoader, TestRunner
 from win32com.test.util import CheckClean, TestCase,  \
     CapturingFunctionTestCase, ShellTestCase, \
-    TestLoader, TestRunner, RegisterPythonServer
+    RegisterPythonServer
 
 verbosity = 1  # default unittest verbosity.
 
@@ -30,12 +31,19 @@ def GenerateAndRunOldStyle():
 def CleanGenerated():
     import win32com
     import shutil
-    if os.path.isdir(win32com.__gen_path__):
-        if verbosity > 1:
-            print("Deleting files from %s" % (win32com.__gen_path__))
-        shutil.rmtree(win32com.__gen_path__)
-    import win32com.client.gencache
-    win32com.client.gencache.__init__()  # Reset
+    try:
+        if os.path.isdir(win32com.__gen_path__):
+            if verbosity > 1:
+                print("Deleting files from %s" % (win32com.__gen_path__))
+            shutil.rmtree(win32com.__gen_path__)
+    except Exception as e:
+        print(e)
+
+    try:
+        import win32com.client.gencache
+        win32com.client.gencache.__init__()  # Reset
+    except Exception as e:
+        print(e)
 
 
 def RemoveRefCountOutput(data):
