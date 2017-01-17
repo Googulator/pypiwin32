@@ -67,7 +67,6 @@ To build 64bit versions of this:
    see the distutils cross-compilation documentation for more details.
 """
 # Originally by Thomas Heller, started in 2000 or so.
-import glob
 import os
 import re
 import shutil
@@ -1288,62 +1287,6 @@ class my_build_ext(build_ext):
         self.compiler.link(
             "executable",
             objects, ext_filename, **kw)
-
-    def build_extension(self, ext):
-        # It is well known that some of these extensions are difficult to
-        # build, requiring various hard-to-track libraries etc.  So we
-        # check the extension list for the extra libraries explicitly
-        # listed.  We then search for this library the same way the C
-        # compiler would - if we can't find a  library, we exclude the
-        # extension from the build.
-        # Note we can't do this in advance, as some of the .lib files
-        # we depend on may be built as part of the process - thus we can
-        # only check an extension's lib files as we are building it.
-        why = self._why_cant_build_extension(ext)
-        if why is not None:
-            self.excluded_extensions.append((ext, why))
-            assert why, "please give a reason, or None"
-            print(("Skipping %s: %s" % (ext.name, why)))
-            return
-        self.current_extension = ext
-
-        # ensure the SWIG .i files are treated as dependencies.
-        for source in ext.sources:
-            if source.endswith(".i"):
-                # for the side-effect of the environment value.
-                self.find_swig()
-                # Find the swig_lib .i files we care about for dependency
-                # tracking.
-                ext.swig_deps = glob.glob(
-                    os.path.join(
-                        os.environ["SWIG_LIB"],
-                        "python",
-                        "*.i"))
-                ext.depends.extend(ext.swig_deps)
-                break
-        else:
-            ext.swig_deps = None
-
-        # some source files are compiled for different extensions
-        # with special defines. So we cannot use a shared
-        # directory for objects, we must use a special one for each extension.
-        old_build_temp = self.build_temp
-        want_static_crt = sys.version_info > (
-            2, 6) and ext.name in static_crt_modules
-        if want_static_crt:
-            self.compiler.compile_options.remove('/MD')
-            self.compiler.compile_options.append('/MT')
-            self.compiler.compile_options_debug.remove('/MDd')
-            self.compiler.compile_options_debug.append('/MTd')
-
-        try:
-            build_ext.run(self, ext)
-        finally:
-            if want_static_crt:
-                self.compiler.compile_options.remove('/MT')
-                self.compiler.compile_options.append('/MD')
-                self.compiler.compile_options_debug.remove('/MTd')
-                self.compiler.compile_options_debug.append('/MDd')
 
     def get_ext_filename(self, name):
         # The pywintypes and pythoncom extensions have special names
