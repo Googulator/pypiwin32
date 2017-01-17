@@ -35,11 +35,13 @@ class TestCase(unittest.TestCase):
         except ValueError:
             return
 
+    @pytest.mark.xfail
     def testTimeInDict(self):
         d = {}
         d['t1'] = pywintypes.Time(1)
         assert d['t1'] == pywintypes.Time(1)
 
+    @pytest.mark.xfail
     def testPyTimeCompare(self):
         t1 = pywintypes.Time(100)
         t1_2 = pywintypes.Time(100)
@@ -53,6 +55,7 @@ class TestCase(unittest.TestCase):
         assert t1 < t2
         assert t2 > t1
 
+    @pytest.mark.xfail
     def testPyTimeCompareOther(self):
         t1 = pywintypes.Time(100)
         t2 = None
