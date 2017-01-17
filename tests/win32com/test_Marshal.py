@@ -29,7 +29,7 @@ import win32event
 import pythoncom
 import win32com.client
 
-from .testServers import InterpCase
+from .test_servers import InterpCase
 
 freeThreaded = 1
 
