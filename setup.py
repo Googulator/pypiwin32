@@ -1384,33 +1384,16 @@ class my_build_ext(build_ext):
         # So in the fixed versions we only get the base name, and if the
         # output name is simply 'dir\name' we need to nothing.
 
-        # The pre 3.1 pywintypes
-        if name == "pywin32_system32.pywintypes":
-            return r"pywin32_system32\pywintypes%d%d%s" % (
-                sys.version_info[0], sys.version_info[1], extra_dll)
         # 3.1+ pywintypes
-        elif name == "pywintypes":
+        if name == "pywintypes":
             return r"pywintypes%d%d%s" % (
                 sys.version_info[0], sys.version_info[1], extra_dll)
-        # pre 3.1 pythoncom
-        elif name == "pywin32_system32.pythoncom":
-            return r"pywin32_system32\pythoncom%d%d%s" % (
-                sys.version_info[0], sys.version_info[1], extra_dll)
         # 3.1+ pythoncom
-        elif name == "pythoncom":
+        if name == "pythoncom":
             return r"pythoncom%d%d%s" % (
                 sys.version_info[0], sys.version_info[1], extra_dll)
-        # Pre 3.1 rest.
-        elif name.endswith("win32.perfmondata"):
-            return r"win32\perfmondata" + extra_dll
-        elif name.endswith("win32.pythonservice"):
-            return r"win32\pythonservice" + extra_exe
-        elif name.endswith("pythonwin.Pythonwin"):
-            return r"pythonwin\Pythonwin" + extra_exe
-        elif name.endswith("isapi.PyISAPI_loader"):
-            return r"isapi\PyISAPI_loader" + extra_dll
         # The post 3.1 rest
-        elif name in ['perfmondata', 'PyISAPI_loader']:
+        if name in ['perfmondata', 'PyISAPI_loader']:
             return name + extra_dll
         elif name in ['pythonservice', 'Pythonwin']:
             return name + extra_exe
