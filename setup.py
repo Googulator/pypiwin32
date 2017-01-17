@@ -2622,6 +2622,7 @@ dist = setup(name="pywin32",
              author_email="mhammond@users.sourceforge.net",
              url="http://sourceforge.net/projects/pywin32/",
              license="PSF",
+             install_requires=['adodbapi'],
              cmdclass=cmdclass,
              options={"bdist_wininst":
                           {"install_script": "pywin32_postinstall.py",
