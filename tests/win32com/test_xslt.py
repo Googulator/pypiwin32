@@ -2,8 +2,10 @@ import os
 import tempfile
 import unittest
 
+import pytest
 import win32com.test.util
-from pytest import xfail
+
+xfail = pytest.mark.xfail
 
 expected_output = "The jscript test worked.\nThe Python test worked"
 

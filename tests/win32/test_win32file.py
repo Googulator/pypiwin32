@@ -18,7 +18,8 @@ import pywintypes
 import win32con
 import win32timezone
 import winerror
-from pytest import xfail
+
+xfail = pytest.mark.xfail
 from pywin32_testutil import str2bytes, TestSkipped
 
 try:

@@ -5,9 +5,11 @@ import unittest
 import win32api
 import win32security
 
+import pytest
 import sspi
 import sspicon
-from pytest import xfail
+
+xfail = pytest.mark.xfail
 from pywin32_testutil import TestSkipped, str2bytes
 
 

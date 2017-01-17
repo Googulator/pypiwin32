@@ -4,9 +4,11 @@ import win32api
 import win32security
 
 import ntsecuritycon
+import pytest
 import win32con
 import winerror
-from pytest import xfail
+
+xfail = pytest.mark.xfail
 from pywin32_testutil import TestSkipped, ob2memory
 
 

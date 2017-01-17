@@ -3,8 +3,10 @@
 import doctest
 import unittest
 
+import pytest
 import win32timezone
-from pytest import xfail
+
+xfail = pytest.mark.xfail
 
 
 class Win32TimeZoneTest(unittest.TestCase):

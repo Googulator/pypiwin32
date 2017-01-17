@@ -2,9 +2,11 @@ import os
 import tempfile
 import unittest
 
+import pytest
 import win32con
 import win32rcparser
-from pytest import xfail
+
+xfail = pytest.mark.xfail
 
 
 class TestParser(unittest.TestCase):

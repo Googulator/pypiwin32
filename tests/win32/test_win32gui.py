@@ -7,7 +7,8 @@ import win32gui
 
 import pytest
 import pywin32_testutil
-from pytest import xfail
+
+xfail = pytest.mark.xfail
 
 
 # theoretically should be in pywin32_testutil, but this is the only place

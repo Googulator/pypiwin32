@@ -6,7 +6,8 @@ import unittest
 
 import pytest
 import pywintypes
-from pytest import xfail
+
+xfail = pytest.mark.xfail
 from pywin32_testutil import str2bytes, ob2memory
 
 

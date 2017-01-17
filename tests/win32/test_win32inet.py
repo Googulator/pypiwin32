@@ -1,8 +1,10 @@
 import unittest
 from win32inet import *
 
+import pytest
 import winerror
-from pytest import xfail
+
+xfail = pytest.mark.xfail
 from pywin32_testutil import str2bytes  # py3k-friendly helper
 from win32inetcon import *
 

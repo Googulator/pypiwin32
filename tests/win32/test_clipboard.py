@@ -9,7 +9,8 @@ from win32clipboard import *
 import pytest
 import pywintypes
 import win32con
-from pytest import xfail
+
+xfail = pytest.mark.xfail
 from pywin32_testutil import str2bytes
 
 custom_format_name = "PythonClipboardTestFormat"
