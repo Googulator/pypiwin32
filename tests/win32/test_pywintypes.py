@@ -6,6 +6,7 @@ import unittest
 
 import pytest
 import pywintypes
+from pytest import xfail
 from pywin32_testutil import str2bytes, ob2memory
 
 
@@ -23,6 +24,7 @@ class TestCase(unittest.TestCase):
             assert v1 == v2, "format %s failed - %r != %r" % \
                              (fmt, v1, v2)
 
+    @xfail
     def testPyTimePrint(self):
         # This used to crash with an invalid, or too early time.
         # We don't really want to check that it does cause a ValueError
@@ -65,6 +67,7 @@ class TestCase(unittest.TestCase):
         if isinstance(pt, datetime.datetime):
             assert pt <= now
 
+    @xfail
     def testTimeTuplems(self):
         now = datetime.datetime.now()  # has usec...
         tt = now.timetuple() + (now.microsecond // 1000,)

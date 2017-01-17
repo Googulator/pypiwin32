@@ -7,7 +7,8 @@ import win32security
 
 import sspi
 import sspicon
-from pywin32_testutil import TestSkipped, testmain, str2bytes
+from pytest import xfail
+from pywin32_testutil import TestSkipped, str2bytes
 
 
 # It is quite likely that the Kerberos tests will fail due to not being
@@ -50,6 +51,7 @@ class TestSSPI(unittest.TestCase):
         sspiserver.ctxt.ImpersonateSecurityContext()
         sspiserver.ctxt.RevertSecurityContext()
 
+    @xfail
     def testImpersonateKerberos(self):
         applyHandlingSkips(self._doTestImpersonate, "Kerberos")
 
@@ -89,6 +91,7 @@ class TestSSPI(unittest.TestCase):
     def testEncryptNTLM(self):
         self._doTestEncrypt("NTLM")
 
+    @xfail
     def testEncryptKerberos(self):
         applyHandlingSkips(self._doTestEncrypt, "Kerberos")
 
@@ -132,6 +135,7 @@ class TestSSPI(unittest.TestCase):
     def testSignNTLM(self):
         self._doTestSign("NTLM")
 
+    @xfail
     def testSignKerberos(self):
         applyHandlingSkips(self._doTestSign, "Kerberos")
 
@@ -143,6 +147,7 @@ class TestSSPI(unittest.TestCase):
         self.assertRaisesHRESULT(sspicon.SEC_E_OUT_OF_SEQUENCE,
                                  sspiserver.verify, 'hello', key)
 
+    @xfail
     def testSequenceSign(self):
         applyHandlingSkips(self._testSequenceSign)
 
@@ -154,9 +159,9 @@ class TestSSPI(unittest.TestCase):
         self.assertRaisesHRESULT(sspicon.SEC_E_OUT_OF_SEQUENCE,
                                  sspiserver.decrypt, blob, key)
 
+    @xfail
     def testSequenceEncrypt(self):
         applyHandlingSkips(self._testSequenceEncrypt)
 
-
-if __name__ == '__main__':
-    testmain()
+# if __name__ == '__main__':
+#    testmain()

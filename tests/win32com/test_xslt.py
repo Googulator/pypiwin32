@@ -3,11 +3,13 @@ import tempfile
 import unittest
 
 import win32com.test.util
+from pytest import xfail
 
 expected_output = "The jscript test worked.\nThe Python test worked"
 
 
 class XSLT(win32com.test.util.TestCase):
+    @xfail
     def testAll(self):
         output_name = tempfile.mktemp("-pycom-test")
         cmd = "cscript //nologo testxslt.js doesnt_matter.xml testxslt.xsl " + output_name

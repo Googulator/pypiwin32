@@ -6,7 +6,8 @@ import win32security
 import ntsecuritycon
 import win32con
 import winerror
-from pywin32_testutil import testmain, TestSkipped, ob2memory
+from pytest import xfail
+from pywin32_testutil import TestSkipped, ob2memory
 
 
 class SecurityTests(unittest.TestCase):
@@ -98,11 +99,13 @@ class DomainTests(unittest.TestCase):
 
 
 class TestDS(DomainTests):
+    @xfail
     def testDsGetDcName(self):
         # Not sure what we can actually test here!  At least calling it
         # does something :)
         win32security.DsGetDcName()
 
+    @xfail
     def testDsListServerInfo(self):
         # again, not checking much, just exercising the code.
         h = win32security.DsBind()
@@ -122,6 +125,7 @@ class TestDS(DomainTests):
                 site):
                 pass
 
+    @xfail
     def testDsCrackNames(self):
         h = win32security.DsBind()
         fmt_offered = ntsecuritycon.DS_FQDN_1779_NAME
@@ -130,6 +134,7 @@ class TestDS(DomainTests):
             h, 0, fmt_offered, fmt_offered, (name,))
         assert name == result[0][2]
 
+    @xfail
     def testDsCrackNamesSyntax(self):
         # Do a syntax check only - that allows us to avoid binding.
         # But must use DS_CANONICAL_NAME (or _EX)
@@ -153,26 +158,29 @@ class TestTranslate(DomainTests):
         got = win32security.TranslateName(name, fmt_from, fmt_to)
         assert got == expected
 
+    @xfail
     def testTranslate1(self):
         self._testTranslate(
             win32api.NameFullyQualifiedDN,
             win32api.NameSamCompatible)
 
+    @xfail
     def testTranslate2(self):
         self._testTranslate(
             win32api.NameSamCompatible,
             win32api.NameFullyQualifiedDN)
 
+    @xfail
     def testTranslate3(self):
         self._testTranslate(
             win32api.NameFullyQualifiedDN,
             win32api.NameUniqueId)
 
+    @xfail
     def testTranslate4(self):
         self._testTranslate(
             win32api.NameUniqueId,
             win32api.NameFullyQualifiedDN)
 
-
-if __name__ == '__main__':
-    testmain()
+# if __name__ == '__main__':
+#     testmain()
