@@ -101,7 +101,6 @@ static_crt_modules = ["winxpgui"]
 from distutils.dep_util import newer_group
 from distutils.sysconfig import get_config_vars
 from distutils.filelist import FileList
-from distutils.errors import DistutilsExecError
 import distutils.util
 import subprocess
 import distutils.file_util
@@ -1585,59 +1584,6 @@ class my_compiler(base_compiler):
     # though, as we can just specify the lowercase name in the module def.
     _cpp_extensions = base_compiler._cpp_extensions + [".CPP"]
     src_extensions = base_compiler.src_extensions + [".CPP"]
-
-    def link(self,
-             target_desc,
-             objects,
-             output_filename,
-             output_dir=None,
-             libraries=None,
-             library_dirs=None,
-             runtime_library_dirs=None,
-             export_symbols=None,
-             debug=0, *args, **kw):
-        msvccompiler.MSVCCompiler.link(self,
-                                       target_desc,
-                                       objects,
-                                       output_filename,
-                                       output_dir,
-                                       libraries,
-                                       library_dirs,
-                                       runtime_library_dirs,
-                                       export_symbols,
-                                       debug, *args, **kw)
-        # Here seems a good place to stamp the version of the built
-        # target.  Do this externally to avoid suddenly dragging in the
-        # modules needed by this process, and which we will soon try and
-        # update.
-        try:
-            import optparse  # win32verstamp will not work without this!
-            ok = True
-        except ImportError:
-            ok = False
-        if ok:
-            stamp_script = os.path.join(sys.prefix, "Lib", "site-packages",
-                                        "win32", "lib", "win32verstamp.py")
-            ok = os.path.isfile(stamp_script)
-        if ok:
-            args = [sys.executable]
-            args.append(stamp_script)
-            args.append("--version=%s" % (pywin32_version,))
-            args.append("--comments=http://pywin32.sourceforge.net")
-            args.append(
-                "--original-filename=%s" %
-                (os.path.basename(output_filename),))
-            args.append("--product=PyWin32")
-            if '-v' not in sys.argv:
-                args.append("--quiet")
-            args.append(output_filename)
-            try:
-                self.spawn(args)
-            except DistutilsExecError as msg:
-                log.info("VersionStamp failed: %s", msg)
-                ok = False
-        if not ok:
-            log.info('Unable to import verstamp, no version info will be added')
 
 
 ################################################################
