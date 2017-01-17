@@ -88,7 +88,6 @@ from setuptools.command.build_ext import build_ext
 from distutils.command.build import build
 from distutils.command.install_data import install_data
 from setuptools.command.build_py import build_py
-from distutils.command.build_scripts import build_scripts
 
 bdist_msi = None  # Do not build any MSI scripts
 
@@ -712,16 +711,6 @@ class my_build_py(build_py):
             # file was copied
             self.updated_files.append(res[0])
         return res
-
-
-class my_build_scripts(build_scripts):
-
-    def copy_file(self, src, dest):
-        dest, copied = build_scripts.copy_file(self, src, dest)
-        # 2to3
-        # if not self.dry_run and copied:
-        # refactor_filenames([dest])
-        return dest, copied
 
 
 # 'build' command
@@ -2620,7 +2609,6 @@ cmdclass = {'install': my_install,
             'build_ext': my_build_ext,
             'install_data': my_install_data,
             'build_py': my_build_py,
-            'build_scripts': my_build_scripts,
             }
 
 dist = setup(name="pywin32",
@@ -2645,7 +2633,7 @@ dist = setup(name="pywin32",
                            },
                       },
 
-             scripts=["pywin32_postinstall.py", "pywin32_testall.py"],
+             scripts=["scripts/pywin32_postinstall.py", "pywin32_testall.py"],
 
              ext_modules=ext_modules,
 
@@ -2683,6 +2671,7 @@ dist = setup(name="pywin32",
                  'com/win32com/test/*.txt',
                  'com/win32com/test/*.vbs',
                  'com/win32com/test/*.xsl',
+                 'com/win32com/test/*.py',
                  # win32com docs
                  'com/win32com/HTML/*.html',
                  'com/win32com/HTML/image/*.gif',

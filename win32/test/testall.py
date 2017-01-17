@@ -1,8 +1,9 @@
-import sys
 import os
 import re
-import unittest
+import sys
 import traceback
+import unittest
+
 import pywin32_testutil
 
 # A list of demos that depend on user-interface of *any* kind.  Tests listed
@@ -82,7 +83,10 @@ class TestRunner:
         p = subprocess.Popen(self.argv,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
-        output, _ = p.communicate()
+        try:
+            output, _ = p.communicate(timeout=60)
+        except subprocess.TimeoutExpired:
+            p.kill()
         rc = p.returncode
 
         if rc:
