@@ -256,7 +256,7 @@ def find_platform_sdk_dir_setuptools():
 # http://bugs.python.org/issue7833 - that issue has a patch, but it is
 # languishing and will probably never be fixed for Python 2.6...
 if sys.version_info > (2, 6):
-    from distutils.msvccompiler import MSVCCompiler
+    from distutils._msvccompiler import MSVCCompiler
 
     MSVCCompiler._orig_spawn = MSVCCompiler.spawn
     MSVCCompiler._orig_link = MSVCCompiler.link
@@ -933,6 +933,12 @@ class my_build_ext(build_ext):
             for f in files:
                 print(('{}{}'.format(subindent, f)))
 
+    def fix_library_dirs(self, ext):
+        ext.library_dirs = ext.library_dirs or []
+        for library_dir in ['win32', 'win32com', 'pythonwin', 'com/win32com', 'com/win32comext/axscript']:
+            ext.library_dirs.append(os.path.join(self.build_temp, library_dir))
+            ext.library_dirs.append(os.path.join(self.build_temp, library_dir, 'src'))
+
     def build_extensions(self):
         # First, sanity-check the 'extensions' list
         self.check_extensions_list(self.extensions)
@@ -960,9 +966,7 @@ class my_build_ext(build_ext):
                 raise RuntimeError("Not a win32 package!")
             ext.extra_compile_args = ext.extra_compile_args or []
             ext.extra_compile_args.extend(['/DUNICODE', '/D_UNICODE', '/DWINNT'])
-            ext.library_dirs = ext.library_dirs or []
-            ext.library_dirs.append(os.path.join(self.build_temp, ext.get_pywin32_dir()))
-            ext.library_dirs.append(os.path.join(self.build_temp, ext.get_pywin32_dir(), 'src'))
+            self.fix_library_dirs(ext)
             if not hasattr(ext, 'swig_deps'):
                 ext.swig_deps = []
             self.current_extension = ext
@@ -970,13 +974,7 @@ class my_build_ext(build_ext):
 
         for ext in W32_exe_files:
             ext.finalize_options(self)
-            why = self._why_cant_build_extension(ext)
-            if why is not None:
-                self.excluded_extensions.append((ext, why))
-                assert why, "please give a reason, or None"
-                print(("Skipping %s: %s" % (ext.name, why)))
-                continue
-
+            self.fix_library_dirs(ext)
             try:
                 self.package = ext.get_pywin32_dir()
             except AttributeError:
@@ -1179,9 +1177,7 @@ class my_build_ext(build_ext):
         # output name is simply 'dir\name' we need to nothing.
 
         # 3.1+ pythoncom
-        if name == "pythoncom":
-            return r"pythoncom%d%d%s" % (
-                sys.version_info[0], sys.version_info[1], extra_dll)
+
         # The post 3.1 rest
         if name in ['perfmondata', 'PyISAPI_loader']:
             return name + extra_dll
@@ -1535,22 +1531,22 @@ win32_extensions += [
                  ),
     # winxpgui is built from win32gui.i, but sets up different #defines before
     # including windows.h.  It also has an XP style manifest.
-    WinExt_win32("winxpgui",
-                 sources="""
-                win32/src/winxpgui.rc win32/src/win32dynamicdialog.cpp
-                win32/src/win32gui.i
-               """.split(),
-                 libraries="gdi32 user32 comdlg32 comctl32 shell32",
-                 windows_h_version=0x0500,
-                 define_macros=[("WIN32GUI", None), ("WINXPGUI", None)],
-                 extra_swig_commands=["-DWINXPGUI"],
-                 ),
+    # WinExt_win32("winxpgui",
+    #             sources="""
+    #            win32/src/winxpgui.rc win32/src/win32dynamicdialog.cpp
+    #            win32/src/win32gui.i
+    #           """.split(),
+    #             libraries="gdi32 user32 comdlg32 comctl32 shell32",
+    #             windows_h_version=0x0500,
+    #             define_macros=[("WIN32GUI", None), ("WINXPGUI", None)],
+    #             extra_swig_commands=["-DWINXPGUI"],
+    #             ),
     # winxptheme
-    WinExt_win32("_winxptheme",
-                 sources=["win32/src/_winxptheme.i"],
-                 libraries="gdi32 user32 comdlg32 comctl32 shell32 Uxtheme",
-                 windows_h_version=0x0500,
-                 ),
+    # WinExt_win32("_winxptheme",
+    #             sources=["win32/src/_winxptheme.i"],
+    #             libraries="gdi32 user32 comdlg32 comctl32 shell32 Uxtheme",
+    #             windows_h_version=0x0500,
+    #             ),
 ]
 win32_extensions += [
     WinExt_win32('servicemanager',
