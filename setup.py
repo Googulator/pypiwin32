@@ -816,11 +816,6 @@ class my_build_ext(build_ext):
                 os.path.dirname(__file__),
                 'mapi'))
 
-        if ext.name in ['shell']:
-            return 'Extension is currently not supported'
-
-        return None
-
     def _build_scintilla(self):
         path = 'pythonwin\\Scintilla'
         makefile = 'makefile_pythonwin'
@@ -965,6 +960,9 @@ class my_build_ext(build_ext):
                 raise RuntimeError("Not a win32 package!")
             ext.extra_compile_args = ext.extra_compile_args or []
             ext.extra_compile_args.extend(['/DUNICODE', '/D_UNICODE', '/DWINNT'])
+            if not hasattr(ext, 'swig_deps'):
+                ext.swig_deps = []
+            self.current_extension = ext
             self.build_extension(ext)
 
         for ext in W32_exe_files:
