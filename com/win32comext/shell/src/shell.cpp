@@ -46,7 +46,7 @@ generates Windows .hlp files.
 #include "PyIPersistFolder.h"
 #include "PyIColumnProvider.h"
 #include "PyIDropTargetHelper.h"
-#include "PyIAsyncOperation.h"
+//#include "PyIAsyncOperation.h"
 #include "PyIQueryAssociations.h"
 #include "PyIDockingWindow.h"
 #include "PyIDeskBand.h"
@@ -3551,7 +3551,7 @@ static struct PyMethodDef shell_methods[]=
 	{ "SHCreateItemInKnownFolder", PySHCreateItemInKnownFolder, 1}, // @pymeth SHCreateItemInKnownFolder|Creates a Shell item object for a single file that exists inside a known folder.
 	{ "SHCreateItemWithParent", PySHCreateItemWithParent, 1}, // @pymeth SHCreateItemWithParent|Create a Shell item, given a parent folder and a child item ID.
 	{ "SHGetIDListFromObject", PySHGetIDListFromObject, 1}, // @pymeth SHGetIDListFromObject|Retrieves the PIDL of an object.
-	{ "SHGetInstanceExplorer", PySHGetInstanceExplorer, 1}, // @pymeth SHGetInstanceExplorer|Allows components that run in a Web browser (Iexplore.exe) or a nondefault Windows® Explorer (Explorer.exe) process to hold a reference to the process. The components can use the reference to prevent the process from closing prematurely.
+	{ "SHGetInstanceExplorer", PySHGetInstanceExplorer, 1}, // @pymeth SHGetInstanceExplorer|Allows components that run in a Web browser (Iexplore.exe) or a nondefault Windowsï¿½ Explorer (Explorer.exe) process to hold a reference to the process. The components can use the reference to prevent the process from closing prematurely.
 	{ "SHFileOperation", PySHFileOperation, 1}, // @pymeth SHFileOperation|Copies, moves, renames, or deletes a file system object.
 	{ "StringAsCIDA", PyStringAsCIDA, 1}, // @pymeth StringAsCIDA|Given a CIDA as a raw string, return pidl_folder, [pidl_children, ...]
 	{ "CIDAAsString", PyCIDAAsString, 1}, // @pymeth CIDAAsString|Given a (pidl, child_pidls) object, return a CIDA as a string
@@ -3580,7 +3580,7 @@ static const PyCom_InterfaceSupportInfo g_interfaceSupportData[] =
 	PYCOM_INTERFACE_IID_ONLY		  (ShellLinkA),
 	PYCOM_INTERFACE_CLSID_ONLY		  (ShellLink),
 	PYCOM_INTERFACE_IID_ONLY		  (ShellLinkW),
-	PYCOM_INTERFACE_FULL(AsyncOperation),
+	// PYCOM_INTERFACE_FULL(AsyncOperation),
 	PYCOM_INTERFACE_FULL(ContextMenu),
 	PYCOM_INTERFACE_SERVER_ONLY(ContextMenu2),
 	PYCOM_INTERFACE_SERVER_ONLY(ContextMenu3),

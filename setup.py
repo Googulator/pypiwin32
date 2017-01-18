@@ -1823,13 +1823,14 @@ com_extensions += [
     #                                  %(mapi)s/exchdapi.i         %(mapi)s/exchdapi.cpp
     #                                  ''' % dirs).split()),
 
+    #                         %(shell)s/PyIAsyncOperation.cpp
+
     WinExt_win32com('shell', libraries='shell32', pch_header="shell_pch.h",
                     windows_h_version=0x600,
                     sources=("""
                         %(shell)s/PyIActiveDesktop.cpp
                         %(shell)s/PyIApplicationDestinations.cpp
                         %(shell)s/PyIApplicationDocumentLists.cpp
-                        %(shell)s/PyIAsyncOperation.cpp
                         %(shell)s/PyIBrowserFrameOptions.cpp
                         %(shell)s/PyICategorizer.cpp
                         %(shell)s/PyICategoryProvider.cpp
@@ -1896,7 +1897,6 @@ com_extensions += [
                         %(shell)s/PyITransferSource.cpp
                         %(shell)s/PyIUniformResourceLocator.cpp
                         %(shell)s/shell.cpp
-
                         """ % dirs).split()),
 
     WinExt_win32com('propsys', libraries='propsys', delay_load_libraries='shell32',
