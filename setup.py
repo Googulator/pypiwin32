@@ -933,9 +933,13 @@ class my_build_ext(build_ext):
             for f in files:
                 print(('{}{}'.format(subindent, f)))
 
+    @staticmethod
+    def get_library_locations():
+        return ['win32', 'win32com', 'pythonwin', 'com/win32com', 'com/win32comext/axscript']
+
     def fix_library_dirs(self, ext):
         ext.library_dirs = ext.library_dirs or []
-        for library_dir in ['win32', 'win32com', 'pythonwin', 'com/win32com', 'com/win32comext/axscript']:
+        for library_dir in self.get_library_locations():
             ext.library_dirs.append(os.path.join(self.build_temp, library_dir))
             ext.library_dirs.append(os.path.join(self.build_temp, library_dir, 'src'))
 
@@ -1001,7 +1005,13 @@ class my_build_ext(build_ext):
             if self.debug:
                 suffix = "_d"
             fname = clib_file[1] % suffix
-            self.copy_file(os.path.join(self.build_temp, fname), target_dir)
+            for library_dir in self.get_library_locations():
+                for real_library_dir in [
+                    os.path.join(self.build_temp, library_dir),
+                    os.path.join(self.build_temp, library_dir, 'src'),
+                ]:
+                    if os.path.isfile(os.path.join(real_library_dir, fname)):
+                        self.copy_file(os.path.join(self.build_temp, fname), target_dir)
         # The MFC DLLs.
         try:
             target_dir = os.path.join(self.build_lib, "pythonwin")
