@@ -960,6 +960,9 @@ class my_build_ext(build_ext):
                 raise RuntimeError("Not a win32 package!")
             ext.extra_compile_args = ext.extra_compile_args or []
             ext.extra_compile_args.extend(['/DUNICODE', '/D_UNICODE', '/DWINNT'])
+            ext.library_dirs = ext.library_dirs or []
+            ext.library_dirs.append(os.path.join(self.build_temp, ext.get_pywin32_dir()))
+            ext.library_dirs.append(os.path.join(self.build_temp, ext.get_pywin32_dir(), 'src'))
             if not hasattr(ext, 'swig_deps'):
                 ext.swig_deps = []
             self.current_extension = ext
