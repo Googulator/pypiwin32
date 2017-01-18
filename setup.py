@@ -803,26 +803,6 @@ class my_build_ext(build_ext):
         assert extra not in self.library_dirs  # see above
         assert os.path.isdir(extra), "%s doesn't exist!" % (extra,)
         self.compiler.add_library_dir(extra)
-        # directx sdk sucks - how to locate it automatically?
-        # Must manually set DIRECTX_SDK_DIR for now.
-        # (but it appears November 2008 and later versions set DXSDK_DIR, so
-        # we allow both, allowing our "old" DIRECTX_SDK_DIR to override things
-        '''
-        for dxsdk_dir_var in ("DIRECTX_SDK_DIR", "DXSDK_DIR"):
-            dxsdk_dir = os.environ.get(dxsdk_dir_var)
-            if dxsdk_dir:
-                extra = os.path.join(dxsdk_dir, 'include')
-                assert os.path.isdir(extra), "%s doesn't exist!" % (extra,)
-                self.compiler.add_include_dir(extra)
-                if is_64bit:
-                    tail = 'x64'
-                else:
-                    tail = 'x86'
-                extra = os.path.join(dxsdk_dir, 'lib', tail)
-                assert os.path.isdir(extra), "%s doesn't exist!" % (extra,)
-                self.compiler.add_library_dir(extra)
-                break
-        '''
         log.debug(
             "After SDK processing, includes are %s",
             self.compiler.include_dirs)
@@ -836,111 +816,10 @@ class my_build_ext(build_ext):
                 os.path.dirname(__file__),
                 'mapi'))
 
-        # Vista SDKs have a 'VC' directory with headers and libs for older
-        # compilers.  We need to hack the support in here so that the
-        # directories are after the compiler's own.  As noted above, the
-        # only way to ensure they are after the compiler's is to put them
-        # in the environment, which has the nice side-effect of working
-        # for the rc executable.
-        # We know its not needed on vs9...
-        if get_build_version() < 9.0:
-            if os.path.isdir(os.path.join(sdk_dir, 'VC', 'INCLUDE')):
-                os.environ["INCLUDE"] += ";" + \
-                    os.path.join(sdk_dir, 'VC', 'INCLUDE')
-                log.debug(
-                    "Vista SDK found: %%INCLUDE%% now %s",
-                    os.environ["INCLUDE"])
-            if os.path.isdir(os.path.join(sdk_dir, 'VC', 'LIB')):
-                os.environ["LIB"] += ";" + os.path.join(sdk_dir, 'VC', 'LIB')
-                log.debug("Vista SDK found: %%LIB%% now %s", os.environ["LIB"])
-
-    def _why_cant_build_extension(self, ext):
-        # Return None, or a reason it can't be built.
-        # Exclude exchange 32-bit utility libraries from 64-bit
-        # builds. Note that the exchange module now builds, but only
-        # includes interfaces for 64-bit builds.
-        if self.plat_name == 'win-amd64' and ext.name in [
-                'exchdapi', 'exchange']:
-            return "No 64-bit library for utility functions available."
-        if get_build_version() >= 14 and ext.name in ['exchdapi', 'exchange']:
-            return "Haven't worked out how to make exchange modules build on vs2015"
-        include_dirs = self.compiler.include_dirs + \
-            os.environ.get("INCLUDE", "").split(os.pathsep)
-        if self.windows_h_version is None:
-            for d in include_dirs:
-                # We look for _WIN32_WINNT instead of WINVER as the Vista
-                # SDK defines _WIN32_WINNT as WINVER and we aren't that clever
-                # * Windows Server 2003 SDK sticks this version in WinResrc.h
-                # * Vista SDKs stick the version in sdkddkver.h
-                for header in ('WINDOWS.H', 'SDKDDKVER.H', "WinResrc.h"):
-                    look = os.path.join(d, header)
-                    if os.path.isfile(look):
-                        # read the fist 100 lines, looking for #define WINVER 0xNN
-                        # (Vista SDKs now define this based on _WIN32_WINNT,
-                        # which should still be fine for old versions)
-                        reob = re.compile(
-                            "#define\W*_WIN32_WINNT\W*(0x[0-9a-fA-F]+)")
-                        f = open(look, "r")
-                        for i in range(500):
-                            line = f.readline()
-                            match = reob.match(line)
-                            if match is not None:
-                                self.windows_h_version = int(
-                                    match.group(1), 16)
-                                log.info("Found version 0x%x in %s"
-                                         % (self.windows_h_version, look))
-                                break
-                        else:
-                            log.debug(
-                                "No version in %r - looking for another...", look)
-                    if self.windows_h_version is not None:
-                        break
-                if self.windows_h_version is not None:
-                    break
-            else:
-                raise RuntimeError("Can't find a version in Windows.h")
-        '''
-        if ext.windows_h_version is not None and \
-                        ext.windows_h_version > self.windows_h_version:
-            return "WINDOWS.H with version 0x%x is required, but only " \
-                   "version 0x%x is installed." \
-                   % (ext.windows_h_version, self.windows_h_version)
-        '''
         if ext.name in ['shell']:
             return 'Extension is currently not supported'
 
-        look_dirs = include_dirs
-        for h in ext.optional_headers:
-            for d in look_dirs:
-                if os.path.isfile(os.path.join(d, h)):
-                    break
-            else:
-                log.debug("Looked for %s in %s", h, look_dirs)
-                return "The header '%s' can not be located" % (h,)
-
-        common_dirs = self.compiler.library_dirs[:]
-        common_dirs += os.environ.get("LIB", "").split(os.pathsep)
-        patched_libs = []
-        for lib in ext.libraries:
-            if lib.lower() in self.found_libraries:
-                found = self.found_libraries[lib.lower()]
-            else:
-                look_dirs = common_dirs + ext.library_dirs
-                found = self.compiler.find_library_file(
-                    look_dirs, lib, self.debug)
-                if not found:
-                    log.debug("Looked for %s in %s", lib, look_dirs)
-                    return "No library '%s'" % lib
-                self.found_libraries[lib.lower()] = found
-            patched_libs.append(os.path.splitext(os.path.basename(found))[0])
-
-        if ext.platforms and self.plat_name not in ext.platforms:
-            return "Only available on platforms %s" % (ext.platforms,)
-
-        # We update the .libraries list with the resolved library name.
-        # This is really only so "_d" works.
-        ext.libraries = patched_libs
-        return None  # no reason - it can be built!
+        return None
 
     def _build_scintilla(self):
         path = 'pythonwin\\Scintilla'
