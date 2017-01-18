@@ -256,7 +256,7 @@ def find_platform_sdk_dir_setuptools():
 # http://bugs.python.org/issue7833 - that issue has a patch, but it is
 # languishing and will probably never be fixed for Python 2.6...
 if sys.version_info > (2, 6):
-    from distutils.msvc9compiler import MSVCCompiler
+    from distutils.msvccompiler import MSVCCompiler
 
     MSVCCompiler._orig_spawn = MSVCCompiler.spawn
     MSVCCompiler._orig_link = MSVCCompiler.link
