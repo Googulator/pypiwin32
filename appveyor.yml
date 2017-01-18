@@ -46,8 +46,7 @@ environment:
       TEST1_CMD: "py.test"
 
 matrix:
-  allow_failures:
-    - PYTHON_VERSION: "3.6"
+  fast_finish: true
 
 cache:
   # Cache downloaded pip packages.
