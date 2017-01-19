@@ -619,6 +619,8 @@ class my_build_ext(build_ext):
             if not hasattr(ext, 'swig_deps'):
                 ext.swig_deps = []
             ext.finalize_options(self)
+            ext.extra_link_args = ext.extra_link_args or []
+            ext.extra_link_args.extend(['/MANIFEST:NO'])
             self.current_extension = ext
             self.build_extension(ext)
 
