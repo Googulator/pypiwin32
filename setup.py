@@ -450,10 +450,7 @@ class WinExt_win32com_axdebug(WinExt_win32com):
     def __init__(self, name, **kw):
         # Later SDK versions again ship with activdbg.h, but if we attempt
         # to use our own copy of that file with that SDK, we fail to link.
-        if os.path.isfile(os.path.join(include_dir, "activdbg.h")):
-            kw.setdefault(
-                'extra_compile_args',
-                []).append("/DHAVE_SDK_ACTIVDBG")
+        kw.setdefault('extra_compile_args', []).append("/DHAVE_SDK_ACTIVDBG")
         WinExt_win32com.__init__(self, name, **kw)
 
 
