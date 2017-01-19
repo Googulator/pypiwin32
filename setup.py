@@ -744,9 +744,6 @@ class my_build_ext(build_ext):
             # Old Python version that doesn't support cross-compile
             self.plat_name = distutils.util.get_platform()
 
-    def copy_extensions_to_source(self):
-        pass
-
     def _fixup_sdk_dirs(self):
         # Adjust paths etc for the platform SDK - this prevents the user from
         # needing to manually add these directories via the MSVC UI.  Note
@@ -976,6 +973,20 @@ class my_build_ext(build_ext):
             self.current_extension = ext
             self.build_extension(ext)
 
+            extra = self.debug and "_d.lib" or ".lib"
+            if ext.name in ("pywintypes", "pythoncom", "axscript"):
+                name1 = "%s%s" % (ext.name, extra)
+                name2 = "%s%s" % (ext.name, extra)
+            elif ext.name in ("win32ui",):
+                name1 = name2 = ext.name + extra
+            else:
+                name1 = name2 = None
+            if name1 is not None:
+                src = os.path.join(self.build_temp, os.path.dirname(ext.sources[0]), name1)
+                dst = os.path.join(self.build_temp, name2)
+            if os.path.abspath(src) != os.path.abspath(dst):
+                self.copy_file(src, dst)
+
         for ext in W32_exe_files:
             ext.finalize_options(self)
             self.fix_library_dirs(ext)
@@ -996,22 +1007,17 @@ class my_build_ext(build_ext):
                       ['win32com', 'pythoncom%s.lib'],
                       ['win32com', 'axscript%s.lib'])
         # print('Listing build directory:')
-        # self.list_files(os.path.dirname(self.build_temp))
+        self.list_files(os.path.dirname(self.build_temp))
         for clib_file in clib_files:
-            target_dir = os.path.join(self.build_lib, clib_file[0], "libs")
+            target_dir = os.path.join(self.build_lib, clib_file[0], 'Lib')
             if not os.path.exists(target_dir):
                 self.mkpath(target_dir)
             suffix = ""
             if self.debug:
                 suffix = "_d"
             fname = clib_file[1] % suffix
-            for library_dir in self.get_library_locations():
-                for real_library_dir in [
-                    os.path.join(self.build_temp, library_dir),
-                    os.path.join(self.build_temp, library_dir, 'src'),
-                ]:
-                    if os.path.isfile(os.path.join(real_library_dir, fname)):
-                        self.copy_file(os.path.join(self.build_temp, fname), target_dir)
+            target_fname = '{}.dll'.format(os.path.splitext(fname)[0])
+            self.copy_file(os.path.join(self.build_temp, fname), os.path.join(target_dir, target_fname))
         # The MFC DLLs.
         try:
             target_dir = os.path.join(self.build_lib, "pythonwin")

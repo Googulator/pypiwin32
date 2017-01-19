@@ -1,7 +1,7 @@
 # Magic utility that "redirects" to pywintypesxx.dll
 import imp
-import sys
 import os
+import sys
 
 
 def __import_pywin32_system_module__(modname, globs):
@@ -46,8 +46,7 @@ def __import_pywin32_system_module__(modname, globs):
             break
     else:
         suffix = ""
-    filename = "%s%d%d%s.dll" % \
-               (modname, sys.version_info[0], sys.version_info[1], suffix)
+    filename = "%s%s.dll" % (modname, suffix)
     if hasattr(sys, "frozen"):
         # If we are running from a frozen program (py2exe, McMillan, freeze)
         # then we try and load the DLL from our sys.path
