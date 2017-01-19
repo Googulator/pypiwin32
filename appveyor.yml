@@ -79,7 +79,8 @@ install:
     ) ELSE (
       %CMD_IN_ENV% pip install -U --disable-pip-version-check --timeout 5 --retries 2 -r tests/requirements-win.txt )"
 
-  - "%CMD_IN_ENV% pip install -v -v -v ."
+  - "%CMD_IN_ENV% python setup.py build"
+  - "%CMD_IN_ENV% pip install ."
 
 build: none
 
