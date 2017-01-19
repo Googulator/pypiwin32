@@ -46,7 +46,7 @@ def __import_pywin32_system_module__(modname, globs):
             break
     else:
         suffix = ""
-    filename = "%s%s.dll" % (modname, suffix)
+    filename = "%s%s.pyd" % (modname, suffix)
     if hasattr(sys, "frozen"):
         # If we are running from a frozen program (py2exe, McMillan, freeze)
         # then we try and load the DLL from our sys.path

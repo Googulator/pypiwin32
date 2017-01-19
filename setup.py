@@ -652,17 +652,7 @@ class my_build_ext(build_ext):
                       ['win32com', 'pythoncom%s.lib'],
                       ['win32com', 'axscript%s.lib'])
         # print('Listing build directory:')
-        self.list_files(os.path.dirname(self.build_temp))
-        for clib_file in clib_files:
-            target_dir = os.path.join(self.build_lib, clib_file[0], 'Lib')
-            if not os.path.exists(target_dir):
-                self.mkpath(target_dir)
-            suffix = ""
-            if self.debug:
-                suffix = "_d"
-            fname = clib_file[1] % suffix
-            target_fname = '{}.dll'.format(os.path.splitext(fname)[0])
-            self.copy_file(os.path.join(self.build_temp, fname), os.path.join(target_dir, target_fname))
+        # self.list_files(os.path.dirname(self.build_temp))
         # The MFC DLLs.
         try:
             target_dir = os.path.join(self.build_lib, "pythonwin")
