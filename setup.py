@@ -618,6 +618,7 @@ class my_build_ext(build_ext):
             ext.extra_compile_args.extend(['/DUNICODE', '/D_UNICODE', '/DWINNT'])
             if not hasattr(ext, 'swig_deps'):
                 ext.swig_deps = []
+            ext.finalize_options(self)
             self.current_extension = ext
             self.build_extension(ext)
 
