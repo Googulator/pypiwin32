@@ -595,16 +595,6 @@ class my_build_ext(build_ext):
             for f in files:
                 print(('{}{}'.format(subindent, f)))
 
-    @staticmethod
-    def get_library_locations():
-        return ['win32', 'win32com', 'pythonwin', 'com/win32com', 'com/win32comext/axscript']
-
-    def fix_library_dirs(self, ext):
-        ext.library_dirs = ext.library_dirs or []
-        for library_dir in self.get_library_locations():
-            ext.library_dirs.append(os.path.join(self.build_temp, library_dir))
-            ext.library_dirs.append(os.path.join(self.build_temp, library_dir, 'src'))
-
     def build_extensions(self):
         # First, sanity-check the 'extensions' list
         self.check_extensions_list(self.extensions)
@@ -629,7 +619,6 @@ class my_build_ext(build_ext):
                 raise RuntimeError("Not a win32 package!")
             ext.extra_compile_args = ext.extra_compile_args or []
             ext.extra_compile_args.extend(['/DUNICODE', '/D_UNICODE', '/DWINNT'])
-            self.fix_library_dirs(ext)
             if not hasattr(ext, 'swig_deps'):
                 ext.swig_deps = []
             self.current_extension = ext
@@ -651,7 +640,6 @@ class my_build_ext(build_ext):
 
         for ext in W32_exe_files:
             ext.finalize_options(self)
-            self.fix_library_dirs(ext)
             try:
                 self.package = ext.get_pywin32_dir()
             except AttributeError:
