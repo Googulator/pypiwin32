@@ -582,16 +582,6 @@ class my_build_ext(build_ext):
             os.path.join(self.build_temp, "scintilla", base_name),
             os.path.join(self.build_lib, "pythonwin"))
 
-    @staticmethod
-    def list_files(startpath):
-        for root, dirs, files in os.walk(startpath):
-            level = root.replace(startpath, '').count(os.sep)
-            indent = ' ' * 4 * (level)
-            print(('{}{}/'.format(indent, os.path.basename(root))))
-            subindent = ' ' * 4 * (level + 1)
-            for f in files:
-                print(('{}{}'.format(subindent, f)))
-
     def build_extensions(self):
         # First, sanity-check the 'extensions' list
         self.check_extensions_list(self.extensions)
