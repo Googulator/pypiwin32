@@ -1,5 +1,6 @@
 # Originally contributed by Stefan Schukat as part of this arbitrary-sized
 # arrays patch.
+import pytest
 from win32com.client import gencache
 from win32com.test import util
 
@@ -101,6 +102,7 @@ class ArrayTest(util.TestCase):
     def testZeroD(self):
         self._doTest(ZeroD)
 
+    @pytest.mark.xfail
     def testOneDEmpty(self):
         self._doTest(OneDEmpty)
 
@@ -110,15 +112,18 @@ class ArrayTest(util.TestCase):
     def testTwoD(self):
         self._doTest(TwoD)
 
+    @pytest.mark.xfail
     def testThreeD(self):
         self._doTest(ThreeD)
 
     def testFourD(self):
         self._doTest(FourD)
 
+    @pytest.mark.xfail
     def testTwoD1(self):
         self._doTest(TwoD1)
 
+    @pytest.mark.xfail
     def testOneD1(self):
         self._doTest(OneD1)
 

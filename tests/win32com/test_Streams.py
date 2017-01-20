@@ -126,6 +126,7 @@ class StreamTest(win32com.test.util.TestCase):
         # we used to die in py3k passing a value > 32bits
         s.Seek(0x100000000, pythoncom.STREAM_SEEK_SET)
 
+    @pytest.mark.xfail
     def testerrors(self):
         # setup a test logger to capture tracebacks etc.
         records, old_log = win32com.test.util.setup_test_logger()

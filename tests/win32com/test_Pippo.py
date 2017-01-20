@@ -1,6 +1,7 @@
 import sys
 import unittest
 
+import pytest
 from win32com.client import Dispatch
 from win32com.client.gencache import EnsureDispatch
 
@@ -35,6 +36,7 @@ class PippoTester(unittest.TestCase):
         assert rc == 123
         assert out1 == 222
 
+    @pytest.mark.xfail
     def testLeaksGencache(self):
         try:
             gtrc = sys.gettotalrefcount

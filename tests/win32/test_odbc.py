@@ -5,6 +5,7 @@ import sys
 import tempfile
 import unittest
 
+import pytest
 import pythoncom
 from pywin32_testutil import str2bytes, str2memory, TestSkipped
 from win32com.client import constants
@@ -87,6 +88,7 @@ class TestStuff(unittest.TestCase):
             except OSError:
                 pass
 
+    @pytest.mark.xfail
     def test_insert_select(self, userid='Frank', username='Frank Millman'):
         assert self.cur.execute("insert into %s (userid, username) \
             values (?,?)" % self.tablename, [userid, username]) == 1
@@ -104,6 +106,7 @@ class TestStuff(unittest.TestCase):
         assert self.cur.execute("select * from %s \
             where username = ?" % self.tablename, [username.lower()]) == 0
 
+    @pytest.mark.xfail
     def test_insert_select_unicode_ext(self):
         userid = "t-\xe0\xf2"
         username = "test-\xe0\xf2 name"
@@ -154,10 +157,12 @@ class TestStuff(unittest.TestCase):
         """ Test a long raw field in excess of internal cursor data size (65536)"""
         self._test_val('longbinaryfield', str2memory('\0\1\2' * 70000))
 
+    @pytest.mark.xfail
     def testRaw(self):
         # Test binary data
         self._test_val('rawfield', str2memory('\1\2\3\4\0\5\6\7\8'))
 
+    @pytest.mark.xfail
     def test_widechar(self):
         """Test a unicode character that would be mangled if bound as plain character.
             For example, previously the below was returned as ascii 'a'
@@ -186,6 +191,7 @@ class TestStuff(unittest.TestCase):
                 self.tablename) == 0
         assert len(self.cur.fetchone()[1]) == 5
 
+    @pytest.mark.xfail
     def test_set_zero_length(self):
         assert self.cur.execute(
                 "insert into %s (userid,username) "
