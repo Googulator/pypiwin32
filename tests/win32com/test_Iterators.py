@@ -17,6 +17,7 @@ def yield_iter(iter):
 
 
 class _BaseTestCase(win32com.test.util.TestCase):
+    @pytest.mark.xfail
     def test_enumvariant_vb(self):
         ob, iter = self.iter_factory()
         got = []
@@ -24,6 +25,7 @@ class _BaseTestCase(win32com.test.util.TestCase):
             got.append(v)
         assert got == self.expected_data
 
+    @pytest.mark.xfail
     def test_yield(self):
         ob, i = self.iter_factory()
         got = []
@@ -43,6 +45,7 @@ class _BaseTestCase(win32com.test.util.TestCase):
         with pytest.raises(AttributeError):
             getattr(object, "next")
 
+    @pytest.mark.xfail
     def test_nonenum_wrapper(self):
         # Check our raw PyIDispatch
         ob = self.object._oleobj_

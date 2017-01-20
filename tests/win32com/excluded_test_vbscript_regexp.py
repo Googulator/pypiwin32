@@ -1,5 +1,6 @@
 import unittest
 
+import pytest
 import win32com.test.util
 from win32com.client.dynamic import DumbDispatch
 from win32com.client.gencache import EnsureDispatch
@@ -31,6 +32,7 @@ class RegexTest(win32com.test.util.TestCase):
         re = DumbDispatch("VBScript.Regexp")
         self._TestVBScriptRegex(re)
 
+    @pytest.mark.fail
     def testGenerated(self):
         re = EnsureDispatch("VBScript.Regexp")
         self._TestVBScriptRegex(re)

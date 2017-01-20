@@ -1,6 +1,7 @@
 import sys
 import unittest
 
+import pytest
 from win32com.client import Dispatch
 from win32com.client.gencache import EnsureDispatch
 
@@ -13,6 +14,7 @@ class PippoTester(unittest.TestCase):
         # create it.
         self.object = Dispatch("Python.Test.Pippo")
 
+    @pytest.mark.xfail
     def testLeaks(self):
         try:
             gtrc = sys.gettotalrefcount
@@ -30,11 +32,13 @@ class PippoTester(unittest.TestCase):
         if end - start > 5:
             self.fail("We lost %d references!" % (end - start,))
 
+    @pytest.mark.xfail
     def testResults(self):
         rc, out1 = self.object.Method2(123, 111)
         assert rc == 123
         assert out1 == 222
 
+    @pytest.mark.xfail
     def testLeaksGencache(self):
         try:
             gtrc = sys.gettotalrefcount

@@ -157,6 +157,7 @@ class FILEGROUPDESCRIPTORTester(win32com.test.util.TestCase):
     def testSimpleUnicode(self):
         self._testSimple(True)
 
+    @pytest.mark.xfail
     def testComplex(self):
         clsid = pythoncom.MakeIID("{CD637886-DB8B-4b04-98B5-25731E1495BE}")
         ctime, atime, wtime = self._getTestTimes()
@@ -171,6 +172,7 @@ class FILEGROUPDESCRIPTORTester(win32com.test.util.TestCase):
                  nFileSize=sys_maxsize + 1)
         self._testRT(d)
 
+    @pytest.mark.xfail
     def testUnicode(self):
         # exercise a bug fixed in build 210 - multiple unicode objects failed.
         ctime, atime, wtime = self._getTestTimes()

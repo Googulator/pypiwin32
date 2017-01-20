@@ -3,6 +3,8 @@
 
 import sys
 
+import pytest
+
 sys.coinit_flags = 0  # Must be free-threaded!
 import pythoncom
 import time
@@ -772,7 +774,8 @@ class Tester(win32com.test.util.TestCase):
         TestGenerated()
 
 
-if __name__ == '__main__':
+@pytest.mark.xfail
+def test():
     # XXX - todo - Complete hack to crank threading support.
     # Should NOT be necessary
     def NullThreadFunc():

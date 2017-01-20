@@ -26,6 +26,7 @@ import traceback
 import win32api
 import win32event
 
+import pytest
 import pythoncom
 import win32com.client
 
@@ -92,6 +93,7 @@ def BeginThreadsSimpleMarshal(numThreads, cookie):
     return ret
 
 
+@pytest.mark.xfail
 def test(fn):
     print("The main thread is %d" % (win32api.GetCurrentThreadId()))
     GIT = CreateGIT()

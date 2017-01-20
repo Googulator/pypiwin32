@@ -18,10 +18,12 @@ import string
 import sys
 import win32api
 
+import pytest
 import pythoncom
 import win32com.client
 
 
+@pytest.mark.xfail
 def test(serverName):
     if string.lower(serverName) == string.lower(win32api.GetComputerName()):
         print("You must specify a remote server name, not the local machine!")
