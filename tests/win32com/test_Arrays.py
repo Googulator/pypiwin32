@@ -99,6 +99,7 @@ class ArrayTest(util.TestCase):
         self.arr.Array = array
         assert _normalize_array(self.arr.Array) == array
 
+    @pytest.mark.xfail
     def testZeroD(self):
         self._doTest(ZeroD)
 
@@ -130,9 +131,11 @@ class ArrayTest(util.TestCase):
     def testOneD1(self):
         self._doTest(OneD1)
 
+    @pytest.mark.xfail
     def testOneD2(self):
         self._doTest(OneD2)
 
+    @pytest.mark.xfail
     def testLargeD(self):
         self._doTest(LargeD)
 

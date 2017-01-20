@@ -3,6 +3,7 @@ import os
 import sys
 import win32api
 
+import pytest
 import win32com.axscript
 import win32com.axscript.client
 import win32com.test.util
@@ -30,6 +31,7 @@ class AXScript(win32com.test.util.TestCase):
             print("Testing Python Scripting host")
         win32com.test.util.ExecuteShellCommand(cmd, self)
 
+    @pytest.mark.xfail
     def testCScript(self):
         file = win32api.GetFullPathName(
             os.path.join(

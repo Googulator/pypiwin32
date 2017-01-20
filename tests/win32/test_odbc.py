@@ -135,6 +135,7 @@ class TestStuff(unittest.TestCase):
         self._test_val('bitfield', 1)
         self._test_val('bitfield', 0)
 
+    @pytest.mark.xfail
     def testInt(self):
         self._test_val('intfield', 1)
         self._test_val('intfield', 0)
@@ -144,6 +145,7 @@ class TestStuff(unittest.TestCase):
             big = sys.maxsize
         self._test_val('intfield', big)
 
+    @pytest.mark.xfail
     def testFloat(self):
         self._test_val('floatfield', 1.01)
         self._test_val('floatfield', 0)
@@ -183,6 +185,7 @@ class TestStuff(unittest.TestCase):
             d = datetime.datetime(*v)
             self._test_val('datefield', d)
 
+    @pytest.mark.xfail
     def test_set_nonzero_length(self):
         assert self.cur.execute(
                 "insert into %s (userid,username) "

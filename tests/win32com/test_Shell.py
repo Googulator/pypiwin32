@@ -157,6 +157,7 @@ class FILEGROUPDESCRIPTORTester(win32com.test.util.TestCase):
     def testSimpleUnicode(self):
         self._testSimple(True)
 
+    @pytest.mark.xfail
     def testComplex(self):
         clsid = pythoncom.MakeIID("{CD637886-DB8B-4b04-98B5-25731E1495BE}")
         ctime, atime, wtime = self._getTestTimes()
