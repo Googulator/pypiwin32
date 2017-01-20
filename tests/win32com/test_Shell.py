@@ -171,6 +171,7 @@ class FILEGROUPDESCRIPTORTester(win32com.test.util.TestCase):
                  nFileSize=sys_maxsize + 1)
         self._testRT(d)
 
+    @pytest.mark.xfail
     def testUnicode(self):
         # exercise a bug fixed in build 210 - multiple unicode objects failed.
         ctime, atime, wtime = self._getTestTimes()

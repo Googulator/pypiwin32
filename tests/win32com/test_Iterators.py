@@ -45,6 +45,7 @@ class _BaseTestCase(win32com.test.util.TestCase):
         with pytest.raises(AttributeError):
             getattr(object, "next")
 
+    @pytest.mark.xfail
     def test_nonenum_wrapper(self):
         # Check our raw PyIDispatch
         ob = self.object._oleobj_

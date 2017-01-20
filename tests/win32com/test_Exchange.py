@@ -5,6 +5,7 @@
 
 import os
 
+import pytest
 import pythoncom
 from win32com.client import gencache
 
@@ -93,6 +94,7 @@ def TestUser(session):
         print("%s/%s=%s" % (field.Name, id, field.Value))
 
 
+@pytest.mark.xfail
 def test():
     oldcwd = os.getcwd()
     try:

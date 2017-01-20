@@ -106,9 +106,11 @@ class ArrayTest(util.TestCase):
     def testOneDEmpty(self):
         self._doTest(OneDEmpty)
 
+    @pytest.mark.xfail
     def testOneD(self):
         self._doTest(OneD)
 
+    @pytest.mark.xfail
     def testTwoD(self):
         self._doTest(TwoD)
 
@@ -116,6 +118,7 @@ class ArrayTest(util.TestCase):
     def testThreeD(self):
         self._doTest(ThreeD)
 
+    @pytest.mark.xfail
     def testFourD(self):
         self._doTest(FourD)
 

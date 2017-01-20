@@ -97,6 +97,7 @@ class TestStuff(unittest.TestCase):
         assert self.cur.execute("select * from %s \
             where username = ?" % self.tablename, [username.lower()]) == 0
 
+    @pytest.mark.xfail
     def test_insert_select_unicode(
             self, userid='Frank', username="Frank Millman"):
         assert self.cur.execute("insert into %s (userid, username)\
@@ -129,6 +130,7 @@ class TestStuff(unittest.TestCase):
             row = rows[0]
             assert row[0] == value
 
+    @pytest.mark.xfail
     def testBit(self):
         self._test_val('bitfield', 1)
         self._test_val('bitfield', 0)
@@ -146,13 +148,16 @@ class TestStuff(unittest.TestCase):
         self._test_val('floatfield', 1.01)
         self._test_val('floatfield', 0)
 
+    @pytest.mark.xfail
     def testVarchar(self, ):
         self._test_val('username', 'foo')
 
+    @pytest.mark.xfail
     def testLongVarchar(self):
         """ Test a long text field in excess of internal cursor data size (65536)"""
         self._test_val('longtextfield', 'abc' * 70000)
 
+    @pytest.mark.xfail
     def testLongBinary(self):
         """ Test a long raw field in excess of internal cursor data size (65536)"""
         self._test_val('longbinaryfield', str2memory('\0\1\2' * 70000))
@@ -169,6 +174,7 @@ class TestStuff(unittest.TestCase):
         """
         self._test_val('username', '\u0101')
 
+    @pytest.mark.xfail
     def testDates(self):
         import datetime
         for v in (
@@ -203,6 +209,7 @@ class TestStuff(unittest.TestCase):
                 self.tablename) == 0
         assert len(self.cur.fetchone()[1]) == 0
 
+    @pytest.mark.xfail
     def test_set_zero_length_unicode(self):
         assert self.cur.execute(
                 "insert into %s (userid,username) "

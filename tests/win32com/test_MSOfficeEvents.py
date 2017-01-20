@@ -5,6 +5,7 @@ import threading
 import time
 import types
 
+import pytest
 import pythoncom
 from win32com.client import DispatchWithEvents
 
@@ -124,6 +125,7 @@ def _CheckSeenEvents(o, events):
     return rc
 
 
+@pytest.mark.xfail
 def test():
     import sys
     if "noword" not in sys.argv[1:]:

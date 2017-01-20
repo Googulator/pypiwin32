@@ -4,7 +4,6 @@
 
 import sys
 
-import netscape
 import pytest
 
 error = "Netscape Test Error"
@@ -12,6 +11,7 @@ error = "Netscape Test Error"
 
 @pytest.mark.xfail
 def main():
+    import netscape
     n = netscape.CNetworkCX()
     rc = n.Open("http://d|/temp/apyext.html", 0, None, 0, None)
     if not rc:
