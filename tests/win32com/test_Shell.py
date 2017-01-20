@@ -231,7 +231,6 @@ class FileOperationTester(win32com.test.util.TestCase):
             if os.path.isfile(fname):
                 os.unlink(fname)
 
-    @pytest.mark.xfail
     def testCopy(self):
         s = (0,  # hwnd,
              FO_COPY,  # operation
