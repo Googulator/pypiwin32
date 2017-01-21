@@ -554,7 +554,7 @@ class my_build_ext(build_ext):
                 if name1 is not None:
                     src = os.path.join(self.build_temp, os.path.dirname(ext.sources[0]), name1)
                     dst = os.path.join(self.build_temp, name2)
-                if os.path.abspath(src) != os.path.abspath(dst) and os.path.isfile(src):
+                if os.path.abspath(src) != os.path.abspath(dst) and os.path.isfile(src) and not os.path.isfile(dst):
                     print('Copying file from: ', src)
                     print('Copying file to: ', dst)
                     self.copy_file(src, dst)
