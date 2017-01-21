@@ -1,9 +1,9 @@
 import unittest
-from win32inet import *
 
 import pytest
 import winerror
 from pywin32_testutil import str2bytes  # py3k-friendly helper
+from win32inet import *
 from win32inetcon import *
 
 
@@ -55,7 +55,7 @@ class TestNetwork(unittest.TestCase):
         # This must appear somewhere on the main page!
         assert data.find(str2bytes("Python")) > 0, repr(data)
 
-    @pytest.mark.xfail
+    @pytest.mark.skip
     def testFtpCommand(self):
         # ftp.python.org doesn't exist.  ftp.gnu.org is what Python's urllib
         # test code uses.

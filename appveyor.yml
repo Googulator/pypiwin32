@@ -80,6 +80,7 @@ install:
       %CMD_IN_ENV% pip install -U --disable-pip-version-check --timeout 5 --retries 2 -r tests/requirements-win.txt )"
 
   - "%CMD_IN_ENV% python setup.py build"
+  - "%CMD_IN_ENV% python setup.py bdist_wheel"
   - "%CMD_IN_ENV% pip install ."
 
 build: none
@@ -88,6 +89,9 @@ test_script:
   # Run the tests appropriate for this entry in the test matrix. Skip tests
   # if we're just updating the cache.
   - "if not \"%APPVEYOR_SCHEDULED_BUILD%\" == \"True\" (%CMD_IN_ENV% %TEST1_CMD% )"
+
+artifacts:
+  - path: '**\*.whl'
 
 on_finish:
   # - "python .\\tests\\scripts\\list_sitepackages.py"
