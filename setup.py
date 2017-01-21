@@ -525,7 +525,7 @@ class my_build_ext(build_ext):
 
     def run(self):
         build_ext.run(self)
-        # self.run_command('build_scintilla')
+        self.run_command('build_scintilla')
 
     def build_extensions(self):
         # First, sanity-check the 'extensions' list
@@ -572,8 +572,7 @@ class my_build_ext(build_ext):
                     print('Copying file to: ', dst)
                     self.copy_file(src, dst)
 
-                    # self._copy_mfc()
-        # self._build_scintilla()
+        # self._copy_mfc()
         # Copy cpp lib files needed to create Python COM extensions
         # print('Listing build directory:')
         # self.list_files(os.path.dirname(self.build_temp))
