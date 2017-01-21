@@ -515,6 +515,11 @@ class my_build_ext(build_ext):
             # Old Python version that doesn't support cross-compile
             self.plat_name = distutils.util.get_platform()
 
+    def _link_executable(self, *args, **kwargs):
+        del kwargs['export_symbols']
+        del kwargs['build_temp']
+        return self.compiler.link_executable(*args, **kwargs)
+
     def run(self):
         build_ext.run(self)
         # self.run_command('build_scintilla')
@@ -532,6 +537,7 @@ class my_build_ext(build_ext):
             if not self.compiler.initialized:
                 self.compiler.initialize()
 
+        link_shared_object = self.compiler.link_shared_object
         # Here we hack a "pywin32" directory (one of 'win32', 'win32com',
         # 'pythonwin' etc), as distutils doesn't seem to like the concept
         # of multiple top-level directories.
@@ -541,7 +547,11 @@ class my_build_ext(build_ext):
                 self.package = ext.get_pywin32_dir()
             except AttributeError:
                 raise RuntimeError("Not a win32 package!")
+            if issubclass(type(ext), WinExt_Executable):
+                self.compiler.link_shared_object = self._link_executable
             self.build_extension(ext)
+            if issubclass(type(ext), WinExt_Executable):
+                self.compiler.link_shared_object = link_shared_object
             if not issubclass(type(ext), WinExt_Executable):
                 extra = self.debug and "_d.lib" or ".lib"
                 if ext.name in ("pywintypes", "pythoncom", "axscript"):
@@ -627,20 +637,14 @@ class my_build_ext(build_ext):
     def get_ext_filename(self, name):
         # The pywintypes and pythoncom extensions have special names
         extra_dll = self.debug and "_d.dll" or ".dll"
-        extra_exe = self.debug and "_d.exe" or ".exe"
         # *sob* - python fixed this bug in python 3.1 (bug 6403)
         # So in the fixed versions we only get the base name, and if the
         # output name is simply 'dir\name' we need to nothing.
 
-        # 3.1+ pythoncom
-
-        # The post 3.1 rest
         if name in ['perfmondata', 'PyISAPI_loader']:
             return name + extra_dll
-        elif name in ['pythonservice', 'Pythonwin']:
-            return name + extra_exe
-
-        return build_ext.get_ext_filename(self, name)
+        else:
+            return build_ext.get_ext_filename(self, name)
 
     def get_export_symbols(self, ext):
         if issubclass(type(ext), WinExt_Executable):
@@ -1572,7 +1576,7 @@ W32_exe_files = [
                          "Pythonwin/pythonwin.rc",
                          "Pythonwin/stdafxpw.cpp",
                      ],
-                                extra_link_args=["/SUBSYSTEM:WINDOWS"],
+                                extra_link_args=["/SUBSYSTEM:WINDOWS", "/ENTRY:wWinMainCRTStartup"],
                                 optional_headers=['afxres.h']),
 ]
 
