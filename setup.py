@@ -89,6 +89,7 @@ from distutils.core import Command
 bdist_msi = None  # Do not build any MSI scripts
 
 from distutils import log
+from distutils._msvccompiler import _find_exe
 
 # some modules need a static CRT to avoid problems caused by them having a
 # manifest.
@@ -438,10 +439,11 @@ class build_scintilla(Command):
     user_options = []
 
     def initialize_options(self):
-        pass
+        self.debug = False
+        self.build_temp = None
 
     def finalize_options(self):
-        pass
+        self.set_undefined_options('build', ('build_temp', 'build_temp'))
 
     def _build_scintilla(self):
         path = 'pythonwin\\Scintilla'
@@ -476,8 +478,9 @@ class build_scintilla(Command):
 
         cwd = os.getcwd()
         os.chdir(path)
+        nmake = _find_exe("nmake.exe")
         try:
-            cmd = ["nmake.exe", "/nologo", "/f", makefile] + makeargs
+            cmd = [nmake, "/nologo", "/f", makefile] + makeargs
             self.spawn(cmd)
         finally:
             os.chdir(cwd)
