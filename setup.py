@@ -85,11 +85,11 @@ from setuptools.command.build_ext import build_ext
 from distutils.command.build import build
 from distutils.command.install_data import install_data
 from distutils.core import Command
+from distutils.version import LooseVersion
 
 bdist_msi = None  # Do not build any MSI scripts
 
 from distutils import log
-from distutils._msvccompiler import _find_exe
 
 # some modules need a static CRT to avoid problems caused by them having a
 # manifest.
@@ -442,6 +442,10 @@ class build_scintilla(Command):
         self.debug = False
         self.build_temp = None
 
+        sdk_path = 'C:\\Program Files\\Microsoft SDKs\\Windows'
+        windows_sdk = next(reversed(sorted(os.listdir(sdk_path), key=LooseVersion)))
+        self.sdk_dir = os.path.join(sdk_path, windows_sdk)
+
     def finalize_options(self):
         self.set_undefined_options('build', ('build_temp', 'build_temp'))
 
@@ -478,9 +482,10 @@ class build_scintilla(Command):
 
         cwd = os.getcwd()
         os.chdir(path)
-        nmake = _find_exe("nmake.exe")
         try:
-            cmd = [nmake, "/nologo", "/f", makefile] + makeargs
+            setenv_cmd = [os.path.join(self.sdk_dir, "Bin", "SetEnv.cmd")]
+            nmake_cmd = ["nmake.exe", "/nologo", "/f", makefile] + makeargs
+            cmd = ["cmd.exe", "/c", '"{}" && "{}"'.format(' '.join(setenv_cmd), ' '.join(nmake_cmd))]
             self.spawn(cmd)
         finally:
             os.chdir(cwd)
