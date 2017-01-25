@@ -24,3 +24,4 @@ pycmd  # Contains 'py.cleanup' that removes all .pyc files and similar.
 codecov
 pytest-cov
 packaging
+cmdvars

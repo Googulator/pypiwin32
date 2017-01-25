@@ -77,6 +77,7 @@ is_py3k = sys.version_info > (3,)  # get this out of the way early on...
 # We have special handling for _winreg so our setup3.py script can avoid
 # using the 'imports' fixer and therefore start much faster...
 import winreg
+import shutil
 
 # The rest of our imports.
 from setuptools import setup
@@ -100,6 +101,7 @@ from distutils.sysconfig import get_config_vars
 from distutils.filelist import FileList
 import distutils.util
 import distutils.file_util
+import subprocess
 
 # prevent the new in 3.5 suffix of "cpXX-win32" from being added.
 # (adjusting both .cp35-win_amd64.pyd and .cp35-win32.pyd to .pyd)
@@ -441,13 +443,16 @@ class build_scintilla(Command):
     def initialize_options(self):
         self.debug = False
         self.build_temp = None
+        self.build_lib = None
 
         sdk_path = 'C:\\Program Files\\Microsoft SDKs\\Windows'
         windows_sdk = next(reversed(sorted(os.listdir(sdk_path), key=LooseVersion)))
         self.sdk_dir = os.path.join(sdk_path, windows_sdk)
 
     def finalize_options(self):
-        self.set_undefined_options('build', ('build_temp', 'build_temp'))
+        self.set_undefined_options('build',
+                                   ('build_temp', 'build_temp'),
+                                   ('build_lib', 'build_lib'))
 
     def _build_scintilla(self):
         path = 'pythonwin\\Scintilla'
@@ -483,10 +488,12 @@ class build_scintilla(Command):
         cwd = os.getcwd()
         os.chdir(path)
         try:
-            setenv_cmd = [os.path.join(self.sdk_dir, "Bin", "SetEnv.cmd")]
-            nmake_cmd = ["nmake.exe", "/nologo", "/f", makefile] + makeargs
-            cmd = ["cmd.exe", "/c", '"{}" && "{}"'.format(' '.join(setenv_cmd), ' '.join(nmake_cmd))]
-            self.spawn(cmd)
+            import cmdvars
+            env = cmdvars.get_vars(os.path.join(self.sdk_dir, "Bin", "SetEnv.cmd"))
+            nmake = shutil.which('nmake.exe', path=env['path'])
+            proc = subprocess.Popen([nmake, "/nologo", "/f", makefile] + makeargs, env=env)
+            outs, errs = proc.communicate()
+            print(outs, errs)
         finally:
             os.chdir(cwd)
 
@@ -1794,7 +1801,7 @@ dist = setup(name="pywin32",
              package_dir=package_dir,
              packages=packages,
              py_modules=py_modules,
-             setup_requires=['setuptools>=24.0'],
+             setup_requires=['setuptools>=24.0', 'cmdvars'],
 
              data_files=[('', (os.path.join(gettempdir(), 'pywin32.version.txt'),))] +
              convert_optional_data_files([
