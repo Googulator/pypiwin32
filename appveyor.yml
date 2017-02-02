@@ -10,6 +10,8 @@ environment:
     # /E:ON and /V:ON options are not enabled in the batch script intepreter
     # See: http://stackoverflow.com/a/13751649/163740
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\tests\\scripts\\appveyor\\run_with_env.cmd"
+    SONAR_TOKEN:
+      secure: uu1kmw00hbvZjH7/2JB3vbM1awCLXBykIOC2zzAbCVKZlEYdyXir5HGpUmvu76Ax
 
   matrix:
     - PYTHON: "C:\\Python35-x64"
@@ -57,6 +59,7 @@ init:
   - "ECHO \"%APPVEYOR_SCHEDULED_BUILD%\""
 
 install:
+  - "choco install sonarcube-scanner"
   # Prepend newly installed Python to the PATH of this build (this cannot be
   # done from inside the powershell script as it would require to restart
   # the parent CMD process).
@@ -95,3 +98,5 @@ artifacts:
 on_finish:
   # - "python .\\tests\\scripts\\list_sitepackages.py"
   - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\junit-results.xml))
+  
+  - "sonar-scanner -Dsonar.projectKey=pywin32 -Dsonar.sources=. -Dsonar.host.url=https://sonarqube.com -Dsonar.login=%SONAR_TOKEN%"
