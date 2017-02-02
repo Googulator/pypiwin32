@@ -99,4 +99,4 @@ on_finish:
   # - "python .\\tests\\scripts\\list_sitepackages.py"
   - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\junit-results.xml))
   
-  - "sonar-scanner -Dsonar.projectKey=pywin32 -Dsonar.sources=. -Dsonar.host.url=https://sonarqube.com -Dsonar.login=%SONAR_TOKEN%"
+  - "sonar-scanner -Dsonar.projectKey=pywin32 -Dsonar.sources=. -Dsonar.host.url=https://sonarqube.com -Dsonar.login=%SONAR_TOKEN% -Dsonar.cfamily.build-wrapper-output.bypass=true"
