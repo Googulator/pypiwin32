@@ -1,7 +1,11 @@
-[![build status][2]][3]
+[![build status][2]][3] [![Quality Gate][4]][5] [![Technical debt ratio][6]][7]
 
 [2]: https://ci.appveyor.com/api/projects/status/github/pywin32/pypiwin32?branch=master&svg=true
 [3]: https://ci.appveyor.com/project/pywin32/pypiwin32
+[4]: https://sonarqube.com/api/badges/gate?key=pywin32
+[5]: https://sonarqube.com/dashboard/index/pywin32
+[6]: https://sonarqube.com/api/badges/measure?key=pywin32&metric=sqale_debt_ratio
+[7]: https://sonarqube.com/dashboard/index/pywin32
 
 This is the readme for the Python for Win32 (pywin32) extensions source code.
 
