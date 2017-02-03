@@ -25,3 +25,4 @@ codecov
 pytest-cov
 packaging
 cmdvars
+requests
