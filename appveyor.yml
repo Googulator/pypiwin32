@@ -121,9 +121,9 @@ on_finish:
   - ps: |
       if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) {
         sonar-scanner `
-          -Dsonar.projectKey=pywin32 `
-          -Dsonar.sources=. `
-          -Dsonar.host.url=https://sonarqube.com `
-          -Dsonar.login=%SONAR_TOKEN% `
-          -Dsonar.cfamily.build-wrapper-output=sonar
+          "-Dsonar.projectKey=pywin32" `
+          "-Dsonar.sources=." `
+          "-Dsonar.host.url=https://sonarqube.com" `
+          "-Dsonar.login=%SONAR_TOKEN%" `
+          "-Dsonar.cfamily.build-wrapper-output=sonar"
       }
