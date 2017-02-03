@@ -119,6 +119,8 @@ on_finish:
         "https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)",
         (Resolve-Path .\junit-results.xml)
       )
+    
+  - "%CMD_IN_ENV% python tests/scripts/appveyor/fixup_wrapper.py sonar/build-wrapper-dump.json"
   - ps: |
       if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) {
         sonar-scanner `
