@@ -85,6 +85,7 @@ install:
   - "%CMD_IN_ENV% python tests/scripts/appveyor/fetch_wrapper.py"
   
   - "%CMD_IN_ENV% build-wrapper-win-x86-64 --out-dir sonar python setup.py bdist_wheel"
+  - "%CMD_IN_ENV% python tests/scripts/appveyor/fixup_wrapper.py sonar/build-wrapper-dump.json"
   - "%CMD_IN_ENV% python tests/scripts/install_wheels.py dist"
 
 build: none
@@ -119,8 +120,8 @@ on_finish:
         "https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)",
         (Resolve-Path .\junit-results.xml)
       )
-    
-  - "%CMD_IN_ENV% python tests/scripts/appveyor/fixup_wrapper.py sonar/build-wrapper-dump.json"
+      $LastExitCode = 0
+
   - ps: |
       if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) {
         sonar-scanner `
@@ -130,3 +131,4 @@ on_finish:
           "-Dsonar.login=%SONAR_TOKEN%" `
           "-Dsonar.cfamily.build-wrapper-output=sonar"
       }
+      $LastExitCode = 0
