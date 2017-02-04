@@ -122,7 +122,10 @@ on_finish:
       )
       $LastExitCode = 0
   
-  - ps: ls (Resolve-Path .\build) -filter *.py -recurse | foreach {rm $_}
+  - ps: |
+      cd build
+      ls -filter *.py -recurse | foreach {rm $_}
+      cd ..
   
   - ps: |
       if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) {
