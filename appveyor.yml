@@ -121,7 +121,9 @@ on_finish:
         (Resolve-Path .\junit-results.xml)
       )
       $LastExitCode = 0
-
+  
+  - ps: ls (Resolve-Path .\build) -filter *.py -recurse | foreach {rm $_}
+  
   - ps: |
       if (-Not $env:APPVEYOR_PULL_REQUEST_NUMBER) {
         sonar-scanner `
