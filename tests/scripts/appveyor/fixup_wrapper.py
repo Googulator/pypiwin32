@@ -22,4 +22,4 @@ for i, item in enumerate(wrapper['captures']):
 
 wrapper_file.seek(0)
 wrapper_file.truncate()
-json.dumps(wrapper, wrapper_file, indent=4)
+json.dump(wrapper, wrapper_file, indent=4)
