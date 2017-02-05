@@ -13,6 +13,8 @@ wrapper_file.seek(pos)
 wrapper = json.load(wrapper_file)
 
 for i, item in enumerate(wrapper['captures']):
+    wrapper['captures'][i].setdefault('stdout', '')
+    wrapper['captures'][i].setdefault('stderr', '')
     if not wrapper['captures'][i]['stdout']:
         wrapper['captures'][i]['stdout'] = wrapper['captures'][0]['stdout']
     if not wrapper['captures'][i]['stderr']:
